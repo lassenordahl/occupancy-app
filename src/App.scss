@@ -1,11 +1,11 @@
-@import "globals/zothacks-styles.scss";
+@import "globals/occupancy-styles.scss";
 
 .App {
-  text-align: center;
   min-height: 100vh;
-  background-color: $lightBackground;
+  min-width: 100vw;
+  background-color: $background;
   color: $fontColor;
-  font-family: $hackUCIFont;
+  font-family: $font;
   overflow-y: auto;
 
   h3 {
