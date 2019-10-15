@@ -5,6 +5,10 @@ Occupancy App environment styles.
 
 **/
 
+// Sizing
+$navbarHeight: 64px;
+$smallSpacing: 24px;
+$largeSpacing: 48px;
 
 // Temporary Appwide Style Variables
 $fontColor: #2e2e2e;
@@ -16,7 +20,7 @@ $background: #f7f9ff;
 
 // Color Profiles
 $blueMain: #2749c4;
-$blueHighlight: #5b7bf0;
+$blueHighlight: #4869e4;
 $redMain: #eb2a3a;
 $redHighlight: #fc626f;
 
@@ -30,6 +34,7 @@ $darkGray: #2e2e2e;
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-direction: column;
 }
 
 .flex-split {
@@ -39,10 +44,10 @@ $darkGray: #2e2e2e;
 }
 
 .box-shadow { 
-  box-shadow: 3px 10px 18px rgba(0, 0, 0, 0.1);
+  box-shadow: 3px 10px 18px rgba(0, 0, 0, 0.1) !important;
 }
 
-.rounded-corner {
+.rounded-corners {
   border-radius: 10px;
 }
 
@@ -58,4 +63,21 @@ $darkGray: #2e2e2e;
 
 .center-text {
   text-align: center;
+}
+
+.color-blue {
+  background-color: $blueMain;
+  outline: 0;
+  border: 0;
+}
+
+.color-blue:hover {
+  background-color: $blueHighlight;
+  border: 0;
+}
+
+.color-blue:focus {
+  background-color: $blueHighlight;
+  outline: 0;
+  border: 0;
 }

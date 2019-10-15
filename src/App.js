@@ -4,17 +4,24 @@ import history from './history';
 import './App.scss';
 
 import {
+  Nav
+} from 'app/components';
+
+import {
   Home
 } from 'app/views';
 
 function App() {
   return (
     <div className='App'>
-      <Router history={history}>
-        <Switch>
-          <Route exact path='/' component={Home}/>
-        </Switch>
-      </Router>
+      <Nav></Nav>
+      <div className="app-content">
+        <Router history={history}>
+          <Switch>
+            <Route exact path='/' component={Home}/>
+          </Switch>
+        </Router>
+      </div>
     </div>
   );
 }

@@ -1,0 +1,22 @@
+@import "globals/occupancy-styles.scss";
+
+.Card {
+  background-color: $white;
+  text-align: left;
+
+  h1 {
+    margin-bottom: 0;
+  }
+  
+  button {
+    display: inline-block;
+    width: 50%;
+  }
+
+  & > div {
+    margin: $smallSpacing;
+    display: flex;
+    flex-direction: column;
+    height: calc(100% - 48px);
+  }
+}

@@ -2,5 +2,21 @@
 
 .Home {
   text-align: center;
-  min-height: 100vh;
+  display: flex;
+
+  .information-card {
+    background-color: $white;
+    position: absolute;
+    bottom: 30px;
+    right: 30px;
+    height: calc(100vh - 64px - 60px);
+  }
+
+  .selected-building-info {
+    flex: 1;
+  }
+
+  p {
+    text-align: center;
+  }
 }
