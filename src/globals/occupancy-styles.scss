@@ -7,7 +7,9 @@ Occupancy App environment styles.
 
 // Sizing
 $navbarHeight: 64px;
+$tinySpacing: 16px;
 $smallSpacing: 24px;
+$mediumSpacing: 36px;
 $largeSpacing: 48px;
 
 // Temporary Appwide Style Variables
@@ -41,6 +43,13 @@ $darkGray: #2e2e2e;
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.flex-start-row {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-direction: row;
 }
 
 .box-shadow { 

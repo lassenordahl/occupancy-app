@@ -1,5 +1,6 @@
 import React from "react";
 import './Legend.scss';
+import Fade from 'react-reveal/Fade';
 
 import LegendRow from './legend-row/LegendRow';
 
@@ -24,13 +25,15 @@ const ranges = [
 
 function Legend() {
   return (
-    <div className="Legend">
-      {ranges.map(function(row, index) {
-        return (
-          <LegendRow color={row.color} range={row.range} key={index}></LegendRow>
-        );
-      })}
-    </div>
+    <Fade duration={1500}>
+      <div className="Legend">
+        {ranges.map(function(row, index) {
+          return (
+            <LegendRow color={row.color} range={row.range} key={index}></LegendRow>
+          );
+        })}
+      </div>
+    </Fade>
   );
 }
 

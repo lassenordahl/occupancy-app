@@ -4,12 +4,18 @@
   text-align: center;
   display: flex;
 
+  .map {
+    width: 100vw;
+    height: calc(100vh - 64px);
+  }
+
   .information-card {
     background-color: $white;
     position: absolute;
     bottom: 30px;
     right: 30px;
     height: calc(100vh - 64px - 60px);
+    z-index: 1;
   }
 
   .selected-building-info {

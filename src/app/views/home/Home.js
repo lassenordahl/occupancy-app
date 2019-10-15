@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import './Home.scss';
 
 import 'leaflet/dist/leaflet.css';
-
-import { Map, TileLayer } from 'react-leaflet';
+import Fade from 'react-reveal/Fade'
+import { Map, TileLayer, Marker, Popup } from 'react-leaflet';
 import { Slider, DatePicker, Button } from 'react-rainbow-components';
 
 import {
@@ -22,8 +22,8 @@ function Home() {
   }
 
   const state = {
-    lat: 51.505,
-    lng: -0.09,
+    lat: 33.6405,
+    lng: -117.8443,
     zoom: 13,
   }
 
@@ -31,39 +31,49 @@ function Home() {
 
   return (
     <div className="Home">
-      {/* <Map style={{'width': '100vw', 'height': '100vh'}} position={[51.505, -0.09]} zoom={12}>
+      <Map center={[state.lat, state.lng]} 
+        style={{'width': '100vw', 'height': 'calc(100vh - 64px)', 'position': 'fixed'}}
+        // className="map" 
+        zoom={13}>
         <TileLayer
-            attribution='Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-            url="http://stamen-tiles-{s}.a.ssl.fastly.net/toner-background/{z}/{x}/{y}.png"
-          />
-      </Map> */}
+          attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+          url='http://{s}.tile.osm.org/{z}/{x}/{y}.png'
+        />
+        <Marker position={position}>
+          <Popup>
+            <span>A pretty CSS3 popup. <br/> Easily customizable.</span>
+          </Popup>
+        </Marker>
+      </Map>
       <Card className="information-card" style={{width: '400px'}}>
-        <div>
-          <h1>
-            UCI Campus
-          </h1>
-          <h3>
-            Legend
-          </h3>
-          <Legend/>
-          <h3>
-            Timeline
-          </h3>
-          <DatePicker></DatePicker>
-          <h2>
-            Selected Building
-          </h2>
-          <div className="selected-building-info flex-center">
-            <p>No building selected</p>
+        <Fade duration={1500} cascade>
+          <div>
+              <h1>
+                UCI Campus
+              </h1>
+              <h3>
+                Legend
+              </h3>
+              <Legend/>
+              <h3>
+                Timeline
+              </h3>
+              <DatePicker></DatePicker>
+              <h2>
+                Selected Building
+              </h2>
+              <div className="selected-building-info flex-center">
+                <p>No building selected</p>
+              </div>
+              <Button
+                variant="brand"
+                className="box-shadow color-blue"
+                style={{'alignSelf': 'center'}}
+              >
+                Show Map Data
+              </Button>
           </div>
-          <Button
-            variant="brand"
-            className="box-shadow color-blue"
-            style={{'alignSelf': 'center'}}
-          >
-            Show Map Data
-          </Button>
-        </div>
+        </Fade>
       </Card>
     </div>
   );

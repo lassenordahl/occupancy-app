@@ -6,11 +6,19 @@
   background-color: $blueMain;
   color: white;
 
-  h3:nth-child(1) {
-    margin-left: 16px;
+  div:nth-child(1) {
+    margin-left: $tinySpacing;
+  }
+
+  ol {
+    margin-left: $smallSpacing;
+  }
+
+  a {
+    color: white !important;
   }
 
   h3:nth-child(n) {
-    margin-right: 16px;
+    margin-right: $tinySpacing;
   }
 }
