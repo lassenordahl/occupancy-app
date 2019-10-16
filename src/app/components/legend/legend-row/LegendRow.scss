@@ -14,3 +14,7 @@
     margin-right: $smallSpacing;
   }
 }
+
+.LegendRow:last-child {
+  margin-bottom: 0 !important;
+}

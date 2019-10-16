@@ -14,9 +14,9 @@
   }
 
   & > div {
-    margin: $smallSpacing;
+    margin: $mediumSpacing;
     display: flex;
     flex-direction: column;
-    height: calc(100% - 48px);
+    height: calc(100% - 72px);
   }
 }
