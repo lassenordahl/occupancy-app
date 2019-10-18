@@ -10,6 +10,12 @@
   display: flex;
   flex-direction: column;
 
+  body {
+    transform: scale(1.1);
+    transform-origin: 0 0;
+    // add prefixed versions too.
+ }
+
   h1              { font-size: 2em; margin: .67em 0 }
   h2              { font-size: 1.5em; margin: .75em 0 }
   h3              { font-size: 1.17em; margin: .83em 0 }

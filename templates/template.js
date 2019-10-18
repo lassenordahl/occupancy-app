@@ -1,5 +1,5 @@
 import React from "react";
-import './template.scss';
+import './Template.scss';
 
 function Template() {
   return (

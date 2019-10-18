@@ -7,6 +7,7 @@ Occupancy App environment styles.
 
 // Sizing
 $navbarHeight: 64px;
+$microSpacing: 8px;
 $tinySpacing: 16px;
 $smallSpacing: 24px;
 $mediumSpacing: 36px;
@@ -30,6 +31,8 @@ $redHighlight: #fc626f;
 $white: #ffffff;
 $black: #000000;
 $darkGray: #2e2e2e;
+$lightGray: #888888;
+
 
 // Helper Classes 
 .flex-center {

@@ -4,7 +4,6 @@ import './Home.scss';
 import 'leaflet/dist/leaflet.css';
 import Fade from 'react-reveal/Fade'
 import { Trail } from 'react-spring/renderprops';
-import { Map, TileLayer, Marker, Popup } from 'react-leaflet';
 import { DatePicker, Button } from 'react-rainbow-components';
 
 import {
@@ -13,45 +12,20 @@ import {
 } from 'app/containers';
 
 import {
-  Legend
+  Legend,
+  CoordinateMap
 } from 'app/components';
 
 function Home() {
-  const [value, setValue] = useState(50);
   const [showDialog, setShowDialog] = useState(false);
 
-  function onChange(e) {
-    setValue(e.target.value);
-  }
-
-  const state = {
-    lat: 33.6405,
-    lng: -117.8443,
-    zoom: 13,
-  }
-
-  const position = [ state.lat, state.lng ];
-
   const items = [
-    1,2,3,4
+    1,2,3,4,5,6
   ]
 
   return (
     <div className="Home">
-      <Map center={[state.lat, state.lng]} 
-        style={{'width': '100vw', 'height': 'calc(100vh - 64px)', 'position': 'fixed'}}
-        // className="map" 
-        zoom={13}>
-        <TileLayer
-          attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-          url='http://{s}.tile.osm.org/{z}/{x}/{y}.png'
-        />
-        <Marker position={position}>
-          <Popup>
-            <span>A pretty CSS3 popup. <br/> Easily customizable.</span>
-          </Popup>
-        </Marker>
-      </Map>
+      <CoordinateMap></CoordinateMap>
       {showDialog ?
         <Dialog 
           className="dialog" 
@@ -64,10 +38,10 @@ function Home() {
                 keys={item => item} 
                 from={{opacity: 0}} 
                 to={{opacity: 1}}
-                duration={3000}
+                duration={4000}
               >
                 {item => props => 
-                  <Card className="flex-center" style={props}>
+                  <Card className="flex-center test" style={props}>
                     <h1>
                       {item}    
                     </h1>

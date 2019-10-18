@@ -43,8 +43,12 @@
       margin-bottom: $tinySpacing;
     }
 
-    div {
+    & > div {
       margin-bottom: $tinySpacing;
+
+      & > div {
+        margin-bottom: $tinySpacing;
+      }
     }
   }
 
@@ -55,4 +59,9 @@
   p {
     text-align: center;
   }
+}
+
+.test {
+  height: 500px !important;
+  z-index: 1;
 }
