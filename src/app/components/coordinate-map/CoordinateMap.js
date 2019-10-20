@@ -1,7 +1,8 @@
 import React from "react";
 import './CoordinateMap.scss';
 
-import { Map, TileLayer, Marker, Popup, Polygon } from 'react-leaflet';
+import { Map, TileLayer, Marker, Popup, Polygon, Tooltip } from 'react-leaflet';
+import uciMap from 'globals/test-data/uci-map.js';
 
 const state = {
   lat: 33.6405,
@@ -11,12 +12,12 @@ const state = {
 
 const position = [ state.lat, state.lng ];
 
-function CoordinateMap() {
+function CoordinateMap(props) {
   return (
     <Map center={[state.lat, state.lng]} 
       style={{'width': '100vw', 'height': 'calc(100vh - 64px)', 'position': 'fixed'}}
-      // className="map" 
-      zoom={13}>
+      className="CoordinateMap" 
+      zoom={15}>
       <TileLayer
         attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         url='http://{s}.tile.osm.org/{z}/{x}/{y}.png'
@@ -26,12 +27,19 @@ function CoordinateMap() {
           <span>A pretty CSS3 popup. <br/> Easily customizable.</span>
         </Popup>
       </Marker>
-      <Polygon positions={[
-        [33.647015, -117.841485],
-        [33.646819, -117.841174],
-        [33.647232, -117.840693],
-        [33.647498, -117.841088]
-      ]}></Polygon>
+      {uciMap.buildings.map(function(building) {
+        return (
+          <Polygon  onClick={() => props.selectBuilding(building)}
+            positions={building.coordinates}
+          >
+            <Tooltip 
+              sticky
+              className="polygon-tooltip box-shadow"
+              >{building.name}
+            </Tooltip>
+          </Polygon>
+        );
+      })}
     </Map>
   );
 }

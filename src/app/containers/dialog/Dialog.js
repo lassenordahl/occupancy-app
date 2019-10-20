@@ -1,7 +1,6 @@
 import React from "react";
 import './Dialog.scss';
 
-import Fade from 'react-reveal/Fade';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faTimes } from '@fortawesome/free-solid-svg-icons'
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, Switch, BrowserRouter as Router } from 'react-router-dom';
+import { Route, Switch, BrowserRouter as Router, Redirect } from 'react-router-dom';
 import history from './history';
 import './App.scss';
 
@@ -8,20 +8,25 @@ import {
 } from 'app/components';
 
 import {
-  Home
+  Home,
+  InvalidRoute
 } from 'app/views';
 
 function App() {
   return (
     <div className='App'>
-      <Nav></Nav>
-      <div className="app-content">
-        <Router history={history}>
-          <Switch>
-            <Route exact path='/' component={Home}/>
-          </Switch>
-        </Router>
-      </div>
+      <Router history={history}>
+        <Nav></Nav>
+        <div className="app-content">
+            <Switch>
+              <Route path='/geolocation/:buildingId?' component={Home}/>
+              <Route exact path="/">
+                <Redirect to="/geolocation"></Redirect>
+              </Route>
+              <Route component={InvalidRoute}></Route>
+            </Switch>
+        </div>
+      </Router>
     </div>
   );
 }

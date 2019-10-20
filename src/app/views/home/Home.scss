@@ -53,12 +53,20 @@
   }
 
   .selected-building-info {
+    display: flex;
     flex: 1;
-  }
+    flex-direction: column;
+    overflow-y: auto;
 
-  p {
-    text-align: center;
-  }
+    & > div:first-child {
+      margin-top: $microSpacing;
+    }
+
+    & > p {
+      text-align: center;
+      margin-top: 40%;
+    }
+  }  
 }
 
 .test {
