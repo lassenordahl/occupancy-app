@@ -1,12 +1,13 @@
 @import "globals/occupancy-styles.scss";
 
 .NumberFocus {
+  margin-bottom: $smallSpacing;
+
   .number-focus-number {
-    font-size: 5em;
+    font-size: 4em;
   }
 
   .number-focus-subtitle {
-    font-size: 1.2em;
     color: $lightGray;
   }
 }

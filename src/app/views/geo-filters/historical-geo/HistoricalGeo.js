@@ -47,7 +47,7 @@ function HistoricalGeo(props) {
             <FloorRow style={props} floorNumber={item}></FloorRow>
           }
         </Trail> 
-        : 
+        :
           <p> No building selected</p>
       }
       <div style={{'flex': '1 1 '}}></div>

@@ -90,6 +90,49 @@
     }
   }
 
+  .legend-card {
+    position: absolute;
+    bottom: $mediumSpacing;
+    left: $mediumSpacing;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 0;
+      margin-bottom: $tinySpacing;
+    }
+
+    .buffer {
+      height: $tinySpacing;
+      width: 100%;
+    }
+
+    .legend-header {
+      margin: $mediumSpacing;
+      margin-bottom: 0;
+      flex-direction: column;
+    
+      h1 {
+        margin-bottom: 0;
+      }
+    }
+
+    .legend-content {
+      width: 100%;
+      flex: 1 1;
+      background-color: $white;
+
+      & > div {
+        display: flex;
+        flex-direction: column;
+        margin: $mediumSpacing;
+        flex: 1 1;
+        height: calc(100% - 72px);
+      }
+    }
+  }
+
   .selected-building-info {
     display: flex;
     flex: 1;

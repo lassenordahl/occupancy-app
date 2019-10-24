@@ -68,10 +68,20 @@ function Home() {
             </div>
         </Dialog>
       : null}
+      <Card className="legend-card" style={{width: '280px'}}>
+        <div className="legend-header">
+          <h1>
+            Legend
+          </h1>
+        </div>
+        <div className="legend-content">
+            <Legend></Legend>
+          </div>
+      </Card>
       <Card className="information-card" style={{width: '400px'}}>
         <div className="information-header">
           <h1>
-            UCI Campus
+            UCI
           </h1>
         </div>
         

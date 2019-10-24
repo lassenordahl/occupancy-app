@@ -7,6 +7,7 @@
   overflow-y: auto;
   display: flex;
   flex-direction: column;
+  z-index: 1000;
 
   .dialog-navbar {
     height: 64px;

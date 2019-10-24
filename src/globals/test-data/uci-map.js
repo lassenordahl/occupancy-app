@@ -2,6 +2,7 @@ export default {
   buildings: [
     {
       name: 'Donald Bren Hall',
+      description: 'Main computer science building',
       buildingId: 123,
       floorCount: 4,
       coordinates: [
@@ -14,8 +15,9 @@ export default {
     },
     {
       name: 'Langson Library',
+      description: 'Main computer science building',
       buildingId: 123,
-      floorCount: 10,
+      floorCount: 6,
       coordinates: [
         [33.647015, -117.841485],
         [33.646819, -117.841174],
@@ -25,6 +27,7 @@ export default {
     },
     {
       name: 'Rowland Hall',
+      description: 'Main computer science building',
       buildingId: 123,
       floorCount: 3,
       coordinates: [
@@ -36,6 +39,7 @@ export default {
     },
     {
       name: 'Humanities Hall',
+      description: 'Main computer science building',
       buildingId: 123,
       floorCount: 5,
       coordinates: [
