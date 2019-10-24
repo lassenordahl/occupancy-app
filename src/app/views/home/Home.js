@@ -4,7 +4,7 @@ import './Home.scss';
 import 'leaflet/dist/leaflet.css';
 import Fade from 'react-reveal/Fade'
 import { Trail } from 'react-spring/renderprops';
-import { DatePicker, Button } from 'react-rainbow-components';
+import { Button, Tabset, Tab } from 'react-rainbow-components';
 
 import {
   Card,
@@ -17,9 +17,15 @@ import {
   FloorRow
 } from 'app/components';
 
+import { 
+  HistoricalGeo,
+  RealTimeGeo
+} from 'app/views';
+
 function Home() {
   const [showDialog, setShowDialog] = useState(false);
   const [building, setBuilding] = useState(null);
+  const [selectedTab, setSelectedTab]  = useState("real-time");
 
   const items = [
     1,2,3,4,5,6
@@ -28,6 +34,10 @@ function Home() {
   function selectBuilding(building) {
     setBuilding(null);
     setBuilding(building);
+  }
+
+  function handleOnSelect(event, selected) {
+    setSelectedTab(selected);
   }
 
   return (
@@ -59,42 +69,41 @@ function Home() {
         </Dialog>
       : null}
       <Card className="information-card" style={{width: '400px'}}>
-        <Fade duration={1500} cascade>
-          <div>
-              <h1> UCI Campus </h1>
-              <h2> Map Information </h2>
-              <h3> Legend </h3>
-              <Legend/>
-              <h3> Timeline </h3>
-              <DatePicker></DatePicker>
-              <h2> Selected Building </h2>
-              <div className="selected-building-info">
-                { building !== null ?
-                  <Trail
-                    items={[...Array(building.floorCount).keys()]}
-                    keys={item => item} 
-                    from={{opacity: 0}} 
-                    to={{opacity: 1}}
-                    duration={4000}
-                  >
-                    {item => props => 
-                      <FloorRow style={props} floorNumber={item}></FloorRow>
-                    }
-                  </Trail> 
-                  : 
-                    <p> No building selected</p>
-                }
-              </div>
-              <Button
-                variant="brand"
-                className="box-shadow color-blue"
-                style={{'alignSelf': 'center'}}
-                onClick={() => setShowDialog(true)}
-              >
-                Show Map Data
-              </Button>
-          </div>
-        </Fade>
+        <div className="information-header">
+          <h1>
+            UCI Campus
+          </h1>
+        </div>
+        
+        <Tabset
+          onSelect={handleOnSelect}
+          activeTabName={selectedTab}
+        >
+          <Tab
+            label="REAL-TIME"
+            name="real-time"
+            id="real-time"
+          >
+          </Tab>
+          <Tab
+            label="HISTORICAL"
+            name="historical"
+            id="historical"
+          >
+          </Tab>
+        </Tabset>
+        <div className="information-tab-content">
+          {selectedTab === 'real-time' ? 
+            <RealTimeGeo 
+              building={building}
+            /> 
+            : 
+            <HistoricalGeo 
+              building={building}
+              setShowDialog={setShowDialog}
+            />
+          }
+        </div>
       </Card>
     </div>
   );

@@ -13,7 +13,7 @@
     width: 50%;
   }
 
-  & > div {
+  .content-flex {
     margin: $mediumSpacing;
     display: flex;
     flex-direction: column;

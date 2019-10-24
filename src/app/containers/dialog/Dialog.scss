@@ -4,13 +4,13 @@
   position: absolute;
   display: flex;
   // background-color: $background !important;
-  overflow-y: scroll;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
 
   .dialog-navbar {
     height: 64px;
-    margin-bottom: 0;
+    margin-bottom: $smallSpacing;
     display: flex;
     flex-direction: row;
     justify-content: space-between;

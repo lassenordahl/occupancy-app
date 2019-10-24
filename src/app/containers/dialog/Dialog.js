@@ -13,19 +13,21 @@ function Dialog(props) {
       className={`Dialog box-shadow ${props.className}`}
       style={{...props.style}}
     > 
-      <div className="dialog-navbar">
-        <div>
-          <h1>
-            {props.title}
-          </h1>
-          <h3>
-            January 21st, 2019
-          </h3>
+      <div className="content-flex">
+        <div className="dialog-navbar">
+          <div>
+            <h1>
+              {props.title}
+            </h1>
+            <h3>
+              January 21st, 2019
+            </h3>
+          </div>
+          <FontAwesomeIcon icon={faTimes} onClick={() => props.closeDialog()}></FontAwesomeIcon>
         </div>
-        <FontAwesomeIcon icon={faTimes} onClick={() => props.closeDialog()}></FontAwesomeIcon>
-      </div>
-      <div className="dialog-content">
-        {props.children}
+        <div className="dialog-content">
+          {props.children}
+        </div>
       </div>
     </Card>
   );
