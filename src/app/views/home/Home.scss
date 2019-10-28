@@ -52,10 +52,21 @@
 
     .information-header {
       margin: $mediumSpacing;
-      flex-direction: column;
+      display: flex;
+      flex-direction: row;
     
       h1 {
         margin-bottom: 0;
+        font-size: 24px;
+      }
+
+      h1:hover {
+        cursor: pointer;
+      }
+
+      p {
+        margin-top: 4px;
+        font-size: 1.6em;
       }
 
       & > div {

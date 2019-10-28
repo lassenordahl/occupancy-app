@@ -29,7 +29,7 @@ function CoordinateMap(props) {
       </Marker>
       {uciMap.buildings.map(function(building) {
         return (
-          <Polygon  onClick={() => props.selectBuilding(building)}
+          <Polygon onClick={() => props.selectBuilding(building)}
             positions={building.coordinates}
           >
             <Tooltip 

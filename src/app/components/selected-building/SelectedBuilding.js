@@ -16,7 +16,7 @@ function SelectedBuilding(props) {
         <p>
           {building.description}
         </p>
-        <div className="flex-center" style={{"flex": "1 1"}}>
+        <div className="building-occupancy-count flex-center">
           <NumberFocus subtitle="Total Occupants">
             12
           </NumberFocus>

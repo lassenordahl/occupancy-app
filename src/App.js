@@ -19,7 +19,7 @@ function App() {
         <Nav></Nav>
         <div className="app-content">
             <Switch>
-              <Route path='/geolocation/:buildingId?' component={Home}/>
+              <Route path='/geolocation/:buildingId?/(floor)?/:floorId?' component={Home}/>
               <Route exact path="/">
                 <Redirect to="/geolocation"></Redirect>
               </Route>

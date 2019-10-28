@@ -4,15 +4,22 @@ import './Nav.scss';
 import { Breadcrumbs, Breadcrumb } from 'react-rainbow-components';
 import { Route, Redirect } from 'react-router-dom';
 
-function ConditionalBreadcrumb() {
-  return (
-    <Breadcrumb label="Floor Map"/>
-  );
+function Conditional() {
+  return (<Breadcrumb label="Floor Map"/>);
 }
+
 
 function Nav() {
 
   const [redirectCampus, setRedirectCampus] = useState(false);
+
+  function conditionalBuilding() {
+    return (<Breadcrumb label="Building"/>);
+  }
+
+  function conditionalFloor() {
+    return (<Breadcrumb label="Floor"/>);
+  }
 
   return (
     <div className="Nav flex-split box-shadow">
@@ -22,7 +29,8 @@ function Nav() {
         </h2>
         <Breadcrumbs style={{'margin-left': '16px'}}>
           <Breadcrumb label="Campus Map" onClick={() => setRedirectCampus(true)}/>
-          <Route path="/geolocation/:buildingId/floor/:floorId" component={ConditionalBreadcrumb}></Route>
+          <Route path="/geolocation/:buildingId" component={conditionalBuilding}></Route>
+          <Route path="/geolocation/:buildingId/floor/:floorId" component={conditionalFloor}></Route>
         </Breadcrumbs>
       </div>
       { redirectCampus ? <Redirect to="/geolocation"></Redirect> : null}

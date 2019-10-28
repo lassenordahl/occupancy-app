@@ -2,11 +2,9 @@
 
 .SelectedBuilding {
   width: 100%;
-  min-height: 100px;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100%;
 
   .building-information {
     width: 100%;
@@ -28,6 +26,9 @@
       border: 3px solid $blueMain;
       margin-bottOm: $tinySpacing;
       margin-top: $tinySpacing;
+    }
+
+    .building-occupancy-count {
     }
   }
 }

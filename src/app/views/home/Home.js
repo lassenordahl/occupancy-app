@@ -1,10 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import './Home.scss';
 
 import 'leaflet/dist/leaflet.css';
-import Fade from 'react-reveal/Fade'
+import { Route } from 'react-router-dom';
 import { Trail } from 'react-spring/renderprops';
-import { Button, Tabset, Tab } from 'react-rainbow-components';
 
 import {
   Card,
@@ -14,40 +13,121 @@ import {
 import {
   Legend,
   CoordinateMap,
-  FloorRow
 } from 'app/components';
 
 import { 
-  HistoricalGeo,
-  RealTimeGeo
+  BuildingInformation,
+  GlobalInformation
 } from 'app/views';
 
-function Home() {
+
+function Home(props) {
   const [showDialog, setShowDialog] = useState(false);
   const [building, setBuilding] = useState(null);
-  const [selectedTab, setSelectedTab]  = useState("real-time");
+  const [floorNumber, setFloorNumber] = useState(null);
 
   const items = [
     1,2,3,4,5,6
   ]
 
+  useEffect(() => {
+    let urlBuildingId = props.match.params.buildingId;
+    // alert(props.match.params.buildingId);
+    // alert(props.match.params.floorId);
+    setFloorNumber(props.match.params.floorId);
+    // if url building id is not in the valid id's then we can just set it to be nothing
+  });
+
   function selectBuilding(building) {
     setBuilding(null);
     setBuilding(building);
+    props.history.push('/geolocation/' + building.buildingId);
   }
 
-  function handleOnSelect(event, selected) {
-    setSelectedTab(selected);
+  function resetBuilding() {
+    setBuilding(null);
+    props.history.push('/geolocation');
   }
 
+  function openFloor(floorNumber) {
+    setFloorNumber(floorNumber);
+    props.history.push('/geolocation/' + building.buildingId + '/floor/' + floorNumber);
+  }
+
+  function conditionalGeolocation() {
+    return (
+      <React.Fragment>
+        { building !== null ?
+          <BuildingInformation 
+            building={building}
+            openFloor={openFloor}
+          /> 
+          :
+          <GlobalInformation/>
+        }
+      </React.Fragment>
+    );
+  }
+
+  function conditionalFloor() {
+    return (
+      <div>
+        <h2>
+          Floor Information
+        </h2>
+        <p>
+          You have selected a floor
+        </p>
+      </div>
+    );
+  }
+
+  function conditionalMap() {
+    return (<CoordinateMap selectBuilding={selectBuilding}></CoordinateMap>);
+  }
+
+  function conditionalFloorMap() {
+    return (
+      <div>
+        This will be the floor map
+      </div>
+    );
+  }
+
+  function conditionalGeolocationTitle() {
+    return (
+      <React.Fragment>
+        <h1 onClick={() => resetBuilding()}>
+          UCI
+        </h1>
+        { building !== null ?
+          <p>&nbsp;&nbsp;>&nbsp;&nbsp;{building.name}</p>
+          : null
+        }
+      </React.Fragment>
+    );
+  }
+
+  function conditionalFloorTitle() {
+    return (
+      <React.Fragment>
+        <h1>
+          { building !== null ? building.name : 'Default'}
+        </h1>
+        <p>&nbsp;&nbsp;>&nbsp;&nbsp;Floor {floorNumber}</p>    
+      </React.Fragment>
+    );
+  }
+  
   return (
     <div className="Home">
-      <CoordinateMap selectBuilding={selectBuilding}></CoordinateMap>
+      <Route exact path="/geolocation/:buildingId?" component={conditionalMap}></Route>
+      <Route exact path="/geolocation/:buildingId/floor/:floorId" component={conditionalFloorMap}></Route>
       {showDialog ?
         <Dialog 
           className="dialog" 
           closeDialog={() => setShowDialog(false)}
-          title="Hay Baby"
+          title="Hello!"
         >
             <div className="dialog-test-content">
               <Trail 
@@ -80,39 +160,12 @@ function Home() {
       </Card>
       <Card className="information-card" style={{width: '400px'}}>
         <div className="information-header">
-          <h1>
-            UCI
-          </h1>
+          <Route exact path="/geolocation/:buildingId?" component={conditionalGeolocationTitle}></Route>
+          <Route exact path="/geolocation/:buildingId/floor/:floorId" component={conditionalFloorTitle}></Route>
         </div>
-        
-        <Tabset
-          onSelect={handleOnSelect}
-          activeTabName={selectedTab}
-        >
-          <Tab
-            label="REAL-TIME"
-            name="real-time"
-            id="real-time"
-          >
-          </Tab>
-          <Tab
-            label="HISTORICAL"
-            name="historical"
-            id="historical"
-          >
-          </Tab>
-        </Tabset>
         <div className="information-tab-content">
-          {selectedTab === 'real-time' ? 
-            <RealTimeGeo 
-              building={building}
-            /> 
-            : 
-            <HistoricalGeo 
-              building={building}
-              setShowDialog={setShowDialog}
-            />
-          }
+          <Route exact path="/geolocation/:buildingId?" component={conditionalGeolocation}></Route>
+          <Route exact path="/geolocation/:buildingId/floor/:floorId" component={conditionalFloor}></Route>
         </div>
       </Card>
     </div>
