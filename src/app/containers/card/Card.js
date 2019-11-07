@@ -3,8 +3,6 @@ import './Card.scss';
 
 function Card(props) {
 
-  console.log(props.style);
-
   return (
     <div 
       className={`Card box-shadow ${props.className}`}

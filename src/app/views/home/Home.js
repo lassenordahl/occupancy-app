@@ -66,6 +66,7 @@ function Home(props) {
           <BuildingInformation 
             building={building}
             openFloor={openFloor}
+            history={props.history}
           /> 
           :
           <GlobalInformation/>
