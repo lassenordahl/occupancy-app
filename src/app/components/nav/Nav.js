@@ -3,23 +3,22 @@ import './Nav.scss';
 
 import { Breadcrumbs, Breadcrumb } from 'react-rainbow-components';
 import { Route, Redirect } from 'react-router-dom';
+import { tsPropertySignature } from "@babel/types";
 
-function Conditional() {
-  return (<Breadcrumb label="Floor Map"/>);
-}
-
-
-function Nav() {
+function Nav(props) {
 
   const [redirectCampus, setRedirectCampus] = useState(false);
+  const [redirectBuilding, setRedirectBuilding] = useState(false);
 
   function conditionalBuilding() {
-    return (<Breadcrumb label="Building"/>);
+    return (<Breadcrumb label="Building" onClick={() => setRedirectBuilding(true)}/>);
   }
 
   function conditionalFloor() {
     return (<Breadcrumb label="Floor"/>);
   }
+
+  console.log(props.match);
 
   return (
     <div className="Nav flex-split box-shadow">
@@ -34,6 +33,7 @@ function Nav() {
         </Breadcrumbs>
       </div>
       { redirectCampus ? <Redirect to="/geolocation"></Redirect> : null}
+      { redirectBuilding ? <Redirect to="/geolocation"></Redirect> : null}
       <h3>
         <a href="http://tippersweb.ics.uci.edu/">
           Tippers Info

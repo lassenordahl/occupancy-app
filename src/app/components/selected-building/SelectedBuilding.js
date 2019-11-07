@@ -10,18 +10,17 @@ function SelectedBuilding(props) {
     return (
       <div className="building-information">
         <div className="building"></div>
-        <h3>
+        {/* <h3>
           {building.name}
         </h3>
         <p>
           {building.description}
-        </p>
+        </p> */}
         <div className="building-occupancy-count flex-center">
           <NumberFocus subtitle="Total Occupants">
             12
           </NumberFocus>
-        </div>
-        
+        </div>  
       </div>
     );
   }

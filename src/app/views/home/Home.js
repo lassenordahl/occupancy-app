@@ -32,9 +32,14 @@ function Home(props) {
 
   useEffect(() => {
     let urlBuildingId = props.match.params.buildingId;
+    let floorId = props.match.params.floorId;
     // alert(props.match.params.buildingId);
     // alert(props.match.params.floorId);
-    setFloorNumber(props.match.params.floorId);
+    if (floorId === undefined) {
+      setFloorNumber(null);
+    } else {
+      setFloorNumber(floorId);
+    }
     // if url building id is not in the valid id's then we can just set it to be nothing
   });
 
@@ -121,8 +126,9 @@ function Home(props) {
   
   return (
     <div className="Home">
-      <Route exact path="/geolocation/:buildingId?" component={conditionalMap}></Route>
-      <Route exact path="/geolocation/:buildingId/floor/:floorId" component={conditionalFloorMap}></Route>
+      { floorNumber === null ? conditionalMap() : conditionalFloorMap() }
+      {/* <Route exact path="/geolocation/:buildingId?" component={}></Route>
+      <Route exact path="/geolocation/:buildingId/floor/:floorId" component={conditionalFloorMap}></Route> */}
       {showDialog ?
         <Dialog 
           className="dialog" 

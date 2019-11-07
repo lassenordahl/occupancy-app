@@ -6,18 +6,49 @@ import {
   FloorRow
 } from 'app/components';
 
+import { DatePicker, Button, Select } from 'react-rainbow-components';
 import { Trail } from 'react-spring/renderprops';
-import { Button } from 'react-rainbow-components';
 
 function BuildingInformation(props) {
+  
+  let selectedFloor = null;
+
+  function mapFloorOptions(floorCount) {
+    return [...Array(floorCount).keys()].map(function(number) {
+      return {
+        value: number + 1, 
+        label: 'Floor ' + (number + 1),
+      };
+    });
+  }
 
   return (
     <div className="RealTimeGeo">
       <h2>
+        Date Range
+      </h2>
+      <DatePicker
+        label="from"
+      />
+      <div style={{'height': '16px'}}/>
+      <DatePicker
+        label="to"
+      />
+      <div style={{'height': '24px'}}/>
+      <h2>
         Selected Building
       </h2>
       <SelectedBuilding building={props.building}></SelectedBuilding>    
-      { props.building !== null ? 
+      <div style={{'height': '24px'}}/>
+      <h2>
+        Select a Floor
+      </h2>
+      <Select 
+        options={mapFloorOptions(props.building.floorCount)}
+        value={selectedFloor}
+        placeholder="hello"
+      />
+      {/* { props.building !== null ? 
         <React.Fragment>
           <h2>
             Floors
@@ -37,7 +68,7 @@ function BuildingInformation(props) {
           </div>
         </React.Fragment>
         : null
-      }
+      } */}
       <Button
         variant="brand"
         className="box-shadow color-blue"
