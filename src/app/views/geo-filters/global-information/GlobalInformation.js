@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState }  from "react";
 import './GlobalInformation.scss';
 
 import { Button, DatePicker } from 'react-rainbow-components';
@@ -8,6 +8,10 @@ import {
 } from 'app/containers';
 
 function GlobalInformation() {
+
+  const [fromDate, setFromDate] = useState(new Date());
+  const [toDate, setToDate] = useState(new Date());
+
   return (
     <div className="GlobalInformation">
       <h2>
@@ -15,10 +19,12 @@ function GlobalInformation() {
       </h2>
       <DatePicker
         label="from"
+        value={fromDate}
       />
       <div style={{'height': '16px'}}/>
       <DatePicker
         label="to"
+        value={toDate}
       />
       <div style={{'height': '24px'}}/>
       <h2>

@@ -26,6 +26,8 @@ function BuildingInformation(props) {
     props.history.push('/geolocation/' + props.building.buildingId + '/floor/' + floor.value);
   }
 
+  console.log(props.building);
+
   return (
     <div className="RealTimeGeo">
       <h2>

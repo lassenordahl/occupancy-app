@@ -18,6 +18,10 @@ function Nav(props) {
     return (<Breadcrumb label="Floor"/>);
   }
 
+  function conditionalRoom() {
+    return (<Breadcrumb label="Room"></Breadcrumb>);
+  }
+
   console.log(props.match);
 
   return (
@@ -26,10 +30,11 @@ function Nav(props) {
         <h2>
           UCI Occupancy Tool
         </h2>
-        <Breadcrumbs style={{'margin-left': '16px'}}>
+        <Breadcrumbs style={{'marginLeft': '16px'}}>
           <Breadcrumb label="Campus Map" onClick={() => setRedirectCampus(true)}/>
           <Route path="/geolocation/:buildingId" component={conditionalBuilding}></Route>
           <Route path="/geolocation/:buildingId/floor/:floorId" component={conditionalFloor}></Route>
+          <Route path="/geolocation/:buildingId/floor/:floorId/room/:roomId" component={conditionalRoom}></Route>
         </Breadcrumbs>
       </div>
       { redirectCampus ? <Redirect to="/geolocation"></Redirect> : null}

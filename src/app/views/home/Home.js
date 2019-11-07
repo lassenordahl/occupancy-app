@@ -13,11 +13,13 @@ import {
 import {
   Legend,
   CoordinateMap,
+  FloorMap
 } from 'app/components';
 
 import { 
   BuildingInformation,
-  GlobalInformation
+  GlobalInformation,
+  FloorInformation
 } from 'app/views';
 
 
@@ -25,13 +27,14 @@ function Home(props) {
   const [showDialog, setShowDialog] = useState(false);
   const [building, setBuilding] = useState(null);
   const [floorNumber, setFloorNumber] = useState(null);
+  const [room, setRoom] = useState(null);
 
   const items = [
     1,2,3,4,5,6
   ]
 
   useEffect(() => {
-    let urlBuildingId = props.match.params.buildingId;
+    // let urlBuildingId = props.match.params.buildingId;
     let floorId = props.match.params.floorId;
     // alert(props.match.params.buildingId);
     // alert(props.match.params.floorId);
@@ -41,7 +44,7 @@ function Home(props) {
       setFloorNumber(floorId);
     }
     // if url building id is not in the valid id's then we can just set it to be nothing
-  });
+  }, [props.match.params.buildingId, props.match.params.floorId]);
 
   function selectBuilding(building) {
     setBuilding(null);
@@ -49,9 +52,26 @@ function Home(props) {
     props.history.push('/geolocation/' + building.buildingId);
   }
 
+  function selectRoom(room) {
+    setRoom(room);
+    if (building !== undefined && building !== null) {
+      props.history.push('/geolocation/' + building.buildingId + '/floor/' + floorNumber + '/room/' + room.name);
+    } else {
+      alert('Building is null');
+    }
+  }
+
   function resetBuilding() {
     setBuilding(null);
     props.history.push('/geolocation');
+  }
+
+  function resetSelectedBuilding() {
+    if (building !== undefined && building !== null) {
+      props.history.push('/geolocation' + building.buildingId);
+    } else {
+      alert('Null building url');
+    }
   }
 
   function openFloor(floorNumber) {
@@ -59,7 +79,7 @@ function Home(props) {
     props.history.push('/geolocation/' + building.buildingId + '/floor/' + floorNumber);
   }
 
-  function conditionalGeolocation() {
+  function conditionalGeolocationInformation() {
     return (
       <React.Fragment>
         { building !== null ?
@@ -75,16 +95,18 @@ function Home(props) {
     );
   }
 
-  function conditionalFloor() {
+  function conditionalFloorInformation() {
+    console.log('rendering floor', room);
     return (
-      <div>
-        <h2>
-          Floor Information
-        </h2>
-        <p>
-          You have selected a floor
-        </p>
-      </div>
+      <React.Fragment>
+        { room !== null ?
+          <FloorInformation
+            room={room}
+          />
+          : <div>null?</div>
+        }
+    
+      </React.Fragment>
     );
   }
 
@@ -93,11 +115,7 @@ function Home(props) {
   }
 
   function conditionalFloorMap() {
-    return (
-      <div>
-        This will be the floor map
-      </div>
-    );
+    return (<FloorMap selectRoom={selectRoom}></FloorMap>);
   }
 
   function conditionalGeolocationTitle() {
@@ -117,7 +135,7 @@ function Home(props) {
   function conditionalFloorTitle() {
     return (
       <React.Fragment>
-        <h1>
+        <h1 onClick={() => resetSelectedBuilding()}>
           { building !== null ? building.name : 'Default'}
         </h1>
         <p>&nbsp;&nbsp;>&nbsp;&nbsp;Floor {floorNumber}</p>    
@@ -168,11 +186,11 @@ function Home(props) {
       <Card className="information-card" style={{width: '400px'}}>
         <div className="information-header">
           <Route exact path="/geolocation/:buildingId?" component={conditionalGeolocationTitle}></Route>
-          <Route exact path="/geolocation/:buildingId/floor/:floorId" component={conditionalFloorTitle}></Route>
+          <Route exact path="/geolocation/:buildingId/floor/:floorId/(room)?/:roomId?" component={conditionalFloorTitle}></Route>
         </div>
         <div className="information-tab-content">
-          <Route exact path="/geolocation/:buildingId?" component={conditionalGeolocation}></Route>
-          <Route exact path="/geolocation/:buildingId/floor/:floorId" component={conditionalFloor}></Route>
+          <Route exact path="/geolocation/:buildingId?" component={conditionalGeolocationInformation}></Route>
+          <Route exact path="/geolocation/:buildingId/floor/:floorId/(room)?/:roomId?" component={conditionalFloorInformation}></Route>
         </div>
       </Card>
     </div>

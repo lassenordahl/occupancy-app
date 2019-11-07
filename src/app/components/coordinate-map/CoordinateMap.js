@@ -27,9 +27,11 @@ function CoordinateMap(props) {
           <span>A pretty CSS3 popup. <br/> Easily customizable.</span>
         </Popup>
       </Marker>
-      {uciMap.buildings.map(function(building) {
+      {uciMap.buildings.map(function(building, index) {
         return (
-          <Polygon onClick={() => props.selectBuilding(building)}
+          <Polygon 
+            key={index}
+            onClick={() => props.selectBuilding(building)}
             positions={building.coordinates}
           >
             <Tooltip 
