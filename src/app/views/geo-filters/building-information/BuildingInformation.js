@@ -30,9 +30,10 @@ function BuildingInformation(props) {
 
   return (
     <div className="RealTimeGeo">
+      
       <h2>
         Date Range
-      </h2>
+      </h2>     
       <DatePicker
         label="from"
         value={fromDate}
@@ -42,22 +43,11 @@ function BuildingInformation(props) {
         label="to"
         value={toDate}
       />
-      <div style={{'height': '24px'}}/>
-      <h2>
-        Selected Building
-      </h2>
-      <SelectedBuilding 
-        building={props.building}
-      ></SelectedBuilding>    
+      
       <div style={{'height': '24px'}}/>
       <h2>
         Select a Floor
       </h2>
-      {/* <Select 
-        options={mapFloorOptions(props.building.floorCount)}
-        value={selectedFloor}
-        placeholder="hello"
-      /> */}
       <Picklist
         value={selectedFloor}
         onChange={value => selectFloor(value)}
@@ -68,29 +58,16 @@ function BuildingInformation(props) {
             <PicklistOption key={index} name={"Floor " + floorNumber} label={"Floor " + floorNumber} value={floorNumber}/>
           );
         })}
-       
       </Picklist>
-      {/* { props.building !== null ? 
-        <React.Fragment>
-          <h2>
-            Floors
-          </h2>
-          <div style={{'overflowY': 'scrool'}}>
-            <Trail
-              items={[...Array(props.building.floorCount).keys()]}
-              keys={item => item} 
-              from={{opacity: 0}} 
-              to={{opacity: 1}}
-              duration={4000}
-            >
-              {item => styleprops => 
-                <FloorRow style={styleprops} floorNumber={item} openFloor={props.openFloor}></FloorRow>
-              }
-            </Trail> 
-          </div>
-        </React.Fragment>
-        : null
-      } */}
+      <div style={{'height': '24px'}}/>
+      
+      <h2>
+        Selected Building
+      </h2>
+      <SelectedBuilding 
+        building={props.building}
+      ></SelectedBuilding>    
+   
       <Button
         variant="brand"
         className="box-shadow color-blue"

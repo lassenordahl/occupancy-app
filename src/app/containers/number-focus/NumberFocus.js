@@ -4,7 +4,7 @@ import './NumberFocus.scss';
 function NumberFocus(props) {
   return (
     <div className="NumberFocus flex-center">
-      <p className="number-focus-number">
+      <p className="number-focus-number" style={{'marginBottom': 0}}>
         {props.children}
       </p>
       <p className="number-focus-subtitle">
