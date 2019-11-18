@@ -38,12 +38,13 @@
   }
 
   .dialog-content {
+    display: flex;
     flex: 1 1;
     margin-top: 0;
 
-    div:last-child {
-      margin-bottom: $mediumSpacing;
-    }
+    // div:last-child {
+    //   margin-bottom: $mediumSpacing;
+    // }
   }
 
 }

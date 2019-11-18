@@ -27,7 +27,7 @@ function FloorInformation(props) {
         variant="brand"
         className="box-shadow color-blue"
         style={{'marginTop': 'auto', 'alignSelf': 'center'}}
-        onClick={() => props.openDialog('floor')}
+        onClick={() => props.openDialog('floor', 'Floor', 'Detailed floor view')}
       >
         Floor Data
       </Button>

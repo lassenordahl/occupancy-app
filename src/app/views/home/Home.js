@@ -19,7 +19,8 @@ import {
 import { 
   BuildingInformation,
   GlobalInformation,
-  FloorInformation
+  FloorInformation,
+  OccupancyDialog,
 } from 'app/views';
 
 
@@ -73,7 +74,7 @@ function Home(props) {
 
   function resetSelectedBuilding() {
     if (building !== undefined && building !== null) {
-      props.history.push('/geolocation' + building.buildingId);
+      props.history.push('/geolocation/' + building.buildingId);
     } else {
       alert('Null building url');
     }
@@ -160,9 +161,14 @@ function Home(props) {
   }
 
   function renderDialogView(type) {
-    if (type === "building") {
-      
-    }
+    return <OccupancyDialog/>
+    // if (type === "building") {
+    //   return <BuildingDialog/>
+    // } else if (type === "global") {
+    //   return <GlobalDialog />
+    // } else if (type === "floor") {
+    //   return <FloorDialog/>
+    // }
   }
   
   return (
@@ -177,7 +183,8 @@ function Home(props) {
           title={dialogTitle}
           titleSubscript={dialogTitleSubscript}
         >
-          <div className="dialog-home-content">
+          {renderDialogView(dialogType)}
+          {/* <div className="dialog-home-content">
             <Trail 
               items={items} 
               keys={item => item} 
@@ -192,8 +199,8 @@ function Home(props) {
                   </h1>
                 </Card>
               }
-            </Trail>
-          </div>
+            </Trail> 
+            </div> */}
         </Dialog>
       : null}
       <Card className="legend-card" style={{width: '280px'}}>

@@ -1,0 +1,45 @@
+@import "globals/occupancy-styles.scss";
+
+.OccupancyDialog {
+  display: flex;
+  flex: 1 1;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  grid-column-gap: 36px;
+  grid-row-gap: 36px;
+
+  & > div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .dialog-graph { 
+    grid-area: 1 / 1 / 3 / 3; 
+    display: flex;
+    flex-direction: column;
+
+    & > div {
+      position: relative;
+      flex: 1 1;
+      flex-direction: column;
+      margin: $smallSpacing;
+      width: calc(100% - 72px);
+    }
+  }
+  .dialog-min { 
+    grid-area: 3 / 1 / 4 / 2; 
+  }
+  .dialog-max { 
+    grid-area: 3 / 2 / 4 / 3; 
+  }
+  .dialog-avg { 
+    grid-area: 3 / 3 / 4 / 4; 
+  }
+  .dialog-configuration { 
+    grid-area: 1 / 3 / 3 / 4; 
+    display: flex;
+    flex-direction: column;
+  }
+}
