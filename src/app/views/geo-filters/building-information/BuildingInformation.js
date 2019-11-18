@@ -72,9 +72,9 @@ function BuildingInformation(props) {
         variant="brand"
         className="box-shadow color-blue"
         style={{'marginTop': 'auto', 'alignSelf': 'center'}}
-        onClick={() => props.setShowDialog(true)}
+        onClick={() => props.openDialog('building', props.building.name, "Detailed building view")}
       >
-        Show Map Data
+        Building Data
       </Button>
     </div>
   );

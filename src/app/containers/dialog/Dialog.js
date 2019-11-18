@@ -20,7 +20,7 @@ function Dialog(props) {
               {props.title}
             </h1>
             <h3>
-              January 21st, 2019
+              {props.titleSubscript}
             </h3>
           </div>
           <FontAwesomeIcon icon={faTimes} onClick={() => props.closeDialog()}></FontAwesomeIcon>

@@ -25,6 +25,11 @@ import {
 
 function Home(props) {
   const [showDialog, setShowDialog] = useState(false);
+  const [dialogType, setDialogType] = useState('building');
+  const [dialogTitle, setDialogTitle] = useState('default');
+  const [dialogTitleSubscript, setDialogTitleSubscript] = useState('default');
+
+
   const [building, setBuilding] = useState(null);
   const [floorNumber, setFloorNumber] = useState(null);
   const [room, setRoom] = useState(null);
@@ -79,6 +84,13 @@ function Home(props) {
     props.history.push('/geolocation/' + building.buildingId + '/floor/' + floorNumber);
   }
 
+  function openDialog(buildingType, title, titleSubscript) {
+    setDialogType(buildingType);
+    setDialogTitle(title);
+    setDialogTitleSubscript(titleSubscript);
+    setShowDialog(true);
+  }
+
   function conditionalGeolocationInformation() {
     return (
       <React.Fragment>
@@ -87,9 +99,12 @@ function Home(props) {
             building={building}
             openFloor={openFloor}
             history={props.history}
+            openDialog={openDialog}
           /> 
           :
-          <GlobalInformation/>
+          <GlobalInformation
+            openDialog={openDialog}
+          />
         }
       </React.Fragment>
     );
@@ -102,6 +117,7 @@ function Home(props) {
         { room !== null ?
           <FloorInformation
             room={room}
+            openDialog={openDialog}
           />
           : <div>null?</div>
         }
@@ -142,6 +158,12 @@ function Home(props) {
       </React.Fragment>
     );
   }
+
+  function renderDialogView(type) {
+    if (type === "building") {
+      
+    }
+  }
   
   return (
     <div className="Home">
@@ -152,25 +174,26 @@ function Home(props) {
         <Dialog 
           className="dialog" 
           closeDialog={() => setShowDialog(false)}
-          title="Hello!"
+          title={dialogTitle}
+          titleSubscript={dialogTitleSubscript}
         >
-            <div className="dialog-test-content">
-              <Trail 
-                items={items} 
-                keys={item => item} 
-                from={{opacity: 0}} 
-                to={{opacity: 1}}
-                duration={4000}
-              >
-                {item => props => 
-                  <Card className="flex-center test" style={props}>
-                    <h1>
-                      {item}    
-                    </h1>
-                  </Card>
-                }
-              </Trail>
-            </div>
+          <div className="dialog-home-content">
+            <Trail 
+              items={items} 
+              keys={item => item} 
+              from={{opacity: 0}} 
+              to={{opacity: 1}}
+              duration={4000}
+            >
+              {item => props => 
+                <Card className="flex-center test" style={props}>
+                  <h1>
+                    {item}    
+                  </h1>
+                </Card>
+              }
+            </Trail>
+          </div>
         </Dialog>
       : null}
       <Card className="legend-card" style={{width: '280px'}}>

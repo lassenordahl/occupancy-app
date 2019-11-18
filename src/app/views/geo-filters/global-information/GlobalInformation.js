@@ -7,7 +7,7 @@ import {
   NumberFocus
 } from 'app/containers';
 
-function GlobalInformation() {
+function GlobalInformation(props) {
 
   const [fromDate, setFromDate] = useState(new Date());
   const [toDate, setToDate] = useState(new Date());
@@ -43,8 +43,9 @@ function GlobalInformation() {
         variant="brand"
         className="box-shadow color-blue"
         style={{'marginTop': 'auto', 'alignSelf': 'center'}}
+        onClick={() => props.openDialog('global', 'Global', 'Detailed global view')}
       >
-        Map Data
+        Global Data
       </Button>
     </div>
   );

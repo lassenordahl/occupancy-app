@@ -55,7 +55,7 @@ function HistoricalGeo(props) {
         variant="brand"
         className="box-shadow color-blue"
         style={{'alignSelf': 'center'}}
-        onClick={() => props.setShowDialog(true)}
+        // onClick={() => props.openDialog('')}
       >
         Show Map Data
       </Button>
