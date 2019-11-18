@@ -9,6 +9,7 @@ function Nav(props) {
 
   const [redirectCampus, setRedirectCampus] = useState(false);
   const [redirectBuilding, setRedirectBuilding] = useState(false);
+  const [redirectFloor, setRedirectFloor] = useState(false);
 
   function conditionalBuilding() {
     return (<Breadcrumb label="Building" onClick={() => setRedirectBuilding(true)}/>);
@@ -39,6 +40,7 @@ function Nav(props) {
       </div>
       { redirectCampus ? <Redirect to="/geolocation"></Redirect> : null}
       { redirectBuilding ? <Redirect to="/geolocation"></Redirect> : null}
+      { redirectFloor  ? <Redirect to="/geolocation/123/floor"></Redirect> : null}
       <h3>
         <a href="http://tippersweb.ics.uci.edu/">
           Tippers Info

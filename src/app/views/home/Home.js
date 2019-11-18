@@ -120,7 +120,12 @@ function Home(props) {
             room={room}
             openDialog={openDialog}
           />
-          : <div>null?</div>
+          : <div>
+            <h2>Floor Selection</h2>
+            <p>
+              Here you can select a floor for the specified building
+            </p>
+          </div>
         }
     
       </React.Fragment>

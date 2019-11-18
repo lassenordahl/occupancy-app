@@ -39,7 +39,8 @@
 
   .dialog-content {
     display: flex;
-    flex: 1 1;
+    width: 100%;
+    height: calc(100% - 124px);
     margin-top: 0;
 
     // div:last-child {

@@ -5,6 +5,7 @@ export default {
       description: 'Main computer science building',
       buildingId: 3425,
       floorCount: 2,
+      occupancy: 12,
       coordinates: [
         [33.643514, -117.842324],
         [33.642979, -117.842174],
@@ -19,6 +20,7 @@ export default {
       description: 'Main computer science building',
       buildingId: 78977,
       floorCount: 2,
+      occupancy: 75,
       coordinates: [
         [33.647015, -117.841485],
         [33.646819, -117.841174],
@@ -31,6 +33,7 @@ export default {
       description: 'Main computer science building',
       buildingId: 89006609,
       floorCount: 2,
+      occupancy: 50,
       coordinates: [
         [33.644927, -117.844158],
         [33.644697, -117.843637],
@@ -43,6 +46,7 @@ export default {
       description: 'Main computer science building',
       buildingId: 890908,
       floorCount: 2,
+      occupancy: 30,
       coordinates: [
         [33.647018, -117.844073],
         [33.647198, -117.843620],

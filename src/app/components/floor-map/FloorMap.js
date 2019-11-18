@@ -35,7 +35,7 @@ const test_rooms = [
 ]
 const margin = 100; // in px
 const hover_size_bump = 6;
-const rectangle_size = 50;
+const rectangle_size = 120;
 
 class FloorMap extends React.Component{
   constructor(props) {
@@ -46,12 +46,22 @@ class FloorMap extends React.Component{
 
   componentDidMount() {
     this.drawContent();
-
-    
+    window.addEventListener('resize', this.drawContent);
   }
 
   scale(num, in_min, in_max, out_min, out_max) {
     return (num - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+  }
+
+  bufferText(text, length = 8) {
+    if (text.length >= length) {
+      return text;
+    } else {
+      while (text.length <= length) {
+        text = '\u00A0' + text;
+      }
+      return text;
+    }
   }
 
   drawContent() {
@@ -59,11 +69,16 @@ class FloorMap extends React.Component{
     let rainbow = new Rainbow();
     rainbow.setSpectrum('#64b1e8', '#3e2ed1');
     rainbow.setNumberRange(0, 200);
+
+    self.svg.selectAll('*').remove();
     
     this.rooms = test_rooms.map(function(room) {
 
-      let x = margin + self.scale(room.x1, 0, 100, 0, 400);
-      let y = margin + self.scale(room.y1, 0, 100, 0, 400)
+      let clientWidth = self.svg._groups[0][0].clientWidth;
+      let clientHeight = self.svg._groups[0][0].clientHeight;
+
+      let x = margin + self.scale(room.x1, 0, 100, 0, clientWidth - margin - 200); // Subtract 400 to account for the information card on the side
+      let y = margin + self.scale(room.y1, 0, 100, 0, clientHeight - margin);
 
       let curr_room = self.svg.append('rect')
                         .attr('x', x)
@@ -71,6 +86,16 @@ class FloorMap extends React.Component{
                         .attr('width', rectangle_size)
                         .attr('height', rectangle_size)
                         .style('fill', '#' + rainbow.colourAt(room.occupancy));
+
+      self.svg.append('text')
+        .attr('x', x + rectangle_size / 4)
+        .attr('y', y + rectangle_size / 2)
+        .attr('dy', '.35em')
+        .style('fill', '#f7f9ff')
+        .text(function(d) {
+          console.log(self.bufferText(room.name));
+          return self.bufferText(room.name);
+        });
 
       curr_room.on('click', function() {
         // alert('you clicked' + room.occupancy);
@@ -90,6 +115,7 @@ class FloorMap extends React.Component{
           .attr('width', rectangle_size)
           .attr('height', rectangle_size);
       });
+
       return curr_room;
     });
   }

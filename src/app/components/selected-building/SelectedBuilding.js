@@ -12,8 +12,8 @@ function SelectedBuilding(props) {
       <div className="building-information">
         <D3Shape coordinates={building.coordinates}/>
         <div className="building-occupancy-count flex-center">
-          <NumberFocus subtitle="Total Occupants">
-            12
+          <NumberFocus subtitle={props.realtime ? "Average Occupants" : "Total Occupants"}>
+            {building.occupancy}
           </NumberFocus>
         </div>  
       </div>

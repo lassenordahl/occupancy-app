@@ -1,0 +1,13 @@
+@import "globals/occupancy-styles.scss";
+
+.header-toggle {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: $tinySpacing;
+
+  h2 {
+    margin-bottom: 0 !important;
+  }
+}

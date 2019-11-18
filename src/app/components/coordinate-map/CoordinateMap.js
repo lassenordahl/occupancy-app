@@ -3,6 +3,7 @@ import './CoordinateMap.scss';
 
 import { Map, TileLayer, Marker, Popup, Polygon, Tooltip } from 'react-leaflet';
 import uciMap from 'globals/test-data/uci-map.js';
+import blueRainbow from 'globals/rainbowvis-helper.js';
 
 const state = {
   lat: 33.6405,
@@ -33,11 +34,12 @@ function CoordinateMap(props) {
             key={index}
             onClick={() => props.selectBuilding(building)}
             positions={building.coordinates}
+            color={'#' + blueRainbow.colorAt(building.occupancy)}
           >
             <Tooltip 
               sticky
               className="polygon-tooltip box-shadow"
-              >{building.name}
+              >{building.name + ' - ' + building.occupancy}
             </Tooltip>
           </Polygon>
         );
