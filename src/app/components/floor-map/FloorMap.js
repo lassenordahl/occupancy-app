@@ -10,24 +10,24 @@ const COLOR = '#fff'
 const test_rooms = [
   {
     name: 'DBH 2059',
-    "x1": 68,
-    "y1": 10,
+    "x1": 0,
+    "y1": 0,
     "x2": 74,
     "y2": 22,
     occupancy: 3
   },
   {
     name: 'test2',
-    "x1": 74,
-    "y1": 9,
+    "x1": 10,
+    "y1": 0,
     "x2": 83,
     "y2": 12,
     occupancy: 39
   },
   {
     name: 'test3',
-    "x1": 35,
-    "y1": 53,
+    "x1": 0,
+    "y1": 19,
     "x2": 44,
     "y2": 64,
     occupancy: 87
