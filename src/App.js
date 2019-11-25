@@ -22,6 +22,7 @@ function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // pass the building id's too 
     getApplicationEntity(app_config.id);
 
     setTimeout(() => {

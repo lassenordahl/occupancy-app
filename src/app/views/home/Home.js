@@ -31,6 +31,7 @@ function Home(props) {
   const [dialogTitle, setDialogTitle] = useState('default');
   const [dialogTitleSubscript, setDialogTitleSubscript] = useState('default');
 
+  const [buildingEntities, setBuildingEntities] = useState([]);
 
   const [building, setBuilding] = useState(null);
   const [floorNumber, setFloorNumber] = useState(null);
@@ -47,7 +48,32 @@ function Home(props) {
       setFloorNumber(floorId);
     }
     // if url building id is not in the valid id's then we can just set it to be nothing
-  }, [props.match.params.buildingId, props.match.params.floorId]);  
+  }, [props.match.params.buildingId, props.match.params.floorId]); 
+
+  useEffect(() => {
+    getBuildingEntities();
+  }, []);
+
+  function getBuildingEntities() {
+    // axios.get(http://128.195.53.189:4001/api/entity/search?orderBy=id&direction=ASC&orderBy2=id&direction2=ASC&limit=25&entityTypeName=building)
+    setBuildingEntities({
+      "resultCode": 100,
+      "message": "Entities found with search parameters.",
+      "entities": [
+        {
+          "id": 3,
+          "name": "DBH",
+          "entityType": {
+              "subtypeOf": 2,
+              "entityTypeName": "building",
+              "entityTypeId": 5
+          },
+          "payload": {
+              "geoId": 3
+          }
+        }
+      ]}.entities);
+  }
 
   function selectBuilding(building) {
     setBuilding(null);
@@ -130,7 +156,7 @@ function Home(props) {
   }
 
   function conditionalMap() {
-    return (<CoordinateMap selectBuilding={selectBuilding} appEntity={props.appEntity}></CoordinateMap>);
+    return (<CoordinateMap selectBuilding={selectBuilding} appEntity={props.appEntity} buildingEntities={buildingEntities}></CoordinateMap>);
   }
 
   function conditionalFloorMap() {
@@ -141,10 +167,15 @@ function Home(props) {
     return (
       <React.Fragment>
         <h1 onClick={() => resetBuilding()}>
-          UCI
+          {props.appEntity.name}
         </h1>
         { building !== null ?
-          <p>&nbsp;&nbsp;>&nbsp;&nbsp;{building.name}</p>
+          <p>
+            &nbsp;&nbsp;>&nbsp;&nbsp;
+            <span style={building.name.length > 15 ? {'fontSize': '20px'} : null}>
+              {building.name}
+            </span>  
+          </p>
           : null
         }
       </React.Fragment>
@@ -163,14 +194,11 @@ function Home(props) {
   }
 
   function renderDialogView(type) {
-    return <OccupancyDialog/>
-    // if (type === "building") {
-    //   return <BuildingDialog/>
-    // } else if (type === "global") {
-    //   return <GlobalDialog />
-    // } else if (type === "floor") {
-    //   return <FloorDialog/>
-    // }
+    let entityId = null;
+    if (type === 'building' && building !== null) {
+      entityId = building.buildingId;
+    }
+    return <OccupancyDialog type={type} entity={entityId}/>
   }
   
   return (
