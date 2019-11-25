@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import './OccupancyDialog.scss';
 
-import axios from "axios";
+import axios from 'axios';
+import moment from 'moment';
 import { Line } from 'react-chartjs-2';
 import { Spinner } from 'react-rainbow-components';
 
@@ -42,14 +43,27 @@ function OccupancyDialog(props) {
   }, [observationValues])
 
   function mapObservationValues() {
+    let maxVal = Number.MIN_SAFE_INTEGER;
+    let minVal = Number.MAX_SAFE_INTEGER;
+    let total = 0;
     let data = observationValues.map(function(observation) {
+      total += observation.payload.value;
+      if (observation.payload.value > maxVal) {
+        maxVal = observation.payload.value;
+      }
+      if (observation.payload.value < minVal) {
+        minVal = observation.payload.value;
+      }
       return observation.payload.value;
     });
+
     let timestamps = observationValues.map(function(observation) {
-      return observation.timestamp;
+      return moment(observation.timestamp).format('MM-DD hh:mm:ss');
     });
 
-    console.log(data, timestamps);
+    setMax(maxVal);
+    setMin(minVal);
+    setAvg((total / observationValues.length).toFixed(1));
 
     setOccupancyData({
       data: data,
@@ -100,9 +114,90 @@ function OccupancyDialog(props) {
                   "value": 100
               },
               "deviceId": 2
+          },
+          {
+              "id": 9,
+              "timestamp": 1574717000,
+              "payload": {
+                  "entityId": 3,
+                  "value": 53
+              },
+              "deviceId": 2
+          },
+          {
+              "id": 10,
+              "timestamp": 1574717000,
+              "payload": {
+                  "entityId": 3,
+                  "value": 52
+              },
+              "deviceId": 2
+          },
+          {
+              "id": 11,
+              "timestamp": 1574717000,
+              "payload": {
+                  "entityId": 3,
+                  "value": 21
+              },
+              "deviceId": 2
+          },
+          {
+              "id": 12,
+              "timestamp": 1574717000,
+              "payload": {
+                  "entityId": 3,
+                  "value": 29
+              },
+              "deviceId": 2
+          },
+          {
+              "id": 13,
+              "timestamp": 1574717000,
+              "payload": {
+                  "entityId": 3,
+                  "value": 11
+              },
+              "deviceId": 2
+          },
+          {
+              "id": 14,
+              "timestamp": 1574717000,
+              "payload": {
+                  "entityId": 3,
+                  "value": 76
+              },
+              "deviceId": 2
+          },
+          {
+              "id": 15,
+              "timestamp": 1574717000,
+              "payload": {
+                  "entityId": 3,
+                  "value": 76
+              },
+              "deviceId": 2
+          },
+          {
+              "id": 16,
+              "timestamp": 1574717000,
+              "payload": {
+                  "entityId": 3,
+                  "value": 73
+              },
+              "deviceId": 2
+          },
+          {
+              "id": 17,
+              "timestamp": 1574717000,
+              "payload": {
+                  "entityId": 3,
+                  "value": 68
+              },
+              "deviceId": 2
           }
       ]
-    }.values);
+  }.values);
   }
 
   function processData() {
@@ -130,17 +225,17 @@ function OccupancyDialog(props) {
           </Card>
           <div className="dialog-min">
             <NumberFocus subtitle="Minimum Occupants">
-              38
+              {min}
             </NumberFocus>
           </div>
           <div className="dialog-max">
             <NumberFocus subtitle="Maximum Occupants">
-              91
+              {max}
             </NumberFocus>
           </div>
           <div className="dialog-avg">
             <NumberFocus subtitle="Average Occupants">
-              57.3
+              {avg}
             </NumberFocus>
           </div>
           <div className="dialog-configuration">
