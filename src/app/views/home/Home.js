@@ -4,6 +4,7 @@ import './Home.scss';
 import 'leaflet/dist/leaflet.css';
 import { Route } from 'react-router-dom';
 import { Trail } from 'react-spring/renderprops';
+import axios from 'axios';
 
 import {
   Card,
@@ -23,8 +24,8 @@ import {
   OccupancyDialog,
 } from 'app/views';
 
-
 function Home(props) {
+
   const [showDialog, setShowDialog] = useState(false);
   const [dialogType, setDialogType] = useState('building');
   const [dialogTitle, setDialogTitle] = useState('default');
@@ -34,10 +35,6 @@ function Home(props) {
   const [building, setBuilding] = useState(null);
   const [floorNumber, setFloorNumber] = useState(null);
   const [room, setRoom] = useState(null);
-
-  const items = [
-    1,2,3,4,5,6
-  ]
 
   useEffect(() => {
     // let urlBuildingId = props.match.params.buildingId;
@@ -50,7 +47,7 @@ function Home(props) {
       setFloorNumber(floorId);
     }
     // if url building id is not in the valid id's then we can just set it to be nothing
-  }, [props.match.params.buildingId, props.match.params.floorId]);
+  }, [props.match.params.buildingId, props.match.params.floorId]);  
 
   function selectBuilding(building) {
     setBuilding(null);
@@ -133,7 +130,7 @@ function Home(props) {
   }
 
   function conditionalMap() {
-    return (<CoordinateMap selectBuilding={selectBuilding}></CoordinateMap>);
+    return (<CoordinateMap selectBuilding={selectBuilding} appEntity={props.appEntity}></CoordinateMap>);
   }
 
   function conditionalFloorMap() {
@@ -189,23 +186,6 @@ function Home(props) {
           titleSubscript={dialogTitleSubscript}
         >
           {renderDialogView(dialogType)}
-          {/* <div className="dialog-home-content">
-            <Trail 
-              items={items} 
-              keys={item => item} 
-              from={{opacity: 0}} 
-              to={{opacity: 1}}
-              duration={4000}
-            >
-              {item => props => 
-                <Card className="flex-center test" style={props}>
-                  <h1>
-                    {item}    
-                  </h1>
-                </Card>
-              }
-            </Trail> 
-            </div> */}
         </Dialog>
       : null}
       <Card className="legend-card" style={{width: '280px'}}>

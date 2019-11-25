@@ -29,7 +29,7 @@ function Nav(props) {
     <div className="Nav flex-split box-shadow">
       <div className="flex-start-row">
         <h2>
-          UCI Occupancy Tool
+          {props.title} Occupancy Tool
         </h2>
         <Breadcrumbs style={{'marginLeft': '16px'}}>
           <Breadcrumb label="Campus Map" onClick={() => setRedirectCampus(true)}/>
