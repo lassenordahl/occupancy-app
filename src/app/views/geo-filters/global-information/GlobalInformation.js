@@ -10,8 +10,8 @@ import {
 function GlobalInformation(props) {
 
   const [realtime, setRealtime] = useState(false);
-  const [fromDate, setFromDate] = useState(new Date());
-  const [toDate, setToDate] = useState(new Date());
+  const [fromDate] = useState(new Date());
+  const [toDate] = useState(new Date());
 
   return (
     <div className="GlobalInformation">
@@ -46,11 +46,11 @@ function GlobalInformation(props) {
       </NumberFocus>
       <Button
         variant="brand"
+        label="Global Data"
         className="box-shadow color-blue"
         style={{'marginTop': 'auto', 'alignSelf': 'center'}}
         onClick={() => props.openDialog('global', 'Global', 'Detailed global view')}
       >
-        Global Data
       </Button>
     </div>
   );

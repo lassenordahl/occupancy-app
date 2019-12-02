@@ -12,8 +12,8 @@ function BuildingInformation(props) {
   
   const [selectedFloor, setSelectedFloor] = useState(null);
   const [realtime, setRealtime] = useState(false);
-  const [fromDate, setFromDate] = useState(new Date());
-  const [toDate, setToDate] = useState(new Date());
+  const [fromDate] = useState(new Date());
+  const [toDate] = useState(new Date());
 
   function mapFloorOptions(floorCount) {
     return [...Array(floorCount).keys()].map(function(number) {

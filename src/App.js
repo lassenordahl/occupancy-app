@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Route, Switch, BrowserRouter as Router, Redirect } from 'react-router-dom';
 import history from './history';
 import './App.scss';
 import ApplicationContext from 'globals/contexts/ApplicationContext';
+import RouteContext from 'globals/contexts/RouteContext';
 
 import app_config from 'globals/config.js';
 import { Spinner } from 'react-rainbow-components';
+import { Route, Switch, BrowserRouter as Router, Redirect } from 'react-router-dom';
+import axios from 'axios';
 
 import {
   Nav
@@ -16,33 +18,92 @@ import {
   InvalidRoute
 } from 'app/views';
 
+/*
+  3 TYPES OF ROOTS
+  
+  1. Root GEO with GEO sub-children
+      -> University with buildings
+  2. Root GEO with NON-GEO sub-children
+      -> Building with floors
+  3. Root NON-GEO with NON-GEO sub-children
+      -> Floor with rooms
+
+  Root Type Variable Names
+  
+  1. GeoSubGeo
+  2. GeoSubNonGeo
+  3. NonGeoSubNonGeo
+  4. NoChildren
+
+*/
+
 function App() {
 
-  const [appEntity, setAppEntity] = useState(false);
+  const [routes, setRoutes] = useState([]);
+  const [currentRoute, setCurrentRoute] = useState([]); 
+
+  // Our main entity for the application
+  const [rootEntity, setRootEntity] = useState(null);
+
+  // Geolocation types for the root and subsequent child
+  const [rootType, setRootType] = useState(null);
+  const [subRootType, setSubRootType] = useState(null);
+
+  // App entity for the application and the app type
+  const [appEntity, setAppEntity] = useState(null);
+  const [appType, setAppType] = useState(null);
+  
   const [loading, setLoading] = useState(true);
 
+  // Retrieves the root entity information and subsequently checks the root type later down the path
   useEffect(() => {
     // pass the building id's too 
-    getApplicationEntity(app_config.id);
+    getRootEntity(app_config.id);
+    // Get the routes for the application
+    getRoutes();
 
     setTimeout(() => {
       setLoading(false);
     }, 1000)
   }, []);
 
-  function getApplicationEntity(entityId) {
-    setAppEntity({
-      "resultCode": 100,
-      "message": "Entities found with search parameters.",
-      "entity": {
-        "id": 2,
-        "name": "UC Irvine",
-        "typeId": 4,
-        "typeName": "university"
-      }
-    }.entity);
+
+  // UseEffect for setting the app entity to contain root information and the application type that
+  // this app should render to 
+  useEffect(() => {
+    if (rootEntity !== null && appType !== null) {
+      // Create an app entity that also contains the type of root this application is using
+      rootEntity['rootType'] = appType;
+      console.log(rootEntity);
+      setAppEntity(rootEntity);
+    }
+  }, [rootEntity, appType]);
+
+  // UseEffect figures out the app type after we have both the rootTypeo and subrootType 
+  useEffect(() => {
+    if (rootType !== null && subRootType !== null) {
+      mapAppType();
+    }
+  }, [rootType, subRootType])
+
   
-   
+  function getRoutes() {
+    setRoutes(['university', 'building', 'floor', 'meeting room']);
+  }
+
+  function mapAppType() {
+    if (rootType === "Invalid") {
+      setAppType("Invalid");  
+    } else if (subRootType === "Invalid") {
+      setAppType("No children");
+    } else {
+      setAppType(rootType + "Sub" + subRootType);
+    }
+  }
+
+  function getRootEntity(entityId) {
+
+      
     // axios.get('http://128.195.53.189:4001/api/entity/get/' + entityId, {
     //   headers: {
     //     'Access-Control-Allow-Origin': '*',
@@ -54,18 +115,172 @@ function App() {
     //   .catch(function (error) {
     //     console.log('APP ENTITY GET', error);
     //   });
+
+
+    // TODO
+    // This is a logic error, the subtype of this ID might not always be 1 less than
+    // The type id of the given root entity
+    getSubRootType({
+      "resultCode": 100,
+      "message": "Entities found with search parameters.",
+      "entity": {
+        "id": 2,
+        "name": "UC Irvine",
+        "typeId": 4,
+        "typeName": "university"
+      }
+    }.entity.id - 1);
+
+    setRootEntity({
+      "resultCode": 100,
+      "message": "Entities found with search parameters.",
+      "entity": {
+        "id": 2,
+        "name": "UC Irvine",
+        "typeId": 4,
+        "typeName": "university"
+      }
+    }.entity);
+
+    setGeolocationType({
+      "resultCode": 100,
+      "message": "Entities found with search parameters.",
+      "entity": {
+        "id": 2,
+        "name": "UC Irvine",
+        "typeId": 4,
+        "typeName": "university"
+      }
+    }.entity.id, setRootType);
   }
 
+  function getSubRootType(entityId) {
+    // Make a request for the entity id one type lower than the root type 
+     // axios.get('http://128.195.53.189:4001/api/entity/get/' + entityId, {
+    //   params: {
+      //    entityTypeId: entityid  
+    // }
+    //   headers: {
+    //     'Access-Control-Allow-Origin': '*',
+    //   }
+    // })
+    //   .then(function (response) {
+    //     console.log(response);
+    //   })
+    //   .catch(function (error) {
+    //     console.log('APP ENTITY GET', error);
+    //   });
 
+    let responseEntities = {
+      "resultCode": 100,
+      "message": "Entities found with search parameters.",
+      "entities": [
+        {
+          "id": 3,
+          "name": "DBH",
+          "entityType": {
+              "subtypeOf": 2,
+              "entityTypeName": "building",
+              "entityTypeId": 5
+          },
+          "payload": {
+              "geoId": 3
+          }
+        }
+      ]
+    }.entities;
+
+    if (responseEntities.length > 0) {
+      setGeolocationType(responseEntities[0].id, setSubRootType);
+    } else {
+      alert('unable to pull the children for this app');
+      setRootType(
+        'Invalid'
+      );
+    }
+  }
+
+  function setGeolocationType(geoId, setFunction) {
+    // GEOLOCATION ENTITY
+  // Make a request for the entity id one type lower than the root type 
+     // axios.get('http://128.195.53.189:4001/api/geo/get/' + entityId, {
+    //   params: {
+      //    entityTypeId: entityid  
+    // }
+    //   headers: {
+    //     'Access-Control-Allow-Origin': '*',
+    //   }
+    // })
+    //   .then(function (response) {
+    //     console.log(response);
+    //   })
+    //   .catch(function (error) {
+    //     console.log('APP ENTITY GET', error);
+    //   });
+
+    let response = {
+      "resultCode": 191,
+      "message": "Found space geo object",
+      "geo": {
+        "extent": {
+          "extentClassId": 3,
+          "start": {
+            "latitude": 33.642992,
+            "longitude": -117.8422864
+          },
+          "extentClassName": "rectangle",
+          "end": {
+            "latitude": 33.6435452,
+            "longitude": -117.8414719
+          }
+        },
+        "parentSpaceId": 2,
+        "coordinateSystem": {
+          "coordinateSystemClassName": "coordinateSystem2hfd",
+          "range": {
+            "yMin": 0,
+            "yMax": 1000,
+            "floorMin": 1,
+            "xMax": 1000,
+            "floorMax": 6,
+            "xMin": 0
+          },
+          "coordinateSystemClassId": 3
+        }
+      }
+    };
+
+    let className = response.geo.coordinateSystem.coordinateSystemClassName;
+
+    if (className === 'coordinateSystem2d') {
+      setFunction('NonGeo');
+    } else if (className === 'coordinateSystem2hfd' || className === 'coordinateSystemGps') {
+      setFunction('Geo');
+    } else {
+      setFunction('Invalid');
+    }
+  }
 
   return (
     <div className='App'>
       { loading || appEntity === null ? 
         <Spinner size="large"/>
         :
-        <ApplicationContext.Provider value={appEntity}>
+        <ApplicationContext.Provider 
+          value={appEntity}
+        >
+        <RouteContext.Provider 
+          value={{
+            currentRoute: currentRoute, 
+            setCurrentRoute: setCurrentRoute
+          }}
+        >
           <Router history={history}>
-            <Nav title={appEntity.name}></Nav>
+            <Nav 
+              title={appEntity.name}
+              routes={routes}
+              currentRoute={currentRoute}
+            ></Nav>
             <div className="app-content">
                 <Switch>
                   <Route path='/geolocation/:buildingId?/(floor)?/:floorId?' component={(props) => <Home {...props} appEntity={appEntity}></Home>}/>
@@ -76,6 +291,7 @@ function App() {
                 </Switch>
             </div>
           </Router>
+        </RouteContext.Provider>
         </ApplicationContext.Provider>
       }
       

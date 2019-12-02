@@ -1,11 +1,8 @@
-import React, { useEffect } from "react";
+import React from "react";
 import './FloorMap.scss';
 
 import * as d3 from 'd3';
 import Rainbow from 'rainbowvis.js';
-
-const BG_COLOR = '#123'  
-const COLOR = '#fff'  
 
 const test_rooms = [
   {

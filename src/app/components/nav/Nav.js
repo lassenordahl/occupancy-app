@@ -1,15 +1,23 @@
-import React, {useState} from "react";
+import React, { useState, useEffect} from "react";
 import './Nav.scss';
 
 import { Breadcrumbs, Breadcrumb } from 'react-rainbow-components';
 import { Route, Redirect } from 'react-router-dom';
 import { tsPropertySignature } from "@babel/types";
 
+import { capitalizeWords } from 'globals/formatting-helper.js';
+
+
 function Nav(props) {
 
   const [redirectCampus, setRedirectCampus] = useState(false);
   const [redirectBuilding, setRedirectBuilding] = useState(false);
   const [redirectFloor, setRedirectFloor] = useState(false);
+
+
+  useEffect(() => {
+    console.log(props.routes, props.currentRoute);
+  }, [props.currentRoute]);
 
   function conditionalBuilding() {
     return (<Breadcrumb label="Building" onClick={() => setRedirectBuilding(true)}/>);
@@ -22,8 +30,6 @@ function Nav(props) {
   function conditionalRoom() {
     return (<Breadcrumb label="Room"></Breadcrumb>);
   }
-
-  console.log(props.match);
 
   return (
     <div className="Nav flex-split box-shadow">
