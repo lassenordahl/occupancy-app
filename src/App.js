@@ -45,10 +45,6 @@ function App() {
   // Our main entity for the application
   const [rootEntity, setRootEntity] = useState(null);
 
-  // Geolocation types for the root and subsequent child
-  const [rootType, setRootType] = useState(null);
-  const [subRootType, setSubRootType] = useState(null);
-
   // App entity for the application and the app type
   const [appEntity, setAppEntity] = useState(null);
   const [appType, setAppType] = useState(null);
@@ -79,154 +75,54 @@ function App() {
     }
   }, [rootEntity, appType]);
 
-  // UseEffect figures out the app type after we have both the rootTypeo and subrootType 
-  useEffect(() => {
-    if (rootType !== null && subRootType !== null) {
-      mapAppType();
-    }
-  }, [rootType, subRootType])
-
-  
   function getRoutes() {
     setRoutes(['university', 'building', 'floor', 'meeting room']);
-  }
-
-  function mapAppType() {
-    if (rootType === "Invalid") {
-      setAppType("Invalid");  
-    } else if (subRootType === "Invalid") {
-      setAppType("No children");
-    } else {
-      setAppType(rootType + "Sub" + subRootType);
-    }
   }
 
   function getRootEntity(entityId) {  
     axios.get('http://128.195.53.189:4001/api/entity/get/' + entityId)
       .then(function (response) {
         let entity = response.data.entity;
-        console.log(entity);
-        getSubRootType(entity.entityType.entityTypeId + 1);
+
+        // Sets the app entity
         setRootEntity(entity);
+
+        // Gets the possible routes for the application
         setCurrentRoute([...currentRoute, {
           id: entity.id,
           name: entity.name
         }]);
-        setGeolocationType(entity.id, setRootType);
+
+        // Makes a call to get the geo object of the root entity geo id
+        getAppType(entity.payload.geoId);
       })
       .catch(function (error) {
         console.log('APP ENTITY GET', error);
       });
-
-    // TODO
-    // This is a logic error, the subtype of this ID might not always be 1 less than
-    // The type id of the given root entity
   }
 
-  function getSubRootType(entityId) {
-    // Make a request for the entity id one type lower than the root type 
-     axios.get('http://128.195.53.189:4001/api/entity/search', {
-        params: {
-          entityTypeId: entityId  
-        }
-    })
-      .then(function (response) {
-        console.log('SUBROOT', response);
-      })
-      .catch(function (error) {
-        console.log('APP ENTITY GET', error);
-      });
-
-      //TODO - This is the current way to find the types
-    let responseEntities = {
-      "resultCode": 100,
-      "message": "Entities found with search parameters.",
-      "entities": [
-        {
-          "id": 3,
-          "name": "DBH",
-          "entityType": {
-              "subtypeOf": 2,
-              "entityTypeName": "building",
-              "entityTypeId": 5
-          },
-          "payload": {
-              "geoId": 3
-          }
-        }
-      ]
-    }.entities;
-
-    if (responseEntities.length > 0) {
-      setGeolocationType(responseEntities[0].id, setSubRootType);
-    } else {
-      alert('unable to pull the children for this app');
-      setRootType(
-        'Invalid'
-      );
-    }
-  }
-
-  function setGeolocationType(geoId, setFunction) {
-    // GEOLOCATION ENTITY
+  // GEOLOCATION ENTITY
   // Make a request for the entity id one type lower than the root type 
-     // axios.get('http://128.195.53.189:4001/api/geo/get/' + entityId, {
-    //   params: {
-      //    entityTypeId: entityid  
-    // }
-    //   headers: {
-    //     'Access-Control-Allow-Origin': '*',
-    //   }
-    // })
-    //   .then(function (response) {
-    //     console.log(response);
-    //   })
-    //   .catch(function (error) {
-    //     console.log('APP ENTITY GET', error);
-    //   });
+  function getAppType(geoId) {
+    console.log(geoId);
+    axios.get('http://128.195.53.189:4001/api/entity/geo/get/' + geoId)
+    .then(function (response) {
+      let coordinateSystem = response.data.geo.coordinateSystem.coordinateSystemClassName;
 
-    let response = {
-      "resultCode": 191,
-      "message": "Found space geo object",
-      "geo": {
-        "extent": {
-          "extentClassId": 3,
-          "start": {
-            "latitude": 33.642992,
-            "longitude": -117.8422864
-          },
-          "extentClassName": "rectangle",
-          "end": {
-            "latitude": 33.6435452,
-            "longitude": -117.8414719
-          }
-        },
-        "parentSpaceId": 2,
-        "coordinateSystem": {
-          "coordinateSystemClassName": "coordinateSystem2hfd",
-          "range": {
-            "yMin": 0,
-            "yMax": 1000,
-            "floorMin": 1,
-            "xMax": 1000,
-            "floorMax": 6,
-            "xMin": 0
-          },
-          "coordinateSystemClassId": 3
-        }
+      // Set the app type based on the entity type of the geolocation system
+      if (coordinateSystem === "coordinateSystemGps") {
+        setAppType("GeoSubGeo");
+      } else if (coordinateSystem === "coordinateSystem2hfd") {
+        setAppType("GeoSubNonGeo");
+      } else if (coordinateSystem === "coordinateSystem2d") {
+        setAppType("NonGeoSubNonGeo");
+      } else {
+        setAppType("Invalid");
       }
-    };
-
-    let className = response.geo.coordinateSystem.coordinateSystemClassName;
-
-    if (className === 'coordinateSystem2d') {
-      setFunction('NonGeo');
-      // coordinateSystem2hfd has a parent that has a special attribute (2.5 D) 
-    } else if (className === 'coordinateSystem2hfd' || className === 'coordinateSystemGps') {
-      setFunction('Geo');
-    } else {
-      setFunction('Invalid');
-    }
+    })
+    .catch(function (error) {
+      console.log('APP ENTITY GET', error);
+    });
   }
 
   return (

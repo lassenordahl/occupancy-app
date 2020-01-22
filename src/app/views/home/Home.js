@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import './Home.scss';
 
 import 'leaflet/dist/leaflet.css';
-import { Route } from 'react-router-dom';
-import { Trail } from 'react-spring/renderprops';
-import axios from 'axios';
+// import { Route } from 'react-router-dom';
+// import { Trail } from 'react-spring/renderprops';
+// import axios from 'axios';
 
 import {
   Card,
@@ -20,7 +20,7 @@ import {
 import { 
   BuildingInformation,
   GlobalInformation,
-  FloorInformation,
+  // FloorInformation,
   OccupancyDialog,
 } from 'app/views';
 
@@ -41,7 +41,7 @@ function Home(props) {
   // Selected building, floor, and room info, also needs to be changed
   const [building, setBuilding] = useState(null);
   const [floorNumber, setFloorNumber] = useState(null);
-  const [room, setRoom] = useState(null);
+  // const [room, setRoom] = useState(null);
 
   useEffect(() => {
     console.log('HOME WAS RENDERED');
@@ -138,7 +138,7 @@ function Home(props) {
 
   // Select room is run when we select a room from the floor map
   function selectRoom(room) {
-    setRoom(room);
+    // setRoom(room);
 
     // If the sub-level isn't defined, we shouldn't be able to select a room
     if (building !== undefined && building !== null) {

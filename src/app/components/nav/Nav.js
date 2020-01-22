@@ -1,9 +1,9 @@
-import React, { useState, useEffect} from "react";
+import React from "react";
 import './Nav.scss';
 
 import { Breadcrumbs, Breadcrumb } from 'react-rainbow-components';
-import { Route, Redirect } from 'react-router-dom';
-import { tsPropertySignature } from "@babel/types";
+// import { Route, Redirect } from 'react-router-dom';
+// import { tsPropertySignature } from "@babel/types";
 
 import { capitalizeWords } from 'globals/formatting-helper.js';
 
@@ -34,7 +34,7 @@ function Nav(props) {
           <Route path="/geolocation/:buildingId/floor/:floorId/room/:roomId" component={conditionalRoom}></Route> */}
           {props.currentRoute.map(function(route, index) {
             return (
-              <Breadcrumb label={capitalizeWords(route.name)} onClick={() => changeRoute(index)}></Breadcrumb>
+              <Breadcrumb key={index} label={capitalizeWords(route.name)} onClick={() => changeRoute(index)}></Breadcrumb>
             )
           })}
         </Breadcrumbs>
