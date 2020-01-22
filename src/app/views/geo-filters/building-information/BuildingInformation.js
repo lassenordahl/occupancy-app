@@ -50,6 +50,7 @@ function BuildingInformation(props) {
       />
       
       <div style={{'height': '24px'}}/>
+      
       <h2>Select a Floor</h2>
       <Picklist
         value={selectedFloor}
@@ -62,6 +63,7 @@ function BuildingInformation(props) {
           );
         })}
       </Picklist>
+
       <div style={{'height': '24px'}}/>
       
       <h2>Selected Building</h2>

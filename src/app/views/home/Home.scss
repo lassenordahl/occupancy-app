@@ -115,6 +115,7 @@
     z-index: 1;
     display: flex;
     flex-direction: column;
+    transition: opacity ease-in-out .5s;
 
     h1, h2, h3, h4, h5, h6 {
       margin-top: 0;
@@ -149,6 +150,10 @@
         height: calc(100% - 72px);
       }
     }
+  }
+
+  .legend-card:hover {
+    opacity: .5;
   }
 
   .selected-building-info {

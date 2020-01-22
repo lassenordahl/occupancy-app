@@ -65,7 +65,7 @@ function App() {
     setTimeout(() => {
       setLoading(false);
     }, 1000)
-  }, []);
+  }, [app_config.id]);
 
 
   // UseEffect for setting the app entity to contain root information and the application type that
@@ -73,7 +73,7 @@ function App() {
   useEffect(() => {
     if (rootEntity !== null && appType !== null) {
       // Create an app entity that also contains the type of root this application is using
-      rootEntity['rootType'] = appType;
+      rootEntity['appType'] = appType;
       console.log(rootEntity);
       setAppEntity(rootEntity);
     }
@@ -101,76 +101,43 @@ function App() {
     }
   }
 
-  function getRootEntity(entityId) {
-
-      
-    // axios.get('http://128.195.53.189:4001/api/entity/get/' + entityId, {
-    //   headers: {
-    //     'Access-Control-Allow-Origin': '*',
-    //   }
-    // })
-    //   .then(function (response) {
-    //     console.log(response);
-    //   })
-    //   .catch(function (error) {
-    //     console.log('APP ENTITY GET', error);
-    //   });
-
+  function getRootEntity(entityId) {  
+    axios.get('http://128.195.53.189:4001/api/entity/get/' + entityId)
+      .then(function (response) {
+        let entity = response.data.entity;
+        console.log(entity);
+        getSubRootType(entity.entityType.entityTypeId + 1);
+        setRootEntity(entity);
+        setCurrentRoute([...currentRoute, {
+          id: entity.id,
+          name: entity.name
+        }]);
+        setGeolocationType(entity.id, setRootType);
+      })
+      .catch(function (error) {
+        console.log('APP ENTITY GET', error);
+      });
 
     // TODO
     // This is a logic error, the subtype of this ID might not always be 1 less than
     // The type id of the given root entity
-    getSubRootType({
-      "resultCode": 100,
-      "message": "Entities found with search parameters.",
-      "entity": {
-        "id": 2,
-        "name": "UC Irvine",
-        "typeId": 4,
-        "typeName": "university"
-      }
-    }.entity.id - 1);
-
-    setRootEntity({
-      "resultCode": 100,
-      "message": "Entities found with search parameters.",
-      "entity": {
-        "id": 2,
-        "name": "UC Irvine",
-        "typeId": 4,
-        "typeName": "university"
-      }
-    }.entity);
-
-    setGeolocationType({
-      "resultCode": 100,
-      "message": "Entities found with search parameters.",
-      "entity": {
-        "id": 2,
-        "name": "UC Irvine",
-        "typeId": 4,
-        "typeName": "university"
-      }
-    }.entity.id, setRootType);
   }
 
   function getSubRootType(entityId) {
     // Make a request for the entity id one type lower than the root type 
-     // axios.get('http://128.195.53.189:4001/api/entity/get/' + entityId, {
-    //   params: {
-      //    entityTypeId: entityid  
-    // }
-    //   headers: {
-    //     'Access-Control-Allow-Origin': '*',
-    //   }
-    // })
-    //   .then(function (response) {
-    //     console.log(response);
-    //   })
-    //   .catch(function (error) {
-    //     console.log('APP ENTITY GET', error);
-    //   });
+     axios.get('http://128.195.53.189:4001/api/entity/search', {
+        params: {
+          entityTypeId: entityId  
+        }
+    })
+      .then(function (response) {
+        console.log('SUBROOT', response);
+      })
+      .catch(function (error) {
+        console.log('APP ENTITY GET', error);
+      });
 
+      //TODO - This is the current way to find the types
     let responseEntities = {
       "resultCode": 100,
       "message": "Entities found with search parameters.",
@@ -254,6 +221,7 @@ function App() {
 
     if (className === 'coordinateSystem2d') {
       setFunction('NonGeo');
+      // coordinateSystem2hfd has a parent that has a special attribute (2.5 D) 
     } else if (className === 'coordinateSystem2hfd' || className === 'coordinateSystemGps') {
       setFunction('Geo');
     } else {
@@ -263,7 +231,7 @@ function App() {
 
   return (
     <div className='App'>
-      { loading || appEntity === null ? 
+      { loading || appEntity == null ? 
         <Spinner size="large"/>
         :
         <ApplicationContext.Provider 
@@ -280,12 +248,16 @@ function App() {
               title={appEntity.name}
               routes={routes}
               currentRoute={currentRoute}
+              setCurrentRoute={setCurrentRoute}
             ></Nav>
             <div className="app-content">
                 <Switch>
-                  <Route path='/geolocation/:buildingId?/(floor)?/:floorId?' component={(props) => <Home {...props} appEntity={appEntity}></Home>}/>
-                  <Route exact path="/">
-                    <Redirect to="/geolocation"></Redirect>
+                  <Route 
+                    path={'/' + routes[0]}
+                    component={(props) => <Home {...props} appEntity={appEntity} routes={routes} currentRoute={currentRoute} setCurrentRoute={setCurrentRoute}></Home>}
+                  />
+                  <Route exact path='/'>
+                    <Redirect to={'/' + routes[0]}></Redirect>
                   </Route>
                   <Route component={InvalidRoute}></Route>
                 </Switch>
