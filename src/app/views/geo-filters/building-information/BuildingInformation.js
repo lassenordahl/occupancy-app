@@ -23,7 +23,7 @@ function BuildingInformation(props) {
 
   function selectFloor(floor) {
     setSelectedFloor(floor);
-    props.history.push('/geolocation/' + props.building.buildingId + '/floor/' + floor.value);
+    props.openFloor(floor.value);
   }
 
   console.log(props.building);
@@ -54,7 +54,7 @@ function BuildingInformation(props) {
       <h2>Select a Floor</h2>
       <Picklist
         value={selectedFloor}
-        onChange={value => selectFloor(value)}
+        onChange={value => selectFloor(value)} // Value.value is the floor number (weird nami
         placeholder="Select a floor"
       >
         {mapFloorOptions(props.building.floorCount).map(function(floorNumber, index) {

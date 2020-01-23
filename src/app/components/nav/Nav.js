@@ -7,7 +7,6 @@ import { Breadcrumbs, Breadcrumb } from 'react-rainbow-components';
 
 import { capitalizeWords } from 'globals/formatting-helper.js';
 
-
 function Nav(props) {
 
   // const [redirectCampus, setRedirectCampus] = useState(false);

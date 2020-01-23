@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import './Home.scss';
 
 import 'leaflet/dist/leaflet.css';
-// import { Route } from 'react-router-dom';
+import { Redirect, useRouteMatch } from 'react-router';
+// import { useRouteMatch } from 'react-router';
 // import { Trail } from 'react-spring/renderprops';
 // import axios from 'axios';
 
@@ -26,8 +27,14 @@ import {
 
 function Home(props) {
 
+  // We'll be using redirect tags rather than props.history.push()
+  // That method of programatically changing the route will be deprecated and only works with <Route> wrapped components
+  let { path, url } = useRouteMatch();
 
   const [view, setView] = useState(null);
+
+  const [redirectFloor, setRedirectFloor] = useState(null);
+  let floorId = 2;
 
   // Dialog Information
   const [showDialog, setShowDialog] = useState(false);
@@ -41,13 +48,9 @@ function Home(props) {
   // Selected building, floor, and room info, also needs to be changed
   const [building, setBuilding] = useState(null);
   const [floorNumber, setFloorNumber] = useState(null);
-  // const [room, setRoom] = useState(null);
 
-  useEffect(() => {
-    console.log('HOME WAS RENDERED');
-
-    console.log(building);
-  }, []);
+  const [willRedirect, redirect] = useState(false);
+  const [currentRoute, setCurrentRoute] = useState([props.routes[0]]);
 
   /**
    * 
@@ -67,7 +70,6 @@ function Home(props) {
 
   useEffect(() => {
     // Our app entity
-    console.log(props.appEntity.appType);
     if (props.appEntity.appType === 'GeoSubGeo') {
       // Here we don't auto select anything and show a global view
       setView(props.appEntity.appType);
@@ -78,6 +80,21 @@ function Home(props) {
     getBuildingEntities();
   }, []);
 
+  useEffect(() => {
+    // If we just redirected, reset the variable so we can redirect again later
+    if (willRedirect)
+      redirect(false);
+  }, [willRedirect])
+
+  useEffect(() => {
+    // If our current route changes, we should trigger a redirect
+    redirect(true);
+  }, [currentRoute])
+
+  function getRedirect() {
+    // console.log(currentRoute);
+    return <Redirect to={currentRoute.join('/')}></Redirect>;
+  }
 
   // TODO: This shouldn't get buildings specifically, it should grab the next level down in the heirarchy
   function getBuildingEntities() {
@@ -103,28 +120,29 @@ function Home(props) {
 
   // Select building is run when we select a geolocation block 
   function selectBuilding(building) {
-    // setBuilding(null);
-    console.log(building);
     setBuilding(building);
     if (view === 'GeoSubGeo') {
-      // props.setCurrentRoute([...props.currentRoute, {
-      //   id: building.buildingId,
-      //   name: building.name
-      // }]);
-      props.history.push('/' + props.routes[0] + '/' + props.routes[1] + '/' + building.buildingId);
+   
+      // If the current route is less than 3, then it's okay to add these to the end of the current route
+      if (currentRoute.length < 3) {
+        setCurrentRoute([...currentRoute, props.routes[1], building.buildingId]);
+      }
     }
   }
 
   // Sets the building to be null and changes the route
   function resetBuilding() {
     setBuilding(null);
-    props.history.push('/geolocation');
+
+    // Not sure why this resets to ['roottype'], it should be initialized to an empty array and there will be no URL anymore
+    setCurrentRoute([]);
   }
 
   // Resets the building to the building that we selected (this maintains the selected building and deselects a room)
   function resetSelectedBuilding() {
     if (building !== undefined && building !== null) {
-      props.history.push('/geolocation/' + building.buildingId);
+      setCurrentRoute([currentRoute[0], currentRoute[1], currentRoute[2]]);
+      // props.history.push('/geolocation/' + building.buildingId);
     } else {
       alert('Null building url');
     }
@@ -133,7 +151,12 @@ function Home(props) {
   // Opens a floor 
   function openFloor(floorNumber) {
     setFloorNumber(floorNumber);
-    props.history.push('/geolocation/' + building.buildingId + '/floor/' + floorNumber);
+    
+    if (currentRoute.length < 5) {
+      console.log([...currentRoute, props.routes[2], floorNumber]);
+
+      // setCurrentRoute([...currentRoute, props.routes[2], floorNumber]);
+    }
   }
 
   // Select room is run when we select a room from the floor map
@@ -166,7 +189,7 @@ function Home(props) {
     return (<FloorMap selectRoom={selectRoom}></FloorMap>);
   }
 
-  // Renders teh dialog 
+  // Renders the dialog 
   function renderDialogView(type) {
     let entityId = null;
     if (type === 'building' && building !== null) {
@@ -224,7 +247,6 @@ function Home(props) {
 
   // Renders the side panel that we can view the information for
   function renderView() {
-    console.log(view, building);
     // If we are in a geosubgeo app type 
     // We can render the global view of the campus, and the building information 
     if (view === 'GeoSubGeo') {
@@ -265,9 +287,10 @@ function Home(props) {
   
   return (
     <div className="Home">
+      {/* If our floor number isn't null, we should redirect there */}
+      { willRedirect ? getRedirect() : null }
+      {/* { floorNumber !== null ? <Redirect to={`${url}/floor/${floorNumber}`}></Redirect> : null} */}
       { floorNumber === null ? conditionalMap() : conditionalFloorMap() }
-      {/* <Route exact path="/geolocation/:buildingId?" component={}></Route>
-      <Route exact path="/geolocation/:buildingId/floor/:floorId" component={conditionalFloorMap}></Route> */}
       {showDialog ?
         <Dialog 
           className="dialog" 
@@ -291,13 +314,9 @@ function Home(props) {
       <Card className="information-card" style={{width: '400px'}}>
         <div className="information-header">
           {renderTitle()}
-          {/* <Route exact path="/geolocation/:buildingId?" component={conditionalGeolocationTitle}></Route>
-          <Route exact path="/geolocation/:buildingId/floor/:floorId/(room)?/:roomId?" component={conditionalFloorTitle}></Route> */}
         </div>
         <div className="information-tab-content">
           {renderView()}
-          {/* <Route exact path="/geolocation/:buildingId?" component={conditionalGeolocationInformation}></Route>
-          <Route exact path="/geolocation/:buildingId/floor/:floorId/(room)?/:roomId?" component={conditionalFloorInformation}></Route> */}
         </div>
       </Card>
     </div>

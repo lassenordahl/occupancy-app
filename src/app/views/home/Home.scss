@@ -52,16 +52,14 @@
 
     .information-header {
       margin: $mediumSpacing;
-      margin-bottom: $smallSpacing;
       margin-top: $smallSpacing;
-      // margin-top: $mediumSpacing;
-      // margin-left: $mediumSpacing;
+      margin-bottom: $smallSpacing;
       display: flex;
       flex-direction: row;
     
       h1 {
         margin-bottom: 0;
-        font-size: 24px;
+        font-size: 32px;
       }
 
       h1:hover {
@@ -71,6 +69,7 @@
 
       p {
         margin-top: 4px;
+        margin-bottom: 0px;
         font-size: 1.6em;
       }
 
