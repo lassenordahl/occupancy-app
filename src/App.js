@@ -1,22 +1,24 @@
-import React, { useState, useEffect } from 'react';
-import history from './history';
-import './App.scss';
-import ApplicationContext from 'globals/contexts/ApplicationContext';
-import RouteContext from 'globals/contexts/RouteContext';
+import React, { useState, useEffect } from "react";
+import history from "./history";
+import "./App.scss";
+import ApplicationContext from "globals/contexts/ApplicationContext";
+import RouteContext from "globals/contexts/RouteContext";
 
-import app_config from 'globals/config.js';
-import { Spinner } from 'react-rainbow-components';
-import { Route, Switch, BrowserRouter as Router, Redirect } from 'react-router-dom';
-import axios from 'axios';
-
+import app_config from "globals/config.js";
+import { Spinner } from "react-rainbow-components";
 import {
-  Nav
-} from 'app/components';
+  Route,
+  Switch,
+  BrowserRouter as Router,
+  Redirect,
+  useLocation
+} from "react-router-dom";
+import axios from "axios";
+// import { seralizeLocation } from 'globals/formatting-helper';
 
-import {
-  Home,
-  InvalidRoute
-} from 'app/views';
+import { Nav } from "app/components";
+
+import { Home, InvalidRoute } from "app/views";
 
 /*
   3 TYPES OF ROOTS
@@ -38,9 +40,10 @@ import {
 */
 
 function App() {
+  const [firstLoad, setFirstLoad] = useState(true);
 
   const [routes, setRoutes] = useState([]);
-  const [currentRoute, setCurrentRoute] = useState([]); 
+  const [appRoute, setAppRoute] = useState([]);
 
   // Our main entity for the application
   const [rootEntity, setRootEntity] = useState(null);
@@ -48,121 +51,131 @@ function App() {
   // App entity for the application and the app type
   const [appEntity, setAppEntity] = useState(null);
   const [appType, setAppType] = useState(null);
-  
+
   const [loading, setLoading] = useState(true);
 
   // Retrieves the root entity information and subsequently checks the root type later down the path
   useEffect(() => {
-    // pass the building id's too 
-    getRootEntity(app_config.id);
     // Get the routes for the application
     getRoutes();
 
     setTimeout(() => {
       setLoading(false);
-    }, 1000)
+    }, 1000);
   }, [app_config.id]);
 
+  useEffect(() => {
+    if (routes.length > 0) {
+      getRootEntity(app_config.id);
+    }
+  }, [routes]);
+
+  useEffect(() => {
+    if (firstLoad) {
+      setFirstLoad(false);
+    }
+  }, [firstLoad]);
 
   // UseEffect for setting the app entity to contain root information and the application type that
-  // this app should render to 
+  // this app should render to
   useEffect(() => {
     if (rootEntity !== null && appType !== null) {
       // Create an app entity that also contains the type of root this application is using
-      rootEntity['appType'] = appType;
+      rootEntity["appType"] = appType;
       console.log(rootEntity);
       setAppEntity(rootEntity);
     }
   }, [rootEntity, appType]);
 
   function getRoutes() {
-    setRoutes(['university', 'building', 'floor', 'room']);
+    setRoutes(["university", "building", "floor", "room"]);
   }
 
-  function getRootEntity(entityId) {  
-    axios.get('http://128.195.53.189:4001/api/entity/get/' + entityId)
-      .then(function (response) {
+  function getRootEntity(entityId) {
+    axios
+      .get("http://128.195.53.189:4001/api/entity/get/" + entityId)
+      .then(function(response) {
         let entity = response.data.entity;
 
         // Sets the app entity
         setRootEntity(entity);
 
         // Gets the possible routes for the application
-        setCurrentRoute([...currentRoute, {
-          id: entity.id,
-          name: entity.name
-        }]);
+        setAppRoute([routes[0], entityId]);
 
         // Makes a call to get the geo object of the root entity geo id
         getAppType(entity.payload.geoId);
       })
-      .catch(function (error) {
-        console.log('APP ENTITY GET', error);
+      .catch(function(error) {
+        console.log("APP ENTITY GET", error);
       });
   }
 
   // GEOLOCATION ENTITY
-  // Make a request for the entity id one type lower than the root type 
+  // Make a request for the entity id one type lower than the root type
   function getAppType(geoId) {
     console.log(geoId);
-    axios.get('http://128.195.53.189:4001/api/entity/geo/get/' + geoId)
-    .then(function (response) {
-      let coordinateSystem = response.data.geo.coordinateSystem.coordinateSystemClassName;
+    axios
+      .get("http://128.195.53.189:4001/api/entity/geo/get/" + geoId)
+      .then(function(response) {
+        let coordinateSystem =
+          response.data.geo.coordinateSystem.coordinateSystemClassName;
 
-      // Set the app type based on the entity type of the geolocation system
-      if (coordinateSystem === "coordinateSystemGps") {
-        setAppType("GeoSubGeo");
-      } else if (coordinateSystem === "coordinateSystem2hfd") {
-        setAppType("GeoSubNonGeo");
-      } else if (coordinateSystem === "coordinateSystem2d") {
-        setAppType("NonGeoSubNonGeo");
-      } else {
-        setAppType("Invalid");
-      }
-    })
-    .catch(function (error) {
-      console.log('APP ENTITY GET', error);
-    });
+        // Set the app type based on the entity type of the geolocation system
+        if (coordinateSystem === "coordinateSystemGps") {
+          setAppType("GeoSubGeo");
+        } else if (coordinateSystem === "coordinateSystem2hfd") {
+          setAppType("GeoSubNonGeo");
+        } else if (coordinateSystem === "coordinateSystem2d") {
+          setAppType("NonGeoSubNonGeo");
+        } else {
+          setAppType("Invalid");
+        }
+      })
+      .catch(function(error) {
+        console.log("APP ENTITY GET", error);
+      });
   }
 
   return (
-    <div className='App'>
-      { loading || appEntity == null ? 
-        <Spinner size="large"/>
-        :
-        <ApplicationContext.Provider 
-          value={appEntity}
-        >
-        <RouteContext.Provider 
-          value={{
-            currentRoute: currentRoute, 
-            setCurrentRoute: setCurrentRoute
-          }}
-        >
-          <Router history={history}>
-            <Nav 
-              title={appEntity.name}
-              routes={routes}
-              currentRoute={currentRoute}
-              setCurrentRoute={setCurrentRoute}
-            ></Nav>
-            <div className="app-content">
+    <div className="App">
+      {/* {firstLoad ? <Redirect to="/"></Redirect>: null } */}
+      {loading || appEntity == null ? (
+        <Spinner size="large" />
+      ) : (
+        <ApplicationContext.Provider value={appEntity}>
+          <RouteContext.Provider
+            value={{
+              appRoute: appRoute,
+              setAppRoute: setAppRoute
+            }}
+          >
+            <Router history={history}>
+              <Nav title={appEntity.name} routes={routes}></Nav>
+              <div className="app-content">
                 <Switch>
-                  <Route 
-                    path={'/' + routes[0]}
-                    component={(props) => <Home {...props} appEntity={appEntity} routes={routes} currentRoute={currentRoute} setCurrentRoute={setCurrentRoute}></Home>}
+                  <Route
+                    path={"/"}
+                    component={props => (
+                      <Home
+                        {...props}
+                        appEntity={appEntity}
+                        routes={routes}
+                        appRoute={appRoute}
+                        setAppRoute={setAppRoute}
+                      ></Home>
+                    )}
                   />
-                  <Route exact path='/'>
+                  {/* <Route exact path='/'>
                     <Redirect to={'/' + routes[0]}></Redirect>
-                  </Route>
+                  </Route> */}
                   <Route component={InvalidRoute}></Route>
                 </Switch>
-            </div>
-          </Router>
-        </RouteContext.Provider>
+              </div>
+            </Router>
+          </RouteContext.Provider>
         </ApplicationContext.Provider>
-      }
-      
+      )}
     </div>
   );
 }

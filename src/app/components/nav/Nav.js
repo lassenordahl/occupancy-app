@@ -2,13 +2,14 @@ import React from "react";
 import './Nav.scss';
 
 import { Breadcrumbs, Breadcrumb } from 'react-rainbow-components';
-import { useRouteMatch } from 'react-router-dom';
-import { capitalizeWords } from 'globals/formatting-helper.js';
+import { useLocation } from 'react-router-dom';
+import { capitalizeWords, serializeLocation } from 'globals/formatting-helper.js';
 
 function Nav(props) {
 
-  let { path, url } = useRouteMatch();
-  console.log(path, url);
+  let currentRoute = serializeLocation(useLocation());
+
+  console.log(currentRoute);
 
   // Removes everything after this index, lets you click back with the breadcrumbs
   function changeRoute(index) {
@@ -24,10 +25,14 @@ function Nav(props) {
           Occupancy Tool
         </h2>
         <Breadcrumbs class="nav-breadcrumbs" style={{'marginLeft': '16px'}}>
-          {props.currentRoute.map(function(route, index) {
-            return (
-              <Breadcrumb key={index} label={capitalizeWords(route.name)} onClick={() => changeRoute(index)}></Breadcrumb>
-            )
+          {currentRoute.map(function(entity, index) {
+            if (index % 2 === 1) {
+              return (
+                <Breadcrumb key={index} label={capitalizeWords(entity)} onClick={() => changeRoute(index)}></Breadcrumb>
+              )
+            } else {
+              return null;
+            }
           })}
         </Breadcrumbs>
       </div>
