@@ -41,7 +41,7 @@ function GlobalInformation(props) {
       <h2>
         Global Occupancy
       </h2>
-      <NumberFocus subtitle={realtime ? "Average Occupants" : "Total Occupants"}>
+      <NumberFocus subtitle={realtime ? "Average Occupants" : "Total Occupants"} style={{flex: 1}}>
         {!realtime ? 42 : 81.1}
       </NumberFocus>
       <Button

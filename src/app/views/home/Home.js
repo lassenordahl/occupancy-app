@@ -49,6 +49,7 @@ function Home(props) {
   const [building, setBuilding] = useState(null);
   const [floorNumber, setFloorNumber] = useState(null);
 
+  // Redirecting variables
   const [willRedirect, redirect] = useState(false);
   const [currentRoute, setCurrentRoute] = useState([props.routes[0]]);
 
@@ -165,7 +166,7 @@ function Home(props) {
 
     // If the sub-level isn't defined, we shouldn't be able to select a room
     if (building !== undefined && building !== null) {
-      props.history.push('/geolocation/' + building.buildingId + '/floor/' + floorNumber + '/room/' + room.name);
+      // props.history.push('/geolocation/' + building.buildingId + '/floor/' + floorNumber + '/room/' + room.name);
     } else {
       alert('Building is null');
     }
