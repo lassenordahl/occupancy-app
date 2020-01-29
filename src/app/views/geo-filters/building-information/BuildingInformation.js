@@ -77,8 +77,8 @@ function BuildingInformation(props) {
         className="box-shadow color-blue"
         style={{'marginTop': 'auto', 'alignSelf': 'center'}}
         onClick={() => props.openDialog('building', props.building.name, "Detailed building view")}
+        label="Building Data"
       >
-        Building Data
       </Button>
     </div>
   );
