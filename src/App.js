@@ -76,7 +76,7 @@ function App() {
   }, [rootEntity, appType]);
 
   function getRoutes() {
-    setRoutes(['university', 'building', 'floor', 'meeting room']);
+    setRoutes(['university', 'building', 'floor', 'room']);
   }
 
   function getRootEntity(entityId) {  

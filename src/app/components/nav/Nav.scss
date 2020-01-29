@@ -14,6 +14,14 @@
     margin-left: $smallSpacing;
   }
 
+  li > button {
+    color: white;
+  }
+
+  li:last-child > button {
+    color: lightgray;
+  }
+
   a {
     color: white !important;
   }
