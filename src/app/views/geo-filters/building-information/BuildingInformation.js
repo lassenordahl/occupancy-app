@@ -26,8 +26,6 @@ function BuildingInformation(props) {
     props.openFloor(floor.value);
   }
 
-  console.log(props.building);
-
   return (
     <div className="RealTimeGeo">
       <div className="header-toggle">

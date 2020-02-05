@@ -1,48 +1,33 @@
 import React, { useState, useEffect } from "react";
-import './Home.scss';
+import "./Home.scss";
 
-import 'leaflet/dist/leaflet.css';
-import { Redirect, useRouteMatch } from 'react-router';
+import "leaflet/dist/leaflet.css";
+import { Redirect, useRouteMatch } from "react-router";
 // import { useRouteMatch } from 'react-router';
 // import { Trail } from 'react-spring/renderprops';
 // import axios from 'axios';
 
-import {
-  Card,
-  Dialog
-} from 'app/containers';
+import { Card, Dialog } from "app/containers";
+
+import { Legend, CoordinateMap, FloorMap } from "app/components";
 
 import {
-  Legend,
-  CoordinateMap,
-  FloorMap
-} from 'app/components';
-
-import { 
   BuildingInformation,
   GlobalInformation,
   // FloorInformation,
-  OccupancyDialog,
-} from 'app/views';
+  OccupancyDialog
+} from "app/views";
 
 function Home(props) {
-
-  // We'll be using redirect tags rather than props.history.push()
-  // That method of programatically changing the route will be deprecated and only works with <Route> wrapped components
-  let { path, url } = useRouteMatch();
-
   const [view, setView] = useState(null);
-
-  const [redirectFloor, setRedirectFloor] = useState(null);
-  let floorId = 2;
 
   // Dialog Information
   const [showDialog, setShowDialog] = useState(false);
-  const [dialogType, setDialogType] = useState('building');
-  const [dialogTitle, setDialogTitle] = useState('default');
-  const [dialogTitleSubscript, setDialogTitleSubscript] = useState('default');
+  const [dialogType, setDialogType] = useState("building");
+  const [dialogTitle, setDialogTitle] = useState("default");
+  const [dialogTitleSubscript, setDialogTitleSubscript] = useState("default");
 
-  // Sub entities, this needs to be changed to sub 
+  // Sub entities, this needs to be changed to sub
   const [buildingEntities, setBuildingEntities] = useState([]);
 
   // Selected building, floor, and room info, also needs to be changed
@@ -51,10 +36,10 @@ function Home(props) {
 
   // Redirecting variables
   const [willRedirect, redirect] = useState(false);
-  const [currentRoute, setCurrentRoute] = useState([props.routes[0]]);
+  const [currentRoute, setCurrentRoute] = useState([]);
 
   /**
-   * 
+   *
    */
   useEffect(() => {
     // let urlBuildingId = props.match.params.buildingId;
@@ -67,11 +52,11 @@ function Home(props) {
       setFloorNumber(floorId);
     }
     // if url building id is not in the valid id's then we can just set it to be nothing
-  }, [props.match.params.buildingId, props.match.params.floorId]); 
+  }, [props.match.params.buildingId, props.match.params.floorId]);
 
   useEffect(() => {
     // Our app entity
-    if (props.appEntity.appType === 'GeoSubGeo') {
+    if (props.appEntity.appType === "GeoSubGeo") {
       // Here we don't auto select anything and show a global view
       setView(props.appEntity.appType);
     }
@@ -82,51 +67,64 @@ function Home(props) {
   }, []);
 
   useEffect(() => {
-    // If we just redirected, reset the variable so we can redirect again later
-    if (willRedirect)
-      redirect(false);
-  }, [willRedirect])
+    setCurrentRoute(props.appRoute);
+  }, [props.appRoute])
 
   useEffect(() => {
+    // If we just redirected, reset the variable so we can redirect again later
+    if (willRedirect) redirect(false);
+  }, [willRedirect]);
+
+  useEffect(() => {
+    console.log(currentRoute);
     // If our current route changes, we should trigger a redirect
     redirect(true);
-  }, [currentRoute])
+  }, [currentRoute]);
 
   function getRedirect() {
-    // console.log(currentRoute);
-    return <Redirect to={currentRoute.join('/')}></Redirect>;
+    console.log("redirecting to ->", currentRoute);
+    let route = "/" + currentRoute.join("/");
+    console.log(route);
+    return <Redirect from="/" to={route}></Redirect>;
   }
 
   // TODO: This shouldn't get buildings specifically, it should grab the next level down in the heirarchy
   function getBuildingEntities() {
     // axios.get(http://128.195.53.189:4001/api/entity/search?orderBy=id&direction=ASC&orderBy2=id&direction2=ASC&limit=25&entityTypeName=building)
-    setBuildingEntities({
-      "resultCode": 100,
-      "message": "Entities found with search parameters.",
-      "entities": [
-        {
-          "id": 3,
-          "name": "DBH",
-          "entityType": {
-              "subtypeOf": 2,
-              "entityTypeName": "building",
-              "entityTypeId": 5
-          },
-          "payload": {
-              "geoId": 3
+    setBuildingEntities(
+      {
+        resultCode: 100,
+        message: "Entities found with search parameters.",
+        entities: [
+          {
+            id: 3,
+            name: "DBH",
+            entityType: {
+              subtypeOf: 2,
+              entityTypeName: "building",
+              entityTypeId: 5
+            },
+            payload: {
+              geoId: 3
+            }
           }
-        }
-      ]}.entities);
+        ]
+      }.entities
+    );
   }
 
-  // Select building is run when we select a geolocation block 
+  // Select building is run when we select a geolocation block
   function selectBuilding(building) {
     setBuilding(building);
-    if (view === 'GeoSubGeo') {
-   
+    if (view === "GeoSubGeo") {
       // If the current route is less than 3, then it's okay to add these to the end of the current route
       if (currentRoute.length < 3) {
-        setCurrentRoute([...currentRoute, props.routes[1], building.buildingId]);
+        console.log(currentRoute);
+        setCurrentRoute([
+          ...currentRoute,
+          props.routes[1],
+          building.buildingId
+        ]);
       }
     }
   }
@@ -145,14 +143,14 @@ function Home(props) {
       setCurrentRoute([currentRoute[0], currentRoute[1], currentRoute[2]]);
       // props.history.push('/geolocation/' + building.buildingId);
     } else {
-      alert('Null building url');
+      alert("Null building url");
     }
   }
 
-  // Opens a floor 
+  // Opens a floor
   function openFloor(floorNumber) {
     setFloorNumber(floorNumber);
-    
+
     if (currentRoute.length < 5) {
       console.log([...currentRoute, props.routes[2], floorNumber]);
 
@@ -168,7 +166,7 @@ function Home(props) {
     if (building !== undefined && building !== null) {
       // props.history.push('/geolocation/' + building.buildingId + '/floor/' + floorNumber + '/room/' + room.name);
     } else {
-      alert('Building is null');
+      alert("Building is null");
     }
   }
 
@@ -182,65 +180,68 @@ function Home(props) {
 
   // Renders the coordinate map on the page if we need to select a geo object (GeoSubGeo, GeoSubNonGeo)
   function conditionalMap() {
-    return (<CoordinateMap selectBuilding={selectBuilding} appEntity={props.appEntity} buildingEntities={buildingEntities}></CoordinateMap>);
+    return (
+      <CoordinateMap
+        selectBuilding={selectBuilding}
+        appEntity={props.appEntity}
+        buildingEntities={buildingEntities}
+      ></CoordinateMap>
+    );
   }
 
   // Renders the floor map if we need to select a non-geo object (GeoSubNonGeo, NonGeoSubNonGeo)
   function conditionalFloorMap() {
-    return (<FloorMap selectRoom={selectRoom}></FloorMap>);
+    return <FloorMap selectRoom={selectRoom}></FloorMap>;
   }
 
-  // Renders the dialog 
+  // Renders the dialog
   function renderDialogView(type) {
     let entityId = null;
-    if (type === 'building' && building !== null) {
+    if (type === "building" && building !== null) {
       entityId = building.buildingId;
     }
-    return <OccupancyDialog type={type} entity={entityId}/>
+    return <OccupancyDialog type={type} entity={entityId} />;
   }
 
   // Renders a title based on the type of app we currently have loading
   function renderTitle() {
     // Renders GeoSubGeo
     // This renders the main app entity name and then the building (sub-entity that we have selected)
-    if (view === 'GeoSubGeo') {
+    if (view === "GeoSubGeo") {
       return (
         <React.Fragment>
-          <h1 onClick={() => resetBuilding()}>
-            {props.appEntity.name}
-          </h1>
-          { building !== null ?
+          <h1 onClick={() => resetBuilding()}>{props.appEntity.name}</h1>
+          {building !== null ? (
             <p>
               &nbsp;&nbsp;>&nbsp;&nbsp;
-              <span style={building.name.length > 15 ? {'fontSize': '20px'} : null}>
+              <span
+                style={building.name.length > 15 ? { fontSize: "20px" } : null}
+              >
                 {building.name}
-              </span>  
+              </span>
             </p>
-            : null
-          }
+          ) : null}
         </React.Fragment>
       );
-    
-    // Renders GeoSubNonGeo
-    // This renders a title where we have a pre-selected building (there is no parent entity like campus -> building)
-    } else if (view === 'GeoSubNonGeo') {
+
+      // Renders GeoSubNonGeo
+      // This renders a title where we have a pre-selected building (there is no parent entity like campus -> building)
+    } else if (view === "GeoSubNonGeo") {
       return (
         <React.Fragment>
-          <h1>
-            {props.appEntity.name}
-          </h1>
+          <h1>{props.appEntity.name}</h1>
         </React.Fragment>
       );
-      
-    // Renders NonGeoSubNonGeo
-    // This renders a title where we have a floor pre-selected, and the rooms are the available spaces we can search
-    } else if (view === 'NonGeoSubNonGeo') {
+
+      // Renders NonGeoSubNonGeo
+      // This renders a title where we have a floor pre-selected, and the rooms are the available spaces we can search
+    } else if (view === "NonGeoSubNonGeo") {
       return (
         <React.Fragment>
           <h1 onClick={() => resetSelectedBuilding()}>
-            { building !== null ? building.name : 'Default'}
+            {building !== null ? building.name : "Default"}
           </h1>
-          <p>&nbsp;&nbsp;>&nbsp;&nbsp;Floor {floorNumber}</p>    
+          <p>&nbsp;&nbsp;>&nbsp;&nbsp;Floor {floorNumber}</p>
         </React.Fragment>
       );
     }
@@ -248,77 +249,68 @@ function Home(props) {
 
   // Renders the side panel that we can view the information for
   function renderView() {
-    // If we are in a geosubgeo app type 
-    // We can render the global view of the campus, and the building information 
-    if (view === 'GeoSubGeo') {
+    // If we are in a geosubgeo app type
+    // We can render the global view of the campus, and the building information
+    if (view === "GeoSubGeo") {
       return (
         <React.Fragment>
-          { building !== null ?
+          {building !== null ? (
             // We aren't always showing the global view, only show it if we have a global entity like campus->building
-            <BuildingInformation 
+            <BuildingInformation
               building={building}
               openFloor={openFloor}
               history={props.history}
-              openDialog={openDialog}
-            /> 
-            :
-            <GlobalInformation
               openDialog={openDialog}
             />
-          }
+          ) : (
+            <GlobalInformation openDialog={openDialog} />
+          )}
         </React.Fragment>
       );
-    // Render just the building information because we will have no global entity to show information for 
-    } else if (view === 'GeoSubNonGeo') {
+      // Render just the building information because we will have no global entity to show information for
+    } else if (view === "GeoSubNonGeo") {
       return (
         <React.Fragment>
-          { building !== null ?
-            <BuildingInformation 
+          {building !== null ? (
+            <BuildingInformation
               building={building}
               openFloor={openFloor}
               history={props.history}
               openDialog={openDialog}
-            /> 
-            : null
-          }
+            />
+          ) : null}
         </React.Fragment>
       );
     }
   }
-  
+
   return (
     <div className="Home">
       {/* If our floor number isn't null, we should redirect there */}
-      { willRedirect ? getRedirect() : null }
+      {willRedirect ? getRedirect() : null}
       {/* { floorNumber !== null ? <Redirect to={`${url}/floor/${floorNumber}`}></Redirect> : null} */}
-      { floorNumber === null ? conditionalMap() : conditionalFloorMap() }
-      {showDialog ?
-        <Dialog 
-          className="dialog" 
+      {floorNumber === null ? conditionalMap() : conditionalFloorMap()}
+      {showDialog ? (
+        <Dialog
+          className="dialog"
           closeDialog={() => setShowDialog(false)}
           title={dialogTitle}
           titleSubscript={dialogTitleSubscript}
         >
           {renderDialogView(dialogType)}
         </Dialog>
-      : null}
-      <Card className="legend-card" style={{width: '280px'}}>
+      ) : null}
+      <Card className="legend-card" style={{ width: "280px" }}>
         <div className="legend-header">
-          <h1>
-            Legend
-          </h1>
+          <h1>Legend</h1>
         </div>
         <div className="legend-content">
           <Legend></Legend>
         </div>
       </Card>
-      <Card className="information-card" style={{width: '400px'}}>
-        <div className="information-header">
-          {renderTitle()}
-        </div>
-        <div className="information-tab-content">
-          {renderView()}
-        </div>
+      <Card className="information-card" style={{ width: "400px" }}>
+        <div className="information-header">{renderTitle()}</div>
+        <div className="information-tab-content">{renderView()}</div>
       </Card>
     </div>
   );

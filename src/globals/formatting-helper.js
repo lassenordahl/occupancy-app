@@ -7,3 +7,9 @@ export function capitalizeWords(word) {
     return str.charAt(0).toUpperCase() + str.slice(1);
   }).join(' ');
 }
+
+export function serializeLocation(useLocationObject) {
+  let location = useLocationObject.pathname.split('/')
+  location.shift(); // Remove the first empty string from the first slash
+  return location;
+}
