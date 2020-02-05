@@ -12,7 +12,7 @@ import {
   getChartJSData,
   getChartJSDataset,
   getChartJSOptions
-} from 'globals/chartjs-helper.js';
+} from 'globals/utils/chartjs-helper.js';
 
 
 function OccupancyDialog(props) {
