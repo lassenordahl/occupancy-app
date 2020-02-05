@@ -56,11 +56,9 @@ function Home(props) {
 
   useEffect(() => {
     // Our app entity
-    if (props.appEntity.appType === "GeoSubGeo") {
-      // Here we don't auto select anything and show a global view
-      setView(props.appEntity.appType);
-    }
-  }, [props.appEntity]);
+    // Here we don't auto select anything and show a global view
+    setView(props.appType);
+  }, [props.appType]);
 
   useEffect(() => {
     getBuildingEntities();

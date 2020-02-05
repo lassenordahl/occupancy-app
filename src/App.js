@@ -93,10 +93,9 @@ function App() {
 
   function getRootEntity(entityId) {
     axios
-      .get("http://128.195.53.189:4001/api/entity/get/" + entityId)
+      .get("http://128.195.53.189:4001/api/entity/" + entityId)
       .then(function(response) {
-        let entity = response.data.entity;
-
+        let entity = response.data;
         // Sets the app entity
         setRootEntity(entity);
 
@@ -104,7 +103,7 @@ function App() {
         setAppRoute([routes[0], entityId]);
 
         // Makes a call to get the geo object of the root entity geo id
-        getAppType(entity.payload.geoId);
+        getAppType(entity.payload);
       })
       .catch(function(error) {
         console.log("APP ENTITY GET", error);
@@ -113,34 +112,27 @@ function App() {
 
   // GEOLOCATION ENTITY
   // Make a request for the entity id one type lower than the root type
-  function getAppType(geoId) {
-    console.log(geoId);
-    axios
-      .get("http://128.195.53.189:4001/api/entity/geo/get/" + geoId)
-      .then(function(response) {
-        let coordinateSystem =
-          response.data.geo.coordinateSystem.coordinateSystemClassName;
-
-        // Set the app type based on the entity type of the geolocation system
-        if (coordinateSystem === "coordinateSystemGps") {
-          setAppType("GeoSubGeo");
-        } else if (coordinateSystem === "coordinateSystem2hfd") {
-          setAppType("GeoSubNonGeo");
-        } else if (coordinateSystem === "coordinateSystem2d") {
-          setAppType("NonGeoSubNonGeo");
-        } else {
-          setAppType("Invalid");
-        }
-      })
-      .catch(function(error) {
-        console.log("APP ENTITY GET", error);
-      });
+  function getAppType(payload) {
+    let coordinateSystem =
+      payload.geo.coordinateSystem.coordinateSystemClassName;
+    console.log(coordinateSystem);
+    // Set the app type based on the entity type of the geolocation system
+    if (coordinateSystem === "gps") {
+      setAppType("GeoSubGeo");
+    } else if (coordinateSystem === "cartesian2hfd") {
+      setAppType("GeoSubNonGeo");
+    } else if (coordinateSystem === "cartesian2d") {
+      setAppType("NonGeoSubNonGeo");
+    } else {
+      setAppType("Invalid");
+    }
   }
 
   return (
     <div className="App">
       {/* {firstLoad ? <Redirect to="/"></Redirect>: null } */}
       {loading || appEntity == null ? (
+        // {loading || appEntity == null ? (
         <Spinner size="large" />
       ) : (
         <ApplicationContext.Provider value={appEntity}>
@@ -163,6 +155,7 @@ function App() {
                         routes={routes}
                         appRoute={appRoute}
                         setAppRoute={setAppRoute}
+                        appType={appType}
                       ></Home>
                     )}
                   />
