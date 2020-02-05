@@ -20,6 +20,8 @@ import { Nav } from "app/components";
 
 import { Home, InvalidRoute } from "app/views";
 
+import { serializeLocation } from "globals/utils/formatting-helper";
+
 /*
   3 TYPES OF ROOTS
   
@@ -53,6 +55,9 @@ function App() {
   const [appType, setAppType] = useState(null);
 
   const [loading, setLoading] = useState(true);
+
+  // console.log(serializeLocation(useLocation()));
+
 
   // Retrieves the root entity information and subsequently checks the root type later down the path
   useEffect(() => {

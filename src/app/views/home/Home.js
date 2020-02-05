@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import "./Home.scss";
 
 import "leaflet/dist/leaflet.css";
-import { Redirect, useRouteMatch } from "react-router";
+import { Redirect, useRouteMatch, useLocation } from "react-router";
 // import { useRouteMatch } from 'react-router';
 // import { Trail } from 'react-spring/renderprops';
-// import axios from 'axios';
+import axios from 'axios';
 
 import { Card, Dialog } from "app/containers";
 
@@ -18,7 +18,15 @@ import {
   OccupancyDialog
 } from "app/views";
 
+import {
+  serializeLocation
+} from "globals/utils/formatting-helper";
+
 function Home(props) {
+  // Variable to keep track of if we're loading the app for the first time
+  const [firstLoad, setFirstLoad] = useState(true);
+
+  // View for Home.js
   const [view, setView] = useState(null);
 
   // Dialog Information
@@ -37,6 +45,8 @@ function Home(props) {
   // Redirecting variables
   const [willRedirect, redirect] = useState(false);
   const [currentRoute, setCurrentRoute] = useState([]);
+
+  let windowRoute = serializeLocation(useLocation());
 
   /**
    *
@@ -65,8 +75,8 @@ function Home(props) {
   }, []);
 
   useEffect(() => {
-    setCurrentRoute(props.appRoute);
-  }, [props.appRoute])
+      setCurrentRoute(props.appRoute);
+  }, [props.appRoute]);
 
   useEffect(() => {
     // If we just redirected, reset the variable so we can redirect again later
@@ -74,16 +84,32 @@ function Home(props) {
   }, [willRedirect]);
 
   useEffect(() => {
-    console.log(currentRoute);
     // If our current route changes, we should trigger a redirect
     redirect(true);
   }, [currentRoute]);
 
+  useEffect(() => {
+    if (firstLoad) {
+      parseUrlRoute(windowRoute);
+      setFirstLoad(false);
+    }
+  }, [firstLoad]);
+
   function getRedirect() {
-    console.log("redirecting to ->", currentRoute);
     let route = "/" + currentRoute.join("/");
-    console.log(route);
     return <Redirect from="/" to={route}></Redirect>;
+  }
+
+  async function parseUrlRoute(route) {
+    let entityIds = route.filter(function(routeElement, index) {
+      return index % 2 === 1;
+    });
+
+    let entityResponses = await Promise.all(entityIds.map(function(id) {
+      return axios.get("http://128.195.53.189:4001/api/entity/" + id);
+    }));
+
+    console.log(entityResponses);
   }
 
   // TODO: This shouldn't get buildings specifically, it should grab the next level down in the heirarchy
@@ -117,7 +143,6 @@ function Home(props) {
     if (view === "GeoSubGeo") {
       // If the current route is less than 3, then it's okay to add these to the end of the current route
       if (currentRoute.length < 3) {
-        console.log(currentRoute);
         setCurrentRoute([
           ...currentRoute,
           props.routes[1],
@@ -150,9 +175,7 @@ function Home(props) {
     setFloorNumber(floorNumber);
 
     if (currentRoute.length < 5) {
-      console.log([...currentRoute, props.routes[2], floorNumber]);
-
-      // setCurrentRoute([...currentRoute, props.routes[2], floorNumber]);
+      setCurrentRoute([...currentRoute, props.routes[2], floorNumber]);
     }
   }
 
