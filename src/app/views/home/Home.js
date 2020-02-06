@@ -101,6 +101,8 @@ function Home(props) {
   }
 
   async function parseUrlRoute(route) {
+    setCurrentRoute(route);
+
     let entityIds = route.filter(function(routeElement, index) {
       return index % 2 === 1;
     });
@@ -110,6 +112,12 @@ function Home(props) {
     }));
 
     console.log(entityResponses);
+    if (props.appType === "GeoSubGeo") {
+      if (entityResponses.length >=2 ) {
+        console.log(entityResponses[1].data);
+        setBuilding(entityResponses[1].data);
+      }
+    }
   }
 
   // TODO: This shouldn't get buildings specifically, it should grab the next level down in the heirarchy
@@ -139,6 +147,36 @@ function Home(props) {
 
   // Select building is run when we select a geolocation block
   function selectBuilding(building) {
+    console.log(building);
+    building = {
+      id: 3,
+      name: "DBH",
+      entityType: {subtypeOf: 2, entityTypeName: "building", entityTypeId: 5},
+      payload: {geoId: 3},
+      geo: {
+        extent: {},
+        extentClassId: 3,
+        start: {latitude: 33.642992, longitude: -117.8422864},
+        extentClassName: "rectangle",
+        end: {latitude: 33.6435452, longitude: -117.8414719},
+        parentSpaceId: 2,
+        coordinateSystem: {},
+        coordinateSystemClassName: "coordinateSystem2hfd",
+        range: {yMin: 0, yMax: 1000, floorMin: 1, xMax: 1000, floorMax: 6},
+        coordinateSystemClassId: 3
+      },
+      floorCount: 6,
+      buildingId: 3,
+      occupancy: 87,
+      description: "Building in UCI",
+      coordinates: [
+        [33.642992, -117.8422864],
+        [33.642992, -117.8414719],
+        [33.6435452, -117.8414719],
+        [33.6435452, -117.8422864]
+      ]
+    }
+    
     setBuilding(building);
     if (view === "GeoSubGeo") {
       // If the current route is less than 3, then it's okay to add these to the end of the current route
@@ -146,7 +184,7 @@ function Home(props) {
         setCurrentRoute([
           ...currentRoute,
           props.routes[1],
-          building.buildingId
+          building.id
         ]);
       }
     }

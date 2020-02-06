@@ -7,16 +7,20 @@ import { D3Shape } from 'app/components';
 function SelectedBuilding(props) {
 
   function renderSelectedBuilding(building) {
-    return (
-      <div className="building-information">
-        <D3Shape coordinates={building.coordinates}/>
-        <div className="building-occupancy-count flex-center">
-          <NumberFocus subtitle={props.realtime ? "Average Occupants" : "Total Occupants"}>
-            {building.occupancy}
-          </NumberFocus>
-        </div>  
-      </div>
-    );
+    // if (building === undefined || building.coordinates === undefined) {
+    //   return null;
+    // } else {
+      return (
+        <div className="building-information">
+          {/* <D3Shape coordinates={building.coordinates}/> */}
+          <div className="building-occupancy-count flex-center">
+            <NumberFocus subtitle={props.realtime ? "Average Occupants" : "Total Occupants"}>
+              {building.occupancy}
+            </NumberFocus>
+          </div>  
+        </div>
+      );
+    // }
   }
 
   return (

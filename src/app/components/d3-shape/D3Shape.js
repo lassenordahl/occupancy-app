@@ -22,6 +22,7 @@ class D3Shape extends React.Component{
   }
 
   calculateSmallestCoordinate(coordinates) {
+    console.log(coordinates);
     return Math.min(
             this.calculate(Math.min, coordinates, true),
             this.calculate(Math.min, coordinates, true)
