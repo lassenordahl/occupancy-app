@@ -148,7 +148,7 @@ function App() {
             }}
           >
             <Router history={history}>
-              <Nav title={appEntity.name} routes={routes}></Nav>
+              {/* <Nav title={appEntity.name} routes={routes}></Nav> */}
               <div className="app-content">
                 <Switch>
                   <Route
