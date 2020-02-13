@@ -9,8 +9,8 @@ const test_rooms = [
     name: 'DBH 2059',
     "x1": 0,
     "y1": 0,
-    "x2": 74,
-    "y2": 22,
+    "x2": 10,
+    "y2": 10,
     occupancy: 3
   },
   {
@@ -119,8 +119,7 @@ class FloorMap extends React.Component{
 
   render() {
     return (
-      <svg
-        className="FloorMap"
+      <svg className="FloorMap"
         ref={handle => (this.svg = d3.select(handle))}
       >
       </svg>

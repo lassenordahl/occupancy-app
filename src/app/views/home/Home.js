@@ -14,7 +14,7 @@ import { Legend, CoordinateMap, FloorMap } from "app/components";
 import {
   BuildingInformation,
   GlobalInformation,
-  // FloorInformation,
+  FloorInformation,
   OccupancyDialog
 } from "app/views";
 
@@ -75,11 +75,13 @@ function Home(props) {
   }, []);
 
   useEffect(() => {
-      setCurrentRoute(props.appRoute);
+    console.log("useffect", props.appRoute)
+    setCurrentRoute(props.appRoute);
   }, [props.appRoute]);
 
   useEffect(() => {
     // If we just redirected, reset the variable so we can redirect again later
+    console.log('redirecting');
     if (willRedirect) redirect(false);
   }, [willRedirect]);
 
@@ -90,7 +92,7 @@ function Home(props) {
 
   useEffect(() => {
     if (firstLoad) {
-      parseUrlRoute(windowRoute);
+      parseUrlRoute(windowRoute, props.appRoute);
       setFirstLoad(false);
     }
   }, [firstLoad]);
@@ -100,9 +102,7 @@ function Home(props) {
     return <Redirect from="/" to={route}></Redirect>;
   }
 
-  async function parseUrlRoute(route) {
-    setCurrentRoute(route);
-
+  async function parseUrlRoute(route, baseAppRoute) {
     let entityIds = route.filter(function(routeElement, index) {
       return index % 2 === 1;
     });
@@ -112,6 +112,13 @@ function Home(props) {
     }));
 
     console.log(entityResponses);
+
+    if (entityResponses.length === 0) {
+      setCurrentRoute(baseAppRoute);
+    } else {
+      setCurrentRoute(route);
+    }
+
     if (props.appType === "GeoSubGeo") {
       if (entityResponses.length >=2 ) {
         console.log(entityResponses[1].data);
@@ -311,21 +318,32 @@ function Home(props) {
     // If we are in a geosubgeo app type
     // We can render the global view of the campus, and the building information
     if (view === "GeoSubGeo") {
-      return (
-        <React.Fragment>
-          {building !== null ? (
-            // We aren't always showing the global view, only show it if we have a global entity like campus->building
-            <BuildingInformation
-              building={building}
-              openFloor={openFloor}
-              history={props.history}
-              openDialog={openDialog}
-            />
-          ) : (
-            <GlobalInformation openDialog={openDialog} />
-          )}
-        </React.Fragment>
-      );
+      if (currentRoute.length < 6) {
+        return (
+          <React.Fragment>
+            {building !== null ? (
+              // We aren't always showing the global view, only show it if we have a global entity like campus->building
+              <BuildingInformation
+                building={building}
+                openFloor={openFloor}
+                history={props.history}
+                openDialog={openDialog}
+              />
+            ) : (
+              <GlobalInformation openDialog={openDialog} />
+            )}
+          </React.Fragment>
+        );
+      } else {
+        return (
+          <React.Fragment>
+            <FloorInformation>
+              {/* {floor !== null ? <div></div> : null} */}
+            </FloorInformation>
+          </React.Fragment>
+        )
+      }
+      
       // Render just the building information because we will have no global entity to show information for
     } else if (view === "GeoSubNonGeo") {
       return (

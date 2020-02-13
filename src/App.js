@@ -105,6 +105,7 @@ function App() {
         setRootEntity(entity);
 
         // Gets the possible routes for the application
+        console.log([routes[0], entityId]);
         setAppRoute([routes[0], entityId]);
 
         // Makes a call to get the geo object of the root entity geo id
@@ -148,7 +149,7 @@ function App() {
             }}
           >
             <Router history={history}>
-              {/* <Nav title={appEntity.name} routes={routes}></Nav> */}
+              <Nav title={appEntity.name} routes={routes}></Nav>
               <div className="app-content">
                 <Switch>
                   <Route
