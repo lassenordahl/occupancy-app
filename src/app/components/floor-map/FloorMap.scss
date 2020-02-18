@@ -3,4 +3,15 @@
 .FloorMap {
   height: calc(100vh - 64px);
   width: 100vw;
+  display: flex;
+  flex-direction: row;
+
+  .floormap-map-container {
+    flex: 1 1;
+  }
+
+  .floormap-margin {
+    height: 100%;
+    width: 472px;
+  }
 }

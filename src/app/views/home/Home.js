@@ -202,7 +202,7 @@ function Home(props) {
     setBuilding(null);
 
     // Not sure why this resets to ['roottype'], it should be initialized to an empty array and there will be no URL anymore
-    setCurrentRoute([]);
+    setCurrentRoute(props.appRoute);
   }
 
   // Resets the building to the building that we selected (this maintains the selected building and deselects a room)
