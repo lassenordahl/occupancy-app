@@ -104,6 +104,11 @@ function Home(props) {
     }
   }
 
+  function selectEntity(entity) {
+    console.log(entity);
+    // setCurrentRoute([...currentRoute, entity.entityTypeName, entity.id]);
+  }
+
   // Opens a dialog using the information given
   function openDialog(title, titleSubscript) {
     setDialogTitle(title);
@@ -153,7 +158,7 @@ function Home(props) {
     if (entity === null) {
       return null;
     } else {
-      return <EntityInformation entity={entity}></EntityInformation>
+      return <EntityInformation entity={entity} selectEntity={selectEntity}></EntityInformation>
     }
   }
 

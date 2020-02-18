@@ -7,21 +7,15 @@ function EntityInformation(props) {
 
   const entity = props.entity;
   
-  // const [selectedFloor, setSelectedFloor] = useState(null);
+  const [selectedEntity, setSelectedEntity] = useState(null);
   const [realtime, setRealtime] = useState(false);
   const [fromDate] = useState(new Date());
   const [toDate] = useState(new Date());
 
-  // function mapFloorOptions(floorCount) {
-  //   return [...Array(floorCount).keys()].map(function(number) {
-  //     return number + 1;
-  //   });
-  // }
-
-  // function selectFloor(floor) {
-  //   setSelectedFloor(floor);
-  //   props.openFloor(floor.value);
-  // }
+  function selectEntity(entitySelection) {
+    setSelectedEntity(entitySelection);
+    props.openFloor(entitySelection.value);
+  }
 
   if (entity === undefined) {
     return null;
@@ -57,21 +51,24 @@ function EntityInformation(props) {
 
       <h2>Entity Type</h2>
       <p>{entity.entityTypeName}</p>
-{/*       
-      <h2>Select a Floor</h2>
+
+      <div style={{'height': '24px'}}/>
+      
+      <h2>Select a Sub-Entity</h2>
       <Picklist
-        value={selectedFloor}
-        onChange={value => selectFloor(value)} // Value.value is the floor number (weird nami
-        placeholder="Select a floor"
+        value={selectedEntity}
+        onChange={value => selectEntity(value)}
+        placeholder="Select a sub-entity"
       >
-        {mapFloorOptions(props.building.floorCount).map(function(floorNumber, index) {
+        {props.subEntities.map(function(entity, index) {
           return ( 
-            <PicklistOption key={index} name={"Floor " + floorNumber} label={"Floor " + floorNumber} value={floorNumber}/>
+            <PicklistOption key={index} name={entity.name} label={entity.name} value={entity}/>
           );
         })}
       </Picklist>
 
       <div style={{'height': '24px'}}/>
+{/*       
       
       <h2>Selected Building</h2>
       <SelectedBuilding 
