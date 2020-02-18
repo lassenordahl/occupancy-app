@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./Nav.scss";
 
 import { Breadcrumbs, Breadcrumb } from "react-rainbow-components";
-import { useLocation } from "react-router-dom";
+import { useLocation, withRouter } from "react-router-dom";
 import {
   capitalizeWords,
   serializeLocation
@@ -15,10 +15,11 @@ function Nav(props) {
 
   const [entityNames, setEntityNames] = useState([]);
 
+  console.log(props.history);
+
   useEffect(() => {
-    console.log('entity ids changed', entityIds);
-    getEntityNames(entityIds);
-  }, [entityIds]);
+    props.history.listen(() => getEntityNames(entityIds));
+  }, []);
 
   async function getEntityNames(entityIds) {
     let entityResults = await Promise.all(
@@ -74,4 +75,4 @@ function Nav(props) {
   );
 }
 
-export default Nav;
+export default withRouter(Nav);

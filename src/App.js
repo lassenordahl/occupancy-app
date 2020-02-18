@@ -56,9 +56,6 @@ function App() {
 
   const [loading, setLoading] = useState(true);
 
-  // console.log(serializeLocation(useLocation()));
-
-
   // Retrieves the root entity information and subsequently checks the root type later down the path
   useEffect(() => {
     // Get the routes for the application
@@ -152,6 +149,7 @@ function App() {
                 <Switch>
                   <Route
                     path={"/"}
+                    onChange={() => console.log('changed route')}
                     component={props => (
                       <Home
                         {...props}
