@@ -15,29 +15,27 @@ function Nav(props) {
 
   const [entityNames, setEntityNames] = useState([]);
 
-  // useEffect(
-  //   function() {
-  //     getEntityNames(entityIds);
-  //   },
-  //   [entityIds]
-  // );
+  useEffect(() => {
+    console.log('entity ids changed', entityIds);
+    getEntityNames(entityIds);
+  }, [entityIds]);
 
-  // async function getEntityNames(entityIds) {
-  //   let entityResults = await Promise.all(
-  //     entityIds.map(function(entityId) {
-  //       return axios.get("http://128.195.53.189:4001/api/entity/" + entityId);
-  //     })
-  //   );
-  //   setEntityNames(
-  //     entityResults.map(function(result) {
-  //       if (result.data !== undefined) {
-  //         return result.data.name;
-  //       } else {
-  //         return "Invalid URL Param";
-  //       }
-  //     })
-  //   );
-  // }
+  async function getEntityNames(entityIds) {
+    let entityResults = await Promise.all(
+      entityIds.map(function(entityId) {
+        return axios.get("http://128.195.53.189:4001/api/entity/" + entityId);
+      })
+    );
+    setEntityNames(
+      entityResults.map(function(result) {
+        if (result.data !== undefined) {
+          return result.data.name;
+        } else {
+          return "Invalid URL Param";
+        }
+      })
+    );
+  }
 
   function filterEntityIds(routeArray) {
     return routeArray.filter(function(routeElement, index) {
