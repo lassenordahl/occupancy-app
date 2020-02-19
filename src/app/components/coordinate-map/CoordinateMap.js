@@ -24,10 +24,10 @@ function CoordinateMap(props) {
   }, [props.appEntity.id]);
 
   useEffect(() => {
-    for (let i = 0; i < props.buildingEntities.length; i++) {
-      loadBuildingGeolocation(props.buildingEntities[i]);
+    for (let i = 0; i < props.coordinateEntities.length; i++) {
+      // loadBuildingGeolocation(props.coordinateEntities[i]);
     }
-  }, [props.buildingEntities]);
+  }, [props.coordinateEntities]);
 
   function loadBuildingGeolocation(buildingEntity) {
     // axios.get('http://128.195.53.189:4001/api/entity/geo/get/' + entityId)

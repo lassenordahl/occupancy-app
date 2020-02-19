@@ -56,9 +56,6 @@ function App() {
 
   const [loading, setLoading] = useState(true);
 
-  // console.log(serializeLocation(useLocation()));
-
-
   // Retrieves the root entity information and subsequently checks the root type later down the path
   useEffect(() => {
     // Get the routes for the application
@@ -105,7 +102,6 @@ function App() {
         setRootEntity(entity);
 
         // Gets the possible routes for the application
-        console.log([routes[0], entityId]);
         setAppRoute([routes[0], entityId]);
 
         // Makes a call to get the geo object of the root entity geo id
@@ -121,7 +117,6 @@ function App() {
   function getAppType(payload) {
     let coordinateSystem =
       payload.geo.coordinateSystem.coordinateSystemClassName;
-    console.log(coordinateSystem);
     // Set the app type based on the entity type of the geolocation system
     if (coordinateSystem === "gps") {
       setAppType("GeoSubGeo");
@@ -154,6 +149,7 @@ function App() {
                 <Switch>
                   <Route
                     path={"/"}
+                    onChange={() => console.log('changed route')}
                     component={props => (
                       <Home
                         {...props}
