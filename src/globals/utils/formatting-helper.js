@@ -13,3 +13,9 @@ export function serializeLocation(useLocationObject) {
   location.shift(); // Remove the first empty string from the first slash
   return location;
 }
+
+export function serializeLocationString(locationString) {
+  let location = locationString.split('/')
+  location.shift(); // Remove the first empty string from the first slash
+  return location;
+}

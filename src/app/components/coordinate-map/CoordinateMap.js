@@ -25,7 +25,7 @@ function CoordinateMap(props) {
 
   useEffect(() => {
     for (let i = 0; i < props.coordinateEntities.length; i++) {
-      loadBuildingGeolocation(props.buildingEntities[i]);
+      // loadBuildingGeolocation(props.coordinateEntities[i]);
     }
   }, [props.coordinateEntities]);
 

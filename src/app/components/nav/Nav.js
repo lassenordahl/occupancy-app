@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import "./Nav.scss";
 
 import { Breadcrumbs, Breadcrumb } from "react-rainbow-components";
-import { useLocation, withRouter } from "react-router-dom";
+import { useLocation, withRouter, Redirect } from "react-router-dom";
 import {
   capitalizeWords,
-  serializeLocation
+  serializeLocation,
+  serializeLocationString
 } from "globals/utils/formatting-helper.js";
 import axios from "axios";
 
@@ -14,12 +15,36 @@ function Nav(props) {
   let entityIds = filterEntityIds(currentRoute);
 
   const [entityNames, setEntityNames] = useState([]);
+  const [filteredRoute, setFilteredRoute] = useState([]);
 
-  console.log(props.history);
+  // Redirecting variables
+  const [willRedirect, redirect] = useState(false);
+
+  const [, updateState] = React.useState();
+  const forceUpdate = useCallback(() => updateState({}), []);
 
   useEffect(() => {
-    props.history.listen(() => getEntityNames(entityIds));
+    props.history.listen(function(location, action) {
+      forceUpdate();
+      getEntityNames(filterEntityIds(serializeLocation(location)));
+    });
+    // props.history.listen(() => getEntityNames(entityIds));
   }, []);
+
+  useEffect(() => {
+    if (willRedirect) {
+      redirect(false);
+    }
+  }, [willRedirect]);
+
+  useEffect(() => {
+    redirect(true);
+  }, [filteredRoute]);
+
+  function getRedirect() {
+    let route = "/" + filteredRoute.join("/");
+    return <Redirect from="/" to={route}></Redirect>;
+  }
 
   async function getEntityNames(entityIds) {
     let entityResults = await Promise.all(
@@ -46,15 +71,19 @@ function Nav(props) {
 
   // Removes everything after this index, lets you click back with the breadcrumbs
   function changeRoute(index) {
-    props.setCurrentRoute(
-      props.currentRoute.filter(function(route, routeIndex) {
-        return routeIndex <= index;
-      })
-    );
+    console.log(currentRoute);
+    setFilteredRoute(currentRoute.filter(function(routeItem, rIndex) {
+      console.log(routeItem);
+      console.log(rIndex, index);
+      return rIndex < index;
+    }));
   }
 
   return (
     <div className="Nav flex-split box-shadow">
+
+      {willRedirect ? getRedirect() : null}
+
       <div className="flex-start-row">
         <h2>Occupancy Tool</h2>
         <Breadcrumbs class="nav-breadcrumbs" style={{ marginLeft: "16px" }}>
@@ -62,6 +91,7 @@ function Nav(props) {
             return (
               <Breadcrumb
                 key={index}
+                onClick={() => changeRoute((index + 1) * 2)}
                 label={capitalizeWords(entityName)}
               ></Breadcrumb>
             );

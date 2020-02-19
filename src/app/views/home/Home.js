@@ -2,9 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./Home.scss";
 
 import "leaflet/dist/leaflet.css";
-import { Redirect, useRouteMatch, useLocation } from "react-router";
-// import { useRouteMatch } from 'react-router';
-// import { Trail } from 'react-spring/renderprops';
+import { Redirect, useLocation, withRouter } from "react-router";
 import axios from 'axios';
 
 import { Card, Dialog } from "app/containers";
@@ -40,12 +38,36 @@ function Home(props) {
   // Our selected entity
   const [entity, setEntity] = useState(null);
   // Sub entities of our current selected entity
-  const [subEntities, setSubEntities] = useState([]);
+  const [subEntities, setSubEntities] = useState([{
+    id: 3,
+    name: "DBH",
+    entityType: {
+      subtypeOf: 2,
+      entityTypeName: "building",
+      entityTypeId: 5
+    },
+    payload: {
+      geoId: 3
+    }
+  }]);
 
   const [entityType, setEntityType] = useState(null);
 
   let windowRoute = serializeLocation(useLocation());
 
+  // This UseEffect listens for route changes from the remainder of the application
+  useEffect(() => {
+    props.history.listen(function(location, action) {
+      // New route comes from the URL
+      let newRoute = serializeLocation(location);
+      setCurrentRoute(newRoute);
+      
+      // If we have an entity at the end, we can load it as our home screen
+      if (newRoute.length > 0) {
+        getEntity(newRoute[newRoute.length - 1]);
+      }
+    });
+  }, [])
 
   useEffect(() => {
     setCurrentRoute(props.appRoute);
@@ -104,9 +126,24 @@ function Home(props) {
     }
   }
 
+  function getEntity(entityId) {
+    axios
+      .get("http://128.195.53.189:4001/api/entity/" + entityId)
+      .then(function(response) {
+        let entity = response.data;
+        // Sets the app entity
+        setEntity(entity);
+        setEntityType(entity.payload.geo.coordinateSystem.coordinateSystemClassName);
+      })
+      .catch(function(error) {
+        console.log("APP ENTITY GET", error);
+      });
+  }
+
   function selectEntity(entity) {
     console.log(entity);
-    // setCurrentRoute([...currentRoute, entity.entityTypeName, entity.id]);
+    setCurrentRoute([...currentRoute, entity.entityType.entityTypeName, entity.id]);
+    getEntity(entity.id);
   }
 
   // Opens a dialog using the information given
@@ -158,7 +195,7 @@ function Home(props) {
     if (entity === null) {
       return null;
     } else {
-      return <EntityInformation entity={entity} selectEntity={selectEntity}></EntityInformation>
+      return <EntityInformation entity={entity} selectEntity={selectEntity} subEntities={subEntities}></EntityInformation>
     }
   }
 
@@ -176,6 +213,7 @@ function Home(props) {
 
   return (
     <div className="Home">
+
       {willRedirect ? getRedirect() : null}
 
       {renderMap()}
@@ -208,4 +246,4 @@ function Home(props) {
   );
 }
 
-export default Home;
+export default withRouter(Home);

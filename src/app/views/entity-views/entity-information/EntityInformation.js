@@ -14,7 +14,7 @@ function EntityInformation(props) {
 
   function selectEntity(entitySelection) {
     setSelectedEntity(entitySelection);
-    props.openFloor(entitySelection.value);
+    props.selectEntity(entitySelection.value);
   }
 
   if (entity === undefined) {
@@ -53,7 +53,7 @@ function EntityInformation(props) {
       <p>{entity.entityTypeName}</p>
 
       <div style={{'height': '24px'}}/>
-      
+
       <h2>Select a Sub-Entity</h2>
       <Picklist
         value={selectedEntity}
