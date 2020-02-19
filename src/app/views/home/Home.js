@@ -178,7 +178,111 @@ function Home(props) {
 
   // Renders the floor map if we need to select a non-geo object (GeoSubNonGeo, NonGeoSubNonGeo)
   function render2DMap() {
-    return <FloorMap></FloorMap>;
+    return (
+      <FloorMap
+        twoDimensionalEntities={[
+          {
+            id: 5,
+            name: "Living Room",
+            entityClassId: 2,
+            entityClassName: "space",
+            entityTypeId: 5,
+            entityTypeName: "Room",
+            payload: {
+              geo: {
+                extent: {
+                  end: {
+                    x: 100,
+                    y: 100
+                  },
+                  start: {
+                    x: 50,
+                    y: 50
+                  },
+                  extentClassName: "rectangle"
+                },
+                parentSpaceId: 1,
+                coordinateSystem: {
+                  range: {
+                    xMax: 200,
+                    xMin: 0,
+                    yMax: 100,
+                    yMin: 0
+                  },
+                  coordinateSystemClassName: "cartesian2d"
+                }
+              }
+            }
+          },
+          {
+            id: 6,
+            name: "Kitchen",
+            entityClassId: 2,
+            entityClassName: "space",
+            entityTypeId: 5,
+            entityTypeName: "Room",
+            payload: {
+              geo: {
+                extent: {
+                  end: {
+                    x: 70,
+                    y: 40
+                  },
+                  start: {
+                    x: 60,
+                    y: 0
+                  },
+                  extentClassName: "rectangle"
+                },
+                parentSpaceId: 1,
+                coordinateSystem: {
+                  range: {
+                    xMax: 200,
+                    xMin: 0,
+                    yMax: 100,
+                    yMin: 0
+                  },
+                  coordinateSystemClassName: "cartesian2d"
+                }
+              }
+            }
+          },
+          {
+            id: 7,
+            name: "Kitchen",
+            entityClassId: 2,
+            entityClassName: "space",
+            entityTypeId: 5,
+            entityTypeName: "Room",
+            payload: {
+              geo: {
+                extent: {
+                  end: {
+                    x: 50,
+                    y: 50
+                  },
+                  start: {
+                    x: 0,
+                    y: 0
+                  },
+                  extentClassName: "rectangle"
+                },
+                parentSpaceId: 1,
+                coordinateSystem: {
+                  range: {
+                    xMax: 200,
+                    xMin: 0,
+                    yMax: 100,
+                    yMin: 0
+                  },
+                  coordinateSystemClassName: "cartesian2d"
+                }
+              }
+            }
+          }
+        ]}
+      ></FloorMap>
+    );
   }
 
   // Renders the dialog

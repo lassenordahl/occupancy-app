@@ -9,12 +9,13 @@
   .floormap-map-wrapper {
     flex: 1;
     display: flex;
-    justify-content: center;
+    justify-content: start;
     align-items: center;
 
     .floormap-canvas {
-      width: 80%;
-      height: 80%;
+      width: calc(100% - 36px);
+      height: calc(100% - 72px);
+      margin-left: 36px;
       border: 5px solid red;
     }
   }

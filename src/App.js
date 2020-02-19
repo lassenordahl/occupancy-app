@@ -100,9 +100,10 @@ function App() {
         let entity = response.data;
         // Sets the app entity
         setRootEntity(entity);
+        console.log(entity);
 
         // Gets the possible routes for the application
-        setAppRoute([routes[0], entityId]);
+        setAppRoute([entity.entityTypeName, entityId]);
 
         // Makes a call to get the geo object of the root entity geo id
         getAppType(entity.payload);
