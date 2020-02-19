@@ -18,7 +18,7 @@ import axios from "axios";
 
 import { Nav } from "app/components";
 
-import { Home, InvalidRoute } from "app/views";
+import { Home, InvalidRoute, PrivateRoute } from "app/views";
 
 import { serializeLocation } from "globals/utils/formatting-helper";
 
@@ -152,7 +152,7 @@ function App() {
               <Nav title={appEntity.name} routes={routes}></Nav>
               <div className="app-content">
                 <Switch>
-                  <Route
+                  <PrivateRoute
                     path={"/"}
                     component={props => (
                       <Home
