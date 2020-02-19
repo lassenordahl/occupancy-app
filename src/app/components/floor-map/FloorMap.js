@@ -25,10 +25,6 @@ const test_rooms = [
         y: 0
       }
     ],
-    // "x1": 0,
-    // "y1": 0,
-    // "x2": 10,
-    // "y2": 10,
     occupancy: 3
   },
   {
@@ -80,8 +76,8 @@ class FloorMap extends React.Component {
   }
 
   componentDidMount() {
-    // this.drawContent();
-    // window.addEventListener("resize", this.drawContent);
+    this.drawContent();
+    window.addEventListener("resize", this.drawContent);
   }
 
   scale(num, in_min, in_max, out_min, out_max) {
@@ -107,25 +103,36 @@ class FloorMap extends React.Component {
 
     self.svg.selectAll("*").remove();
 
+    if (self.svg._groups[0][0] === null) {
+      return;
+    }
+
     this.rooms = test_rooms.map(function(room) {
       let clientWidth = self.svg._groups[0][0].clientWidth;
       let clientHeight = self.svg._groups[0][0].clientHeight;
 
       let x =
-        margin + self.scale(room.x1, 0, 100, 0, clientWidth - margin - 200); // Subtract 400 to account for the information card on the side
-      let y = margin + self.scale(room.y1, 0, 100, 0, clientHeight - margin);
+        margin + self.scale(room.x1, 0, 100, 0, clientWidth); // Subtract 400 to account for the information card on the side
+      let y = margin + self.scale(room.y1, 0, 100, 0, clientHeight);
 
       let curr_room = self.svg
         .append("polygon")
         .attr("points", function(d) {
           return room.verticies
             .map(function(verticie) {
-              return (
+              console.log((
                 margin +
-                self.scale(verticie.x, 0, 100, 0, clientWidth - margin - 200) +
+                self.scale(verticie.x, 0, 100, 0, clientWidth) +
                 "," +
                 (margin +
-                  self.scale(verticie.y, 0, 100, 0, clientWidth - margin - 200))
+                  self.scale(verticie.y, 0, 100, 0, clientWidth))
+              ));
+              return (
+                margin +
+                self.scale(verticie.x, 0, 100, 0, clientWidth) +
+                "," +
+                (margin +
+                  self.scale(verticie.y, 0, 100, 0, clientWidth))
               );
               // return verticie.x + ", " + verticie.y;
             })
@@ -144,8 +151,7 @@ class FloorMap extends React.Component {
       //   });
 
       curr_room.on("click", function() {
-        // alert('you clicked' + room.occupancy);
-        self.props.selectRoom(room);
+        alert('you clicked' + room.occupancy);
       });
 
       curr_room.on("mouseover", function() {
@@ -180,12 +186,10 @@ class FloorMap extends React.Component {
     return (
       <div className="FloorMap">
         <div className="floormap-map-wrapper">
-        {/* <svg
-        className="FloorMap"
-        ref={handle => (this.svg = d3.select(handle))}
-      ></svg> */}
-          <div style={{backgroundColor: 'red'}}></div>
-
+          <svg
+            className="floormap-canvas"
+            ref={handle => (this.svg = d3.select(handle))}
+          ></svg>
         </div>
         <div className="floormap-margin">
 

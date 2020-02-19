@@ -6,8 +6,17 @@
   display: flex;
   flex-direction: row;
 
-  .floormap-map-container {
-    flex: 1 1;
+  .floormap-map-wrapper {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .floormap-canvas {
+      width: 80%;
+      height: 80%;
+      border: 5px solid red;
+    }
   }
 
   .floormap-margin {

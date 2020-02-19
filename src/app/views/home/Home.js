@@ -3,7 +3,7 @@ import "./Home.scss";
 
 import "leaflet/dist/leaflet.css";
 import { Redirect, useLocation, withRouter } from "react-router";
-import axios from 'axios';
+import axios from "axios";
 
 import { Card, Dialog } from "app/containers";
 
@@ -17,9 +17,7 @@ import {
   OccupancyDialog
 } from "app/views";
 
-import {
-  serializeLocation
-} from "globals/utils/formatting-helper";
+import { serializeLocation } from "globals/utils/formatting-helper";
 
 function Home(props) {
   // Variable to keep track of if we're loading the app for the first time
@@ -38,18 +36,20 @@ function Home(props) {
   // Our selected entity
   const [entity, setEntity] = useState(null);
   // Sub entities of our current selected entity
-  const [subEntities, setSubEntities] = useState([{
-    id: 3,
-    name: "DBH",
-    entityType: {
-      subtypeOf: 2,
-      entityTypeName: "building",
-      entityTypeId: 5
-    },
-    payload: {
-      geoId: 3
+  const [subEntities, setSubEntities] = useState([
+    {
+      id: 3,
+      name: "DBH",
+      entityType: {
+        subtypeOf: 2,
+        entityTypeName: "building",
+        entityTypeId: 5
+      },
+      payload: {
+        geoId: 3
+      }
     }
-  }]);
+  ]);
 
   const [entityType, setEntityType] = useState(null);
 
@@ -61,15 +61,16 @@ function Home(props) {
       // New route comes from the URL
       let newRoute = serializeLocation(location);
       setCurrentRoute(newRoute);
-      
+
       // If we have an entity at the end, we can load it as our home screen
       if (newRoute.length > 0) {
         getEntity(newRoute[newRoute.length - 1]);
       }
     });
-  }, [])
+  }, []);
 
   useEffect(() => {
+    // Initializes our current route to the app route from the config of the application
     setCurrentRoute(props.appRoute);
   }, [props.appRoute]);
 
@@ -105,9 +106,11 @@ function Home(props) {
     });
 
     // Get all the entities listed in the URL
-    let entityResponses = await Promise.all(entityIds.map(function(id) {
-      return axios.get("http://128.195.53.189:4001/api/entity/" + id);
-    }));
+    let entityResponses = await Promise.all(
+      entityIds.map(function(id) {
+        return axios.get("http://128.195.53.189:4001/api/entity/" + id);
+      })
+    );
 
     if (entityResponses.length === 0) {
       // If we have no valid entities, use the valid route that was given at the root of the application
@@ -118,22 +121,29 @@ function Home(props) {
       let entities = entityResponses.map(function(response) {
         return response.data;
       });
-      
+
       let selectedEntity = entities[entities.length - 1];
-      let selectedEntityType = selectedEntity.payload.geo.coordinateSystem.coordinateSystemClassName;
+      console.log(selectedEntity);
+      let selectedEntityType =
+        selectedEntity.payload.geo.coordinateSystem.coordinateSystemClassName;
       setEntity(selectedEntity);
       setEntityType(selectedEntityType);
     }
   }
 
   function getEntity(entityId) {
+    if (entityId === null || entityId === "") {
+      return;
+    }
     axios
       .get("http://128.195.53.189:4001/api/entity/" + entityId)
       .then(function(response) {
         let entity = response.data;
         // Sets the app entity
         setEntity(entity);
-        setEntityType(entity.payload.geo.coordinateSystem.coordinateSystemClassName);
+        setEntityType(
+          entity.payload.geo.coordinateSystem.coordinateSystemClassName
+        );
       })
       .catch(function(error) {
         console.log("APP ENTITY GET", error);
@@ -141,8 +151,11 @@ function Home(props) {
   }
 
   function selectEntity(entity) {
-    console.log(entity);
-    setCurrentRoute([...currentRoute, entity.entityType.entityTypeName, entity.id]);
+    setCurrentRoute([
+      ...currentRoute,
+      entity.entityType.entityTypeName,
+      entity.id
+    ]);
     getEntity(entity.id);
   }
 
@@ -165,9 +178,7 @@ function Home(props) {
 
   // Renders the floor map if we need to select a non-geo object (GeoSubNonGeo, NonGeoSubNonGeo)
   function render2DMap() {
-    return (
-      <FloorMap></FloorMap>
-    );
+    return <FloorMap></FloorMap>;
   }
 
   // Renders the dialog
@@ -180,7 +191,7 @@ function Home(props) {
     if (entity === null || entity === undefined) {
       return null;
     } else {
-      return  (
+      return (
         <React.Fragment>
           <h1>{entity.name}</h1>
         </React.Fragment>
@@ -195,7 +206,13 @@ function Home(props) {
     if (entity === null) {
       return null;
     } else {
-      return <EntityInformation entity={entity} selectEntity={selectEntity} subEntities={subEntities}></EntityInformation>
+      return (
+        <EntityInformation
+          entity={entity}
+          selectEntity={selectEntity}
+          subEntities={subEntities}
+        ></EntityInformation>
+      );
     }
   }
 
@@ -213,7 +230,6 @@ function Home(props) {
 
   return (
     <div className="Home">
-
       {willRedirect ? getRedirect() : null}
 
       {renderMap()}
