@@ -26,7 +26,7 @@ class FloorMap extends React.Component {
     return ((num - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min;
   }
 
-  bufferText(text, length = 8) {
+  bufferText(text, length = 10) {
     if (text.length >= length) {
       return text;
     } else {
@@ -128,33 +128,47 @@ class FloorMap extends React.Component {
       // //     return self.bufferText(room.name);
       // //   });
 
-      // // curr_room.on("click", function() {
-      // //   alert('you clicked' + entity.occupancy);
-      // // });
-
-      // currEntity.on("mouseover", function() {
-      //   d3.select(this)
-      //     .attr(
-      //       "transform",
-      //       "translate(" +
-      //         (-1 * hover_size_bump) / 4 +
-      //         "," +
-      //         (-1 * hover_size_bump) / 4 +
-      //         ")"
-      //     )
-      //     .attr("width", rectangle_size + hover_size_bump)
-      //     .attr("height", rectangle_size + hover_size_bump);
+      // curr_room.on("click", function() {
+      //   alert('you clicked' + entity.occupancy);
       // });
 
-      // currEntity.on("mouseout", function() {
-      //   d3.select(this)
+      currEntity.on("mouseover", function() {
+        d3.select(this)
+          self.svg.append('text')
+              .attr('x', coordInfo.start.x + (Math.abs(coordInfo.end.x - coordInfo.start.x) / 4))
+              .attr('y', coordInfo.start.y + 20)
+              .attr("font-family", "sans-serif")
+              .attr("font-size", "20px")
+              .attr("fill", "black")
+              .text(function(d)
+              {
+                console.log(self.bufferText(entity.name));
+                return self.bufferText(entity.name);
+              });
+
+          console.log("name " + entity.name);
+          // .attr(
+          //   "transform",
+          //   "translate(" +
+          //     (-1 * hover_size_bump) / 4 +
+          //     "," +
+          //     (-1 * hover_size_bump) / 4 +
+          //     ")"
+          // )
+          // .attr("width", rectangle_size + hover_size_bump)
+          // .attr("height", rectangle_size + hover_size_bump);
+      });
+
+      currEntity.on("mouseout", function() {
+        d3.select(this)
+        self.drawContent()
       //     .attr(
       //       "transform",
       //       "translate(" + hover_size_bump / 4 + "," + hover_size_bump / 4 + ")"
       //     )
       //     .attr("width", rectangle_size)
       //     .attr("height", rectangle_size);
-      // });
+      });
 
       return currEntity;
     });
