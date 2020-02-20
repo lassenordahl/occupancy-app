@@ -36,20 +36,7 @@ function Home(props) {
   // Our selected entity
   const [entity, setEntity] = useState(null);
   // Sub entities of our current selected entity
-  const [subEntities, setSubEntities] = useState([
-    {
-      id: 3,
-      name: "DBH",
-      entityType: {
-        subtypeOf: 2,
-        entityTypeName: "building",
-        entityTypeId: 5
-      },
-      payload: {
-        geoId: 3
-      }
-    }
-  ]);
+  const [subEntities, setSubEntities] = useState([]);
 
   const [entityType, setEntityType] = useState(null);
 
@@ -68,6 +55,16 @@ function Home(props) {
       }
     });
   }, []);
+
+  useEffect(() => {
+    if (entity !== null) {
+      getSubEntities(entityType, entity.id);
+    }
+  }, [entity]);
+
+  useEffect(() => {
+    console.log(subEntities);
+  }, [subEntities]);
 
   useEffect(() => {
     // Initializes our current route to the app route from the config of the application
@@ -144,19 +141,209 @@ function Home(props) {
         setEntityType(
           entity.payload.geo.coordinateSystem.coordinateSystemClassName
         );
+        getSubEntities(entity.payload.geo.coordinateSystem.coordinateSystemClassName, entity.id);
       })
       .catch(function(error) {
         console.log("APP ENTITY GET", error);
       });
   }
 
+  function getSubEntities(entityType, entityId) {
+    if (entityType === "gps") {
+      setSubEntities([
+        {
+          id: 3,
+          name: "Donald Bren Hall",
+          entityClassId: 2,
+          entityClassName: "space",
+          entityTypeId: 5,
+          entityTypeName: "building",
+          payload: {
+            geo: {
+              extent: {
+                end: {
+                  latitude: 33.1,
+                  longitude: 33.1
+                },
+                start: {
+                  latitude: 33,
+                  longitude: 33
+                },
+                extentClassName: "rectangle"
+              },
+              parentSpaceId: 1,
+              coordinateSystem: {
+                range: {
+                  xMax: 1000,
+                  xMin: 0,
+                  yMax: 1000,
+                  yMin: 0,
+                  floorMax: 6,
+                  floorMin: 1
+                },
+                coordinateSystemClassName: "cartesian2hfd"
+              }
+            }
+          }
+        }
+      ]);
+    } else if (entityType === "cartesian2hfd") {
+      setSubEntities([
+        {
+          id: 4,
+          name: "floor 2",
+          entityClassId: 2,
+          entityClassName: "space",
+          entityTypeId: 7,
+          entityTypeName: "floor",
+          payload: {
+            geo: {
+              extent: {
+                end: {
+                  x: 1000,
+                  y: 1000,
+                  floor: 2
+                },
+                start: {
+                  x: 0,
+                  y: 0,
+                  floor: 2
+                },
+                extentClassName: "rectangle"
+              },
+              parentSpaceId: 1,
+              coordinateSystem: {
+                range: {
+                  xMax: 1000,
+                  xMin: 0,
+                  yMax: 1000,
+                  yMin: 0
+                },
+                coordinateSystemClassName: "cartesian2d"
+              }
+            }
+          }
+        }
+      ]);
+    } else if (entityType === "cartesian2d") {
+      setSubEntities([
+        {
+          id: 5,
+          name: "Living Room",
+          entityClassId: 2,
+          entityClassName: "space",
+          entityTypeId: 5,
+          entityTypeName: "Room",
+          payload: {
+            geo: {
+              extent: {
+                end: {
+                  x: 70,
+                  y: 70
+                },
+                start: {
+                  x: 50,
+                  y: 50
+                },
+                extentClassName: "rectangle"
+              },
+              parentSpaceId: 1,
+              coordinateSystem: {
+                range: {
+                  xMax: 200,
+                  xMin: 0,
+                  yMax: 100,
+                  yMin: 0
+                },
+                coordinateSystemClassName: "cartesian2d"
+              }
+            }
+          }
+        },
+        {
+          id: 6,
+          name: "Kitchen",
+          entityClassId: 2,
+          entityClassName: "space",
+          entityTypeId: 5,
+          entityTypeName: "Room",
+          payload: {
+            geo: {
+              extent: {
+                end: {
+                  x: 70,
+                  y: 40
+                },
+                start: {
+                  x: 60,
+                  y: 0
+                },
+                extentClassName: "rectangle"
+              },
+              parentSpaceId: 1,
+              coordinateSystem: {
+                range: {
+                  xMax: 200,
+                  xMin: 0,
+                  yMax: 100,
+                  yMin: 0
+                },
+                coordinateSystemClassName: "cartesian2d"
+              }
+            }
+          }
+        },
+        {
+          id: 7,
+          name: "Kitchen",
+          entityClassId: 2,
+          entityClassName: "space",
+          entityTypeId: 5,
+          entityTypeName: "Room",
+          payload: {
+            geo: {
+              extent: {
+                end: {
+                  x: 50,
+                  y: 50
+                },
+                start: {
+                  x: 0,
+                  y: 0
+                },
+                extentClassName: "rectangle"
+              },
+              parentSpaceId: 1,
+              coordinateSystem: {
+                range: {
+                  xMax: 200,
+                  xMin: 0,
+                  yMax: 100,
+                  yMin: 0
+                },
+                coordinateSystemClassName: "cartesian2d"
+              }
+            }
+          }
+        }
+      ]);
+    }
+  }
+
   function selectEntity(entity) {
-    setCurrentRoute([
-      ...currentRoute,
-      entity.entityType.entityTypeName,
-      entity.id
-    ]);
+    console.log('SELECTED AN ENTITY', entity);
+    setCurrentRoute([...currentRoute, getEntityTypeName(entity), entity.id]);
     getEntity(entity.id);
+  }
+
+  function getEntityTypeName(entity) {
+    console.log('ENTITY TYPE NAME', entity);
+    return entity.entityTypeName;
+    if (entity.entityType === undefined) {
+      return entity.entityTypename;
+    } else {
+      return entity.entityType.entityTypeName;
+    }
   }
 
   // Opens a dialog using the information given
@@ -170,119 +357,17 @@ function Home(props) {
   function renderGPSMap() {
     return (
       <CoordinateMap
-        appEntity={props.appEntity}
+        entity={props.entity}
         coordinateEntities={subEntities}
+        entityType={entityType}
+        selectEntity={selectEntity}
       ></CoordinateMap>
     );
   }
 
   // Renders the floor map if we need to select a non-geo object (GeoSubNonGeo, NonGeoSubNonGeo)
   function render2DMap() {
-    return (
-      <FloorMap
-        twoDimensionalEntities={[
-          {
-            id: 5,
-            name: "Living Room",
-            entityClassId: 2,
-            entityClassName: "space",
-            entityTypeId: 5,
-            entityTypeName: "Room",
-            payload: {
-              geo: {
-                extent: {
-                  end: {
-                    x: 100,
-                    y: 100
-                  },
-                  start: {
-                    x: 50,
-                    y: 50
-                  },
-                  extentClassName: "rectangle"
-                },
-                parentSpaceId: 1,
-                coordinateSystem: {
-                  range: {
-                    xMax: 200,
-                    xMin: 0,
-                    yMax: 100,
-                    yMin: 0
-                  },
-                  coordinateSystemClassName: "cartesian2d"
-                }
-              }
-            }
-          },
-          {
-            id: 6,
-            name: "Kitchen",
-            entityClassId: 2,
-            entityClassName: "space",
-            entityTypeId: 5,
-            entityTypeName: "Room",
-            payload: {
-              geo: {
-                extent: {
-                  end: {
-                    x: 70,
-                    y: 40
-                  },
-                  start: {
-                    x: 60,
-                    y: 0
-                  },
-                  extentClassName: "rectangle"
-                },
-                parentSpaceId: 1,
-                coordinateSystem: {
-                  range: {
-                    xMax: 200,
-                    xMin: 0,
-                    yMax: 100,
-                    yMin: 0
-                  },
-                  coordinateSystemClassName: "cartesian2d"
-                }
-              }
-            }
-          },
-          {
-            id: 7,
-            name: "Kitchen",
-            entityClassId: 2,
-            entityClassName: "space",
-            entityTypeId: 5,
-            entityTypeName: "Room",
-            payload: {
-              geo: {
-                extent: {
-                  end: {
-                    x: 50,
-                    y: 50
-                  },
-                  start: {
-                    x: 0,
-                    y: 0
-                  },
-                  extentClassName: "rectangle"
-                },
-                parentSpaceId: 1,
-                coordinateSystem: {
-                  range: {
-                    xMax: 200,
-                    xMin: 0,
-                    yMax: 100,
-                    yMin: 0
-                  },
-                  coordinateSystemClassName: "cartesian2d"
-                }
-              }
-            }
-          }
-        ]}
-      ></FloorMap>
-    );
+    return <FloorMap twoDimensionalEntities={subEntities}></FloorMap>;
   }
 
   // Renders the dialog
