@@ -125,6 +125,7 @@ function Home(props) {
         selectedEntity.payload.geo.coordinateSystem.coordinateSystemClassName;
       setEntity(selectedEntity);
       setEntityType(selectedEntityType);
+      getSubEntities(selectedEntityType, selectedEntity.id);
     }
   }
 
