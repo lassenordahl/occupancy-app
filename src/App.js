@@ -18,7 +18,7 @@ import axios from "axios";
 
 import { Nav } from "app/components";
 
-import { Home, InvalidRoute } from "app/views";
+import { Home, InvalidRoute, PrivateRoute, DefaultView } from "app/views";
 
 import { serializeLocation } from "globals/utils/formatting-helper";
 
@@ -55,6 +55,11 @@ function App() {
   const [appType, setAppType] = useState(null);
 
   const [loading, setLoading] = useState(true);
+
+  const [authStatus, setAuthStatus] = useState(false);
+
+  // console.log(serializeLocation(useLocation()));
+
 
   // Retrieves the root entity information and subsequently checks the root type later down the path
   useEffect(() => {
@@ -145,12 +150,17 @@ function App() {
             }}
           >
             <Router history={history}>
-              <Nav title={appEntity.name} routes={routes}></Nav>
+              <Nav title={appEntity.name} routes={routes} auth={{authStatus: authStatus}}></Nav>
               <div className="app-content">
                 <Switch>
                   <Route
+                    path={"/home"}
+                    component={DefaultView}
+                  />
+                  <PrivateRoute
                     path={"/"}
                     onChange={() => console.log('changed route')}
+                    auth={{authStatus: authStatus, setAuthStatus: setAuthStatus}}
                     component={props => (
                       <Home
                         {...props}

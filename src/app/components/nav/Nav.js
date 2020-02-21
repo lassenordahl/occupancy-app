@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import "./Nav.scss";
 
-import { Breadcrumbs, Breadcrumb } from "react-rainbow-components";
+import { Breadcrumbs, Breadcrumb, Button } from "react-rainbow-components";
 import { useLocation, withRouter, Redirect } from "react-router-dom";
 import {
   capitalizeWords,
@@ -79,6 +79,16 @@ function Nav(props) {
     }));
   }
 
+  function redirectLogout() {
+    window.location.href = '/logout'
+  }
+
+  function showLoginButton() {
+    if (props.auth.authStatus) {
+      return (<Button label="Logout" style={{marginLeft: "1rem"}} onClick={() => redirectLogout()}></Button>)
+    }
+  }
+
   return (
     <div className="Nav flex-split box-shadow">
 
@@ -100,6 +110,7 @@ function Nav(props) {
       </div>
       <h3>
         <a href="http://tippersweb.ics.uci.edu/">Tippers Info</a>
+        { showLoginButton() }
       </h3>
     </div>
   );

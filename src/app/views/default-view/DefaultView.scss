@@ -1,0 +1,13 @@
+@import "globals/occupancy-styles.scss";
+
+.DefaultView {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.block {
+    margin-top: 8rem;
+    max-width: 75%;
+}
