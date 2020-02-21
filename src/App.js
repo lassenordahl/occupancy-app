@@ -18,7 +18,7 @@ import axios from "axios";
 
 import { Nav } from "app/components";
 
-import { Home, InvalidRoute, PrivateRoute } from "app/views";
+import { Home, InvalidRoute, PrivateRoute, DefaultView } from "app/views";
 
 import { serializeLocation } from "globals/utils/formatting-helper";
 
@@ -55,6 +55,8 @@ function App() {
   const [appType, setAppType] = useState(null);
 
   const [loading, setLoading] = useState(true);
+
+  const [authStatus, setAuthStatus] = useState(false);
 
   // console.log(serializeLocation(useLocation()));
 
@@ -149,11 +151,16 @@ function App() {
             }}
           >
             <Router history={history}>
-              <Nav title={appEntity.name} routes={routes}></Nav>
+              <Nav title={appEntity.name} routes={routes} auth={{authStatus: authStatus}}></Nav>
               <div className="app-content">
                 <Switch>
+                  <Route
+                    path={"/home"}
+                    component={DefaultView}
+                  />
                   <PrivateRoute
                     path={"/"}
+                    auth={{authStatus: authStatus, setAuthStatus: setAuthStatus}}
                     component={props => (
                       <Home
                         {...props}

@@ -1,4 +1,5 @@
 export { default as Home } from './home/Home';
+export { default as DefaultView } from './default-view/DefaultView'
 export { default as InvalidRoute } from './invalid-route/InvalidRoute';
 
 export { default as BuildingInformation } from './geo-filters/building-information/BuildingInformation';

@@ -4,55 +4,25 @@ import {
   Redirect
 } from 'react-router-dom'
 import axios from 'axios';
-// import app_config from "../../../globals/config";
 
-const auth = {
-    authLoginURL: window.location.origin + '/login',
-    isAuthenticated: false,
-    async verifyOrRedirect() {
-        let self = this;
-        axios.get(window.location.origin + '/verify')
-            .then(function (response) {
-                self.isAuthenticated = true
-            })
-            .catch(function (error) {
-                if (!self.isAuthenticated) {
-                    window.location.href = self.authLoginURL; 
-                }
-            });
-        return self.isAuthenticated
-    },
-    async signout() {
-        axios.get(window.location.origin + '/logout')
-            .then(function (response) {
-                console.log(response);
-            })
-            .catch(function (error) {
-                console.log(error);
-            });
-        this.isAuthenticated = false
-    }
+async function verifyOrRedirect(auth) {
+    axios.get(window.location.origin + '/verify')
+        .then(function (response) {
+            auth.setAuthStatus(true)
+        })
+        .catch(function (error) {
+            auth.setAuthStatus(false)
+            window.location.href = '/home'; 
+        });
+    return auth.authStatus
 }
 
-const PrivateRoute = ({ component: Component, ...rest }) => (
+const PrivateRoute = ({ component: Component, auth: authStatus, ...rest }) => (
     <Route {...rest} render={(props) => (
-        auth.verifyOrRedirect()
+        verifyOrRedirect(authStatus)
         ? <Component {...props} />
-        : <Redirect to={{ pathname: '/' }} />
+        : <Redirect to='/home' />
     )} />
-)
-
-const AuthButton = () => (
-    auth.isAuthenticated ? (
-        <p>
-        Welcome! <button onClick={() => {
-            auth.signout()
-        }}>Sign out</button>
-        </p>
-    ) : (
-        <p>You are not logged in. <button href={auth.authLoginURL}>Login</button>
-        </p>
-    )
 )
 
 export default PrivateRoute
