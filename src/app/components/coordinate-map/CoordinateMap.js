@@ -5,6 +5,7 @@ import { Map, TileLayer, Marker, Popup, Polygon, Tooltip } from "react-leaflet";
 import uciMap from "globals/test-data/uci-map.js";
 import blueRainbow from "globals/utils/rainbowvis-helper.js";
 import axios from "axios";
+import authGet from "../../../globals/authentication/AuthGet";
 
 const state = {
   lat: 33.6405,
@@ -22,7 +23,7 @@ function CoordinateMap(props) {
   }, [props.coordinateEntities]);
 
   function buildCoordinates(buildingGeo) {
-    axios.get(
+    authGet(
       "http://128.195.53.189:4001/api/observation/search?obsTypeId=2&orderBy=id&direction=asc&orderBy2=id&direction2=asc&limit=25",
       {
         params: {

@@ -1,6 +1,6 @@
 import os
 from src import oauth, config
-from flask import url_for, redirect, Blueprint, render_template, session, request, jsonify, send_from_directory
+from flask import url_for, redirect, Blueprint, render_template, session, request, jsonify, send_from_directory, make_response
 
 main = Blueprint('main', __name__, static_folder=config.FRONTEND_STATIC_FILES)
 
@@ -17,7 +17,9 @@ def verify():
     if oauth.tippers_app.token:
         verify_request = oauth.tippers_app.get('verify')
         if verify_request.status_code == 200:
-            return verify_request.json()
+            resp = make_response(verify_request.json())
+            resp.set_cookie('access_token', oauth.tippers_app.token['access_token'])
+            return resp
         else:
             return jsonify({'success': False, 'error': 'Expired access token or issue with Oauth server.'}), 401
     return jsonify({'success': False, 'error': 'Not logged in.'}), 401
@@ -35,13 +37,17 @@ def signup():
 @main.route('/logout')
 def logout():
     session['token'] = None
-    return redirect(config.FRONTEND_REDIRECT_URL)
+    resp = make_response(redirect(config.FRONTEND_REDIRECT_URL))
+    resp.set_cookie('access_token', '', expires=0)
+    return resp
 
 @main.route('/authorize')
 def authorize():
     token = oauth.tippers_app.authorize_access_token()
     session['token'] = token
-    return redirect(config.FRONTEND_REDIRECT_URL)
+    resp = make_response(redirect(config.FRONTEND_REDIRECT_URL))
+    resp.set_cookie('access_token', token['access_token'])
+    return resp
 
 @main.route('/', defaults={'path': ''})
 @main.route('/<path:path>')

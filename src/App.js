@@ -3,7 +3,7 @@ import history from "./history";
 import "./App.scss";
 import ApplicationContext from "globals/contexts/ApplicationContext";
 import RouteContext from "globals/contexts/RouteContext";
-
+import authGet from "globals/authentication/AuthGet";
 import app_config from "globals/config.js";
 import { Spinner } from "react-rainbow-components";
 import {
@@ -99,8 +99,7 @@ function App() {
   }
 
   function getRootEntity(entityId) {
-    axios
-      .get("http://128.195.53.189:4001/api/entity/" + entityId)
+    authGet("http://128.195.53.189:4001/api/entity/" + entityId)
       .then(function(response) {
         let entity = response.data;
         // Sets the app entity
@@ -157,7 +156,7 @@ function App() {
                     path={"/home"}
                     component={DefaultView}
                   />
-                  <PrivateRoute
+                  <Route
                     path={"/"}
                     onChange={() => console.log('changed route')}
                     auth={{authStatus: authStatus, setAuthStatus: setAuthStatus}}

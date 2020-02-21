@@ -4,16 +4,23 @@ import {
   Redirect
 } from 'react-router-dom'
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
 async function verifyOrRedirect(auth) {
-    axios.get(window.location.origin + '/verify')
-        .then(function (response) {
-            auth.setAuthStatus(true)
-        })
-        .catch(function (error) {
+    if (Cookies.get('access-token')) {
+        auth.setAuthStatus(true)
+    }
+    else {
+        try {
+            await axios.get(window.location.origin + '/verify');
+            auth.setAuthStatus(true);
+            return auth.authStatus;
+        }
+        catch(error) {
             auth.setAuthStatus(false)
             window.location.href = '/home'; 
-        });
+        }
+    }
     return auth.authStatus
 }
 

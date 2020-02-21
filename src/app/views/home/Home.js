@@ -19,6 +19,8 @@ import {
 
 import { serializeLocation } from "globals/utils/formatting-helper";
 
+import authGet from "../../../globals/authentication/AuthGet";
+
 function Home(props) {
   // Variable to keep track of if we're loading the app for the first time
   const [firstLoad, setFirstLoad] = useState(true);
@@ -105,7 +107,7 @@ function Home(props) {
     // Get all the entities listed in the URL
     let entityResponses = await Promise.all(
       entityIds.map(function(id) {
-        return axios.get("http://128.195.53.189:4001/api/entity/" + id);
+        return authGet("http://128.195.53.189:4001/api/entity/" + id);
       })
     );
 
@@ -133,8 +135,7 @@ function Home(props) {
     if (entityId === null || entityId === "") {
       return;
     }
-    axios
-      .get("http://128.195.53.189:4001/api/entity/" + entityId)
+    authGet("http://128.195.53.189:4001/api/entity/" + entityId)
       .then(function(response) {
         let entity = response.data;
         // Sets the app entity

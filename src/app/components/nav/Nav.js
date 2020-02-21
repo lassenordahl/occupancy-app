@@ -9,6 +9,7 @@ import {
   serializeLocationString
 } from "globals/utils/formatting-helper.js";
 import axios from "axios";
+import authGet from "../../../globals/authentication/AuthGet";
 
 function Nav(props) {
   let currentRoute = serializeLocation(useLocation());
@@ -49,7 +50,7 @@ function Nav(props) {
   async function getEntityNames(entityIds) {
     let entityResults = await Promise.all(
       entityIds.map(function(entityId) {
-        return axios.get("http://128.195.53.189:4001/api/entity/" + entityId);
+        return authGet("http://128.195.53.189:4001/api/entity/" + entityId);
       })
     );
     setEntityNames(
