@@ -10,6 +10,7 @@ import {
 } from "globals/utils/formatting-helper.js";
 import axios from "axios";
 import authGet from "../../../globals/authentication/AuthGet";
+import api from "globals/api";
 
 function Nav(props) {
   let currentRoute = serializeLocation(useLocation());
@@ -50,7 +51,7 @@ function Nav(props) {
   async function getEntityNames(entityIds) {
     let entityResults = await Promise.all(
       entityIds.map(function(entityId) {
-        return authGet("http://128.195.53.189:4001/api/entity/" + entityId);
+        return authGet(api.entity + "/" + entityId);
       })
     );
     setEntityNames(
@@ -66,7 +67,7 @@ function Nav(props) {
 
   function filterEntityIds(routeArray) {
     return routeArray.filter(function(routeElement, index) {
-      return index % 2 === 1;
+      return index % 2 === 0;
     });
   }
 
@@ -76,7 +77,7 @@ function Nav(props) {
     setFilteredRoute(currentRoute.filter(function(routeItem, rIndex) {
       console.log(routeItem);
       console.log(rIndex, index);
-      return rIndex < index;
+      return rIndex + 1 < index;
     }));
   }
 
