@@ -196,10 +196,10 @@ function Home(props) {
 
   // Renders the coordinate map on the page if we need to select a geo object (GeoSubGeo, GeoSubNonGeo)
   function renderGPSMap() {
-    console.log('RENDERING MAP', subEntities);
+    // console.log('RENDERING MAP', entitysubEntities);
     return (
       <CoordinateMap
-        entity={props.entity}
+        entity={entity}
         coordinateEntities={subEntities}
         entityType={entityType}
         selectEntity={selectEntity}

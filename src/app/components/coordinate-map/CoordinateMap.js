@@ -22,11 +22,15 @@ function CoordinateMap(props) {
   }, [props.coordinateEntities]);
 
   function mapCoordinates(coordinateEntity) {
+    if (coordinateEntity.payload === undefined) {
+      return [];
+    }
+
     let extent = coordinateEntity.payload.geo.extent;
     if (extent.extentClassName === "polygon") {
       return extent.verticies.map(function(verticie) {
         return [verticie.latitude, verticie.longitude];
-      })
+      });
     } else if (extent.extentClassName === "rectangle") {
       let coordinates = [];
       if (extent.start.latitude === undefined) {
@@ -57,13 +61,40 @@ function CoordinateMap(props) {
           </Polygon>
         );
       });
+    } else if (props.entityType === "cartesian2hfd") {
+      return (
+        <Polygon
+          onClick={() => props.selectEntity(props.entity)}
+          positions={mapCoordinates(props.entity)}
+          color={"#" + blueRainbow.colorAt(10)}
+        >
+          <Tooltip sticky className="polygon-tooltip box-shadow">
+            {props.entity.name}
+          </Tooltip>
+        </Polygon>
+      );
     }
     return null;
   }
 
+  function getMapCenter() {
+    if (props.entity === null || props.entity === undefined) {
+      return position;
+    }
+
+    let extent = props.entity.payload.geo.extent;
+    if (extent.extentClassName === "polygon") {
+      return [extent.verticies[0].latitude, extent.verticies[0].longitude];
+    }
+    // } else if (extent.extentClassName === "rectangle") {
+    //   return position;
+    // }
+    return position;
+  }
+
   return props.entity !== null ? (
     <Map
-      center={position}
+      center={getMapCenter()}
       style={{
         width: "100vw",
         height: "calc(100vh - 64px)",
