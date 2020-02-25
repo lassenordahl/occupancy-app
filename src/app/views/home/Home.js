@@ -27,6 +27,7 @@ function Home(props) {
   // Redirecting variables
   const [willRedirect, redirect] = useState(false);
   const [currentRoute, setCurrentRoute] = useState([]);
+  const [newRoute, pushRoute] = useState(['occupancy', app_config.id]);
 
   // Our selected entity
   const [entity, setEntity] = useState(null);
@@ -36,13 +37,13 @@ function Home(props) {
   const [entityType, setEntityType] = useState(null);
 
   let windowRoute = serializeLocation(useLocation());
-
-  // This UseEffect listens for route changes from the remainder of the application
+  // // This UseEffect listens for route changes from the remainder of the application
   useEffect(() => {
     props.history.listen(function(location, action) {
       // New route comes from the URL
       let newRoute = serializeLocation(location);
-      setCurrentRoute(newRoute);
+   
+      // setCurrentRoute(newRoute);
       // parseUrlRoute()
 
       // If we have an entity at the end, we can load it as our home screen
@@ -54,13 +55,15 @@ function Home(props) {
 
   useEffect(() => {
     // If we just redirected, reset the variable so we can redirect again later
-    if (willRedirect) redirect(false);
+    if (willRedirect) {
+      redirect(false);
+    }
   }, [willRedirect]);
 
-  // useEffect(() => {
-  //   // If our current route changes, we should trigger a redirect
-  //   redirect(true);
-  // }, [currentRoute]);
+  useEffect(() => {
+    // If our current route changes, we should trigger a redirect
+    redirect(true);
+  }, [newRoute]);
 
   useEffect(() => {
     if (firstLoad) {
@@ -70,20 +73,25 @@ function Home(props) {
   }, [firstLoad]);
 
   function getRedirect() {
-    console.log("redirecting");
-    let route = "/" + currentRoute.join("/");
-    return <Redirect from="/" to={route}></Redirect>;
+    console.log("redirecting", windowRoute);
+
+    let route;
+    if (windowRoute.length === 1 && windowRoute[0] === '') {
+      route = '/' + newRoute.join('/');
+    } else {
+      route = '/' + windowRoute.concat(newRoute).join('/');
+    }
+    console.log(route);
+    return <Redirect to={route}></Redirect>;
   }
 
   async function parseUrlRoute(route, baseAppRoute) {
-    console.log(route, route.length);
-    if (route.length === 1 && route[0] === "") {
-      console.log(app_config);
-      setCurrentRoute([app_config.id]);
-      // redirect(true);
-      getEntity(app_config.id, true);
-      return;
-    }
+    // console.log(route, route.length);
+    // if (route.length === 1 && route[0] === "") {
+    //   console.log(app_config);
+    //   pushRoute(['occupancy', app_config.id]);
+    //   return;
+    // }
     let entityIds = route.filter(function(routeElement, index) {
       return index % 2 === 1;
     });
@@ -95,30 +103,30 @@ function Home(props) {
       })
     );
 
-    if (entityResponses.length === 0) {
-      // If we have no valid entities, use the valid route that was given at the root of the application
-      setCurrentRoute(baseAppRoute);
-    } else {
-      setCurrentRoute(route);
+    // if (entityResponses.length === 0) {
+    //   // If we have no valid entities, use the valid route that was given at the root of the application
+    //   // setCurrentRoute(baseAppRoute);
+    // } else {
+    //   // pushRoute(route);
 
-      let entities = entityResponses.map(function(response) {
-        return response.data;
-      });
+    //   let entities = entityResponses.map(function(response) {
+    //     return response.data;
+    //   });
 
-      let selectedEntity = entities[entities.length - 1];
-      console.log(selectedEntity);
-      let selectedEntityType =
-        selectedEntity.payload.geo.coordinateSystem.coordinateSystemClassName;
-      setEntity(selectedEntity);
-      setEntityType(selectedEntityType);
-      if (selectedEntity.payload.geo.childSpaces !== undefined) {
-        setSubEntities(selectedEntity.payload.geo.childSpaces);
-      }
-      // getSubEntities(selectedEntityType, selectedEntity.id);
-    }
+    //   let selectedEntity = entities[entities.length - 1];
+    //   console.log(selectedEntity);
+    //   let selectedEntityType =
+    //     selectedEntity.payload.geo.coordinateSystem.coordinateSystemClassName;
+    //   setEntity(selectedEntity);
+    //   setEntityType(selectedEntityType);
+    //   if (selectedEntity.payload.geo.childSpaces !== undefined) {
+    //     setSubEntities(selectedEntity.payload.geo.childSpaces);
+    //   }
+    //   // getSubEntities(selectedEntityType, selectedEntity.id);
+    // }
   }
 
-  function getEntity(entityId, initialLoad = false) {
+  function getEntity(entityId) {
     if (entityId === null || entityId === "") {
       return;
     }
@@ -126,13 +134,12 @@ function Home(props) {
       .then(function(response) {
         let entity = response.data;
         // Sets the app entity
+
         setEntity(entity);
         setEntityType(
           entity.payload.geo.coordinateSystem.coordinateSystemClassName
         );
         setSubEntities(entity.payload.geo.childSpaces);
-        console.log('REDIRECTING FROM GETTING ENTITY', currentRoute);
-        redirect(true);
       })
       .catch(function(error) {
         console.log("APP ENTITY GET", error);
@@ -140,20 +147,12 @@ function Home(props) {
   }
 
   function selectEntity(entity) {
-    setCurrentRoute([...currentRoute, getEntityTypeName(entity), entity.id]);
-    console.log("REDIRECTING FROM ENTITY SELECTION", entity);
-    redirect(true);
-    // getEntity(entity.id);
+    pushRoute([getEntityTypeName(entity), entity.id]);
   }
 
   function getEntityTypeName(entity) {
     console.log("ENTITY TYPE NAME", entity);
     return entity.entityTypeName;
-    if (entity.entityType === undefined) {
-      return entity.entityTypename;
-    } else {
-      return entity.entityType.entityTypeName;
-    }
   }
 
   // Opens a dialog using the information given

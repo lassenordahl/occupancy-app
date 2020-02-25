@@ -67,7 +67,7 @@ function Nav(props) {
 
   function filterEntityIds(routeArray) {
     return routeArray.filter(function(routeElement, index) {
-      return index % 2 === 0;
+      return index % 2 === 1;
     });
   }
 
@@ -77,7 +77,7 @@ function Nav(props) {
     setFilteredRoute(currentRoute.filter(function(routeItem, rIndex) {
       console.log(routeItem);
       console.log(rIndex, index);
-      return rIndex + 1 < index;
+      return rIndex < index;
     }));
   }
 
