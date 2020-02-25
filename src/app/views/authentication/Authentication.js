@@ -13,16 +13,13 @@ class PrivateRoute extends React.Component {
     }
     async componentDidMount() {
         try {
-            if (Cookies.get('access-token')) {
-                this.props.auth.setAuthStatus(true);
-                this.setState({loading: false, verified: true});
-            }
-            else {
-                this.props.auth.setAuthStatus(true);
-                this.setState({loading: false, verified: true});
+            if (!Cookies.get('access-token')) {
                 await axios.get(window.location.origin + '/verify');
             }
-        } catch (error) {
+            this.props.auth.setAuthStatus(true);
+            this.setState({loading: false, verified: true});
+        } 
+        catch (error) {
             this.props.auth.setAuthStatus(false);
             this.setState({loading: false, verified: false});
         }
@@ -30,7 +27,7 @@ class PrivateRoute extends React.Component {
     render() {
         let { component: Component, auth: authStatus, ...rest } = this.props;
         if (this.state.loading) {
-            return (<div>loading</div>);
+            return (<div>Loading authentication status...</div>);
         }
         else if (!this.state.verified) {
             return (<Redirect to='/home' />);
