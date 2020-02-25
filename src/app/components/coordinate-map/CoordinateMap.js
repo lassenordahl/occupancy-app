@@ -21,32 +21,16 @@ function CoordinateMap(props) {
     }
   }, [props.coordinateEntities]);
 
-  function buildCoordinates(buildingGeo) {
-    authGet(
-      "http://128.195.53.189:4001/api/observation/search?obsTypeId=2&orderBy=id&direction=asc&orderBy2=id&direction2=asc&limit=25",
-      {
-        params: {
-          payload: {
-            entityId: 4
-          }
-        }
-      }
-    );
-
-    let coordinates = [];
-    coordinates.push([buildingGeo.start.latitude, buildingGeo.start.longitude]);
-    coordinates.push([buildingGeo.start.latitude, buildingGeo.end.longitude]);
-    coordinates.push([buildingGeo.end.latitude, buildingGeo.end.longitude]);
-    coordinates.push([buildingGeo.end.latitude, buildingGeo.start.longitude]);
-    return coordinates;
-  }
-
   function mapCoordinates(coordinateEntity) {
+    if (coordinateEntity.payload === undefined) {
+      return [];
+    }
+
     let extent = coordinateEntity.payload.geo.extent;
     if (extent.extentClassName === "polygon") {
       return extent.verticies.map(function(verticie) {
         return [verticie.latitude, verticie.longitude];
-      })
+      });
     } else if (extent.extentClassName === "rectangle") {
       let coordinates = [];
       if (extent.start.latitude === undefined) {
@@ -62,7 +46,6 @@ function CoordinateMap(props) {
   }
 
   function renderPolygons() {
-    
     if (props.entityType === "gps") {
       return props.coordinateEntities.map(function(coordinateEntity, index) {
         return (
@@ -78,13 +61,40 @@ function CoordinateMap(props) {
           </Polygon>
         );
       });
+    } else if (props.entityType === "cartesian2hfd") {
+      return (
+        <Polygon
+          onClick={() => props.selectEntity(props.entity)}
+          positions={mapCoordinates(props.entity)}
+          color={"#" + blueRainbow.colorAt(10)}
+        >
+          <Tooltip sticky className="polygon-tooltip box-shadow">
+            {props.entity.name}
+          </Tooltip>
+        </Polygon>
+      );
     }
     return null;
   }
 
+  function getMapCenter() {
+    if (props.entity === null || props.entity === undefined) {
+      return position;
+    }
+
+    let extent = props.entity.payload.geo.extent;
+    if (extent.extentClassName === "polygon") {
+      return [extent.verticies[0].latitude, extent.verticies[0].longitude];
+    }
+    // } else if (extent.extentClassName === "rectangle") {
+    //   return position;
+    // }
+    return position;
+  }
+
   return props.entity !== null ? (
     <Map
-      center={[33, 33]}
+      center={getMapCenter()}
       style={{
         width: "100vw",
         height: "calc(100vh - 64px)",
@@ -104,22 +114,6 @@ function CoordinateMap(props) {
           </span>
         </Popup>
       </Marker>
-      {/* {uciMap.buildings.map(function(building, index) {
-          return (
-            <Polygon 
-              key={index}
-              onClick={() => props.selectBuilding(building)}
-              positions={building.coordinates}
-              color={'#' + blueRainbow.colorAt(building.occupancy)}
-            >
-              <Tooltip 
-                sticky
-                className="polygon-tooltip box-shadow"
-                >{building.name + ' - ' + building.occupancy}
-              </Tooltip>
-            </Polygon>
-          );
-        })} */}
       {renderPolygons()}
     </Map>
   ) : null;

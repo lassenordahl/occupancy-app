@@ -31,10 +31,11 @@ async function verifyOrRedirect() {
 async function authGet(url, args) {
     let config = {}//getConfig(args)
     try {
-        let response = await axios.get(url, config);
+        let response = await axios.get(url, {params: args});
         return response;
     }
     catch(error) {
+        console.log(error);
         if (error.response.status === 401) {
             verifyOrRedirect();
             config = getConfig(args);

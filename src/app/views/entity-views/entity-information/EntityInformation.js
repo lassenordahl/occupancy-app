@@ -9,6 +9,8 @@ import {
   CheckboxToggle
 } from "react-rainbow-components";
 
+import { NumberFocus } from "app/containers";
+
 function EntityInformation(props) {
   const entity = props.entity;
 
@@ -74,6 +76,9 @@ function EntityInformation(props) {
       </Picklist>
 
       <div style={{ height: "24px" }} />
+
+      <h2>Occupancy</h2>
+      <NumberFocus subtitle="Occupants">{props.occupancy}</NumberFocus>
       {/*       
       
       <h2>Selected Building</h2>
