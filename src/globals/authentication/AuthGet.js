@@ -25,10 +25,6 @@ async function verifyOrRedirect() {
     catch(error) {
         window.location.href = '/home'; 
     }
-    // axios.get(window.location.origin + '/verify')
-    //     .catch(function (error) {
-    //         window.location.href = '/home'; 
-    //     });
 }
 
 

@@ -1,6 +1,6 @@
 import os
 
-TIPPERS_OAUTH_BASE_URL = 'http://128.195.53.189.xip.io:5001'
+TIPPERS_OAUTH_BASE_URL = 'http://128.195.53.189:5001'
 
 class DevConfig:
 	os.environ['AUTHLIB_INSECURE_TRANSPORT'] = '1'
