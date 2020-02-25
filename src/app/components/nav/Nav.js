@@ -73,10 +73,7 @@ function Nav(props) {
 
   // Removes everything after this index, lets you click back with the breadcrumbs
   function changeRoute(index) {
-    console.log(currentRoute);
     setFilteredRoute(currentRoute.filter(function(routeItem, rIndex) {
-      console.log(routeItem);
-      console.log(rIndex, index);
       return rIndex < index;
     }));
   }
