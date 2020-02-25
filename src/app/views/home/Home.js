@@ -26,13 +26,11 @@ function Home(props) {
 
   // Redirecting variables
   const [willRedirect, redirect] = useState(false);
-  const [currentRoute, setCurrentRoute] = useState([]);
   const [newRoute, pushRoute] = useState(['occupancy', app_config.id]);
 
-  // Our selected entity
-  const [entity, setEntity] = useState(null);
-  // Sub entities of our current selected entity
-  const [subEntities, setSubEntities] = useState([]);
+  const [entity, setEntity] = useState(null); // Our selected entity
+  const [subEntities, setSubEntities] = useState([]);  // Sub entities of our current selected entity
+  const [occupancies, setOccupancies] = useState([]);
 
   const [entityType, setEntityType] = useState(null);
 
@@ -71,6 +69,11 @@ function Home(props) {
       setFirstLoad(false);
     }
   }, [firstLoad]);
+
+  useEffect(() => {
+    console.log('getting occupancy data for ', subEntities);
+    getOccupancyData(subEntities);
+  }, [subEntities]);
 
   function getRedirect() {
     console.log("redirecting", windowRoute);
@@ -146,6 +149,35 @@ function Home(props) {
       });
   }
 
+  async function getOccupancyData(subEntities) {
+    console.log(subEntities);
+
+    let occupancyResponses = await Promise.all(
+      subEntities.map(function(subEntity) {
+        console.log(subEntity);
+        return authGet(api.observation, {
+          orderBy: 'timestamp',
+          direction: 'desc',
+          limit: 50
+        });
+      })
+    );
+
+    let occupancies = occupancyResponses.map(function(response, index) {
+      let occupancyData = response.data;
+      for (var i = 0; i < occupancyData.length; i++) {
+        if (occupancyData[i].payload.entityId === subEntities[index].id) {
+          return occupancyData[i].payload.value;
+        }
+      }
+      return 0;
+    })
+
+    console.log("OCCUPANCY", occupancyResponses, occupancies);
+
+    setOccupancies(occupancies);
+  }
+
   function selectEntity(entity) {
     pushRoute([getEntityTypeName(entity), entity.id]);
   }
@@ -164,6 +196,7 @@ function Home(props) {
 
   // Renders the coordinate map on the page if we need to select a geo object (GeoSubGeo, GeoSubNonGeo)
   function renderGPSMap() {
+    console.log('RENDERING MAP', subEntities);
     return (
       <CoordinateMap
         entity={props.entity}
@@ -209,10 +242,14 @@ function Home(props) {
           entity={entity}
           selectEntity={selectEntity}
           subEntities={subEntities}
+          occupancy={occupancies.reduce(function(a, b) {
+            return a + b;
+          }, 0)}
         ></EntityInformation>
       );
     }
   }
+
 
   function renderMap() {
     if (entityType === null) {
