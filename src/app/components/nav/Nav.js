@@ -10,6 +10,7 @@ import {
 } from "globals/utils/formatting-helper.js";
 import axios from "axios";
 import authGet from "../../../globals/authentication/AuthGet";
+import api from "globals/api";
 
 function Nav(props) {
   let currentRoute = serializeLocation(useLocation());
@@ -50,7 +51,7 @@ function Nav(props) {
   async function getEntityNames(entityIds) {
     let entityResults = await Promise.all(
       entityIds.map(function(entityId) {
-        return authGet("http://128.195.53.189:4001/api/entity/" + entityId);
+        return authGet(api.entity + "/" + entityId);
       })
     );
     setEntityNames(

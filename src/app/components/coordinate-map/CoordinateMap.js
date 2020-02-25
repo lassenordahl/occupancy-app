@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import "./CoordinateMap.scss";
 
 import { Map, TileLayer, Marker, Popup, Polygon, Tooltip } from "react-leaflet";
-import uciMap from "globals/test-data/uci-map.js";
 import blueRainbow from "globals/utils/rainbowvis-helper.js";
 import axios from "axios";
 import authGet from "../../../globals/authentication/AuthGet";
