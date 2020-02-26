@@ -48,15 +48,16 @@ function CoordinateMap(props) {
   function renderPolygons() {
     if (props.entityType === "gps") {
       return props.coordinateEntities.map(function(coordinateEntity, index) {
+        let occupancy = getOccupancy(index)
         return (
           <Polygon
             key={index}
             onClick={() => props.selectEntity(coordinateEntity)}
             positions={mapCoordinates(coordinateEntity)}
-            color={"#" + blueRainbow.colorAt(10)}
+            color={"#" + blueRainbow.colorAt(occupancy)}
           >
             <Tooltip sticky className="polygon-tooltip box-shadow">
-              {coordinateEntity.name}
+              {coordinateEntity.name} - {occupancy}
             </Tooltip>
           </Polygon>
         );
@@ -77,6 +78,14 @@ function CoordinateMap(props) {
     return null;
   }
 
+  function getOccupancy(index) {
+    if (props.occupancies[index] !== undefined) {
+      return props.occupancies[index];
+    } else {
+      return 0;
+    }
+  }
+
   function getMapCenter() {
     if (props.entity === null || props.entity === undefined) {
       return position;
@@ -84,12 +93,20 @@ function CoordinateMap(props) {
 
     let extent = props.entity.payload.geo.extent;
     if (extent.extentClassName === "polygon") {
+      console.log([extent.verticies[0].latitude, extent.verticies[0].longitude]);
       return [extent.verticies[0].latitude, extent.verticies[0].longitude];
     }
     // } else if (extent.extentClassName === "rectangle") {
-    //   return position;
     // }
     return position;
+  }
+
+  function getZoom() {
+    if (props.entityType === "gps") {
+      return 15;
+    } else {
+      return 16;
+    }
   }
 
   return props.entity !== null ? (
@@ -101,7 +118,7 @@ function CoordinateMap(props) {
         position: "fixed"
       }}
       className="CoordinateMap"
-      zoom={15}
+      zoom={getZoom()}
     >
       <TileLayer
         attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'

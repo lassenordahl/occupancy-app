@@ -12,7 +12,7 @@ import api from "globals/api";
 
 import { EntityInformation, OccupancyDialog } from "app/views";
 
-import { serializeLocation } from "globals/utils/formatting-helper";
+import { serializeLocation, capitalizeWords } from "globals/utils/formatting-helper";
 
 function Home(props) {
   // Variable to keep track of if we're loading the app for the first time
@@ -89,22 +89,22 @@ function Home(props) {
   }
 
   async function parseUrlRoute(route, baseAppRoute) {
-    // console.log(route, route.length);
+    // console.log('parse url route');
     // if (route.length === 1 && route[0] === "") {
     //   console.log(app_config);
     //   pushRoute(['occupancy', app_config.id]);
     //   return;
     // }
-    let entityIds = route.filter(function(routeElement, index) {
-      return index % 2 === 1;
-    });
+    // let entityIds = route.filter(function(routeElement, index) {
+    //   return index % 2 === 1;
+    // });
 
-    // Get all the entities listed in the URL
-    let entityResponses = await Promise.all(
-      entityIds.map(function(id) {
-        return authGet(api.entity + "/" + id);
-      })
-    );
+    // // Get all the entities listed in the URL
+    // let entityResponses = await Promise.all(
+    //   entityIds.map(function(id) {
+    //     return authGet(api.entity + "/" + id);
+    //   })
+    // );
 
     // if (entityResponses.length === 0) {
     //   // If we have no valid entities, use the valid route that was given at the root of the application
@@ -203,6 +203,7 @@ function Home(props) {
         coordinateEntities={subEntities}
         entityType={entityType}
         selectEntity={selectEntity}
+        occupancies={occupancies}
       ></CoordinateMap>
     );
   }
@@ -224,7 +225,7 @@ function Home(props) {
     } else {
       return (
         <React.Fragment>
-          <h1>{entity.name}</h1>
+          <h1>{capitalizeWords(entity.name)}</h1>
         </React.Fragment>
       );
     }
@@ -265,6 +266,7 @@ function Home(props) {
 
   return (
     <div className="Home">
+      {firstLoad ? <Redirect to="/"></Redirect>: null}
       {willRedirect ? getRedirect() : null}
 
       {renderMap()}

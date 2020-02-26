@@ -11,6 +11,8 @@ import {
 
 import { NumberFocus } from "app/containers";
 
+import { capitalizeWords } from "globals/utils/formatting-helper";
+
 function EntityInformation(props) {
   const entity = props.entity;
 
@@ -68,7 +70,7 @@ function EntityInformation(props) {
             <PicklistOption
               key={index}
               name={entity.name}
-              label={entity.name}
+              label={capitalizeWords(entity.name)}
               value={entity}
             />
           );
