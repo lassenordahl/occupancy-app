@@ -12,7 +12,10 @@ import api from "globals/api";
 
 import { EntityInformation, OccupancyDialog } from "app/views";
 
-import { serializeLocation, capitalizeWords } from "globals/utils/formatting-helper";
+import {
+  serializeLocation,
+  capitalizeWords
+} from "globals/utils/formatting-helper";
 
 function Home(props) {
   // Variable to keep track of if we're loading the app for the first time
@@ -26,10 +29,10 @@ function Home(props) {
 
   // Redirecting variables
   const [willRedirect, redirect] = useState(false);
-  const [newRoute, pushRoute] = useState(['occupancy', app_config.id]);
+  const [newRoute, pushRoute] = useState(["occupancy", app_config.id]);
 
   const [entity, setEntity] = useState(null); // Our selected entity
-  const [subEntities, setSubEntities] = useState([]);  // Sub entities of our current selected entity
+  const [subEntities, setSubEntities] = useState([]); // Sub entities of our current selected entity
   const [occupancies, setOccupancies] = useState([]);
 
   const [entityType, setEntityType] = useState(null);
@@ -40,7 +43,7 @@ function Home(props) {
     props.history.listen(function(location, action) {
       // New route comes from the URL
       let newRoute = serializeLocation(location);
-   
+
       // setCurrentRoute(newRoute);
       // parseUrlRoute()
 
@@ -71,7 +74,7 @@ function Home(props) {
   }, [firstLoad]);
 
   useEffect(() => {
-    console.log('getting occupancy data for ', subEntities);
+    console.log("getting occupancy data for ", subEntities);
     getOccupancyData(subEntities);
   }, [subEntities]);
 
@@ -79,10 +82,10 @@ function Home(props) {
     console.log("redirecting", windowRoute);
 
     let route;
-    if (windowRoute.length === 1 && windowRoute[0] === '') {
-      route = '/' + newRoute.join('/');
+    if (windowRoute.length === 1 && windowRoute[0] === "") {
+      route = "/" + newRoute.join("/");
     } else {
-      route = '/' + windowRoute.concat(newRoute).join('/');
+      route = "/" + windowRoute.concat(newRoute).join("/");
     }
     console.log(route);
     return <Redirect to={route}></Redirect>;
@@ -98,24 +101,20 @@ function Home(props) {
     // let entityIds = route.filter(function(routeElement, index) {
     //   return index % 2 === 1;
     // });
-
     // // Get all the entities listed in the URL
     // let entityResponses = await Promise.all(
     //   entityIds.map(function(id) {
     //     return authGet(api.entity + "/" + id);
     //   })
     // );
-
     // if (entityResponses.length === 0) {
     //   // If we have no valid entities, use the valid route that was given at the root of the application
     //   // setCurrentRoute(baseAppRoute);
     // } else {
     //   // pushRoute(route);
-
     //   let entities = entityResponses.map(function(response) {
     //     return response.data;
     //   });
-
     //   let selectedEntity = entities[entities.length - 1];
     //   console.log(selectedEntity);
     //   let selectedEntityType =
@@ -156,8 +155,8 @@ function Home(props) {
       subEntities.map(function(subEntity) {
         console.log(subEntity);
         return authGet(api.observation, {
-          orderBy: 'timestamp',
-          direction: 'desc',
+          orderBy: "timestamp",
+          direction: "desc",
           limit: 50
         });
       })
@@ -171,7 +170,7 @@ function Home(props) {
         }
       }
       return 0;
-    })
+    });
 
     console.log("OCCUPANCY", occupancyResponses, occupancies);
 
@@ -210,7 +209,12 @@ function Home(props) {
 
   // Renders the floor map if we need to select a non-geo object (GeoSubNonGeo, NonGeoSubNonGeo)
   function render2DMap() {
-    return <FloorMap twoDimensionalEntities={subEntities}></FloorMap>;
+    return (
+      <FloorMap
+        twoDimensionalEntities={subEntities}
+        occupancies={occupancies}
+      ></FloorMap>
+    );
   }
 
   // Renders the dialog
@@ -251,7 +255,6 @@ function Home(props) {
     }
   }
 
-
   function renderMap() {
     if (entityType === null) {
       return null;
@@ -266,7 +269,7 @@ function Home(props) {
 
   return (
     <div className="Home">
-      {firstLoad ? <Redirect to="/"></Redirect>: null}
+      {firstLoad ? <Redirect to="/"></Redirect> : null}
       {willRedirect ? getRedirect() : null}
 
       {renderMap()}

@@ -13,6 +13,7 @@ class FloorMap extends React.Component {
     super(props);
 
     this.drawContent = this.drawContent.bind(this);
+    this.getOccupancy = this.getOccupancy.bind(this);
   }
 
   componentDidMount() {
@@ -35,10 +36,21 @@ class FloorMap extends React.Component {
     }
   }
 
+  getOccupancy(index) {
+    if (this.props.occupancies[index] !== undefined) {
+      return this.props.occupancies[index];
+    } else {
+      return 0;
+    }
+  }
+
+
   getGraphedEntity(shapeType, entityCoordInfo, occupancy) {
     let rainbow = new Rainbow();
     rainbow.setSpectrum("#64b1e8", "#3e2ed1");
     rainbow.setNumberRange(0, 200);
+
+    console.log('entity corod info', entityCoordInfo);
 
     let self = this;
     if (shapeType === "rectangle") {
@@ -62,6 +74,8 @@ class FloorMap extends React.Component {
     return (word.length / 2) * 11;
   }
 
+  
+
   drawContent() {
     let self = this;
 
@@ -71,17 +85,18 @@ class FloorMap extends React.Component {
       return;
     }
 
-    this.entities = self.props.twoDimensionalEntities.map(function(entity) {
-      console.log(entity);
-
+    this.entities = self.props.twoDimensionalEntities.map(function(entity, index) {
       let clientWidth = self.svg._groups[0][0].clientWidth;
       let clientHeight = self.svg._groups[0][0].clientHeight;
+
+      console.log(entity.payload.geo.extent);
 
       let coordInfo = JSON.parse(JSON.stringify(entity.payload.geo.extent));
       let coordSystem = entity.payload.geo.coordinateSystem;
       let range = coordSystem.range;
 
       let margin = 40;
+
 
       coordInfo.start.x = self.scale(
         coordInfo.start.x,
@@ -113,11 +128,15 @@ class FloorMap extends React.Component {
         clientHeight - margin
       );
 
+      console.log(coordInfo);
+
       let currEntity = self.getGraphedEntity(
         coordInfo.extentClassName,
         coordInfo,
-        100
+        self.getOccupancy(index)
       );
+
+      // console.log(currEntity);
 
       currEntity.on("mouseover", function() {
         d3.select(this);
@@ -138,7 +157,6 @@ class FloorMap extends React.Component {
             return entity.name;
           });
 
-        console.log("name " + entity.name);
         // .attr(
         //   "transform",
         //   "translate(" +
