@@ -2,18 +2,21 @@ import React from "react";
 import "./FloorMap.scss";
 
 import * as d3 from "d3";
-import Rainbow from "rainbowvis.js";
+import getBlueRainbow from "globals/utils/rainbowvis-helper.js";
 
 const margin = 100; // in px
 const hover_size_bump = 6;
 const rectangle_size = 120;
 
 class FloorMap extends React.Component {
+  
+
   constructor(props) {
     super(props);
 
     this.drawContent = this.drawContent.bind(this);
     this.getOccupancy = this.getOccupancy.bind(this);
+    this.getGraphedEntity = this.getGraphedEntity.bind(this);
   }
 
   componentDidMount() {
@@ -49,11 +52,7 @@ class FloorMap extends React.Component {
 
 
   getGraphedEntity(shapeType, entityCoordInfo, occupancy) {
-    let rainbow = new Rainbow();
-    rainbow.setSpectrum("#64b1e8", "#3e2ed1");
-    rainbow.setNumberRange(0, 200);
-
-    console.log('entity corod info', entityCoordInfo);
+    let rainbow = getBlueRainbow(this.props.legendMax);
 
     let self = this;
     if (shapeType === "rectangle") {
@@ -69,7 +68,7 @@ class FloorMap extends React.Component {
           "height",
           Math.abs(entityCoordInfo.end.y - entityCoordInfo.start.y)
         )
-        .style("fill", "#" + rainbow.colourAt(occupancy));
+        .style("fill", "#" + rainbow.colourAt(occupancy.payload !== undefined ? occupancy.payload.value : 1));
     }
   }
 
@@ -91,8 +90,6 @@ class FloorMap extends React.Component {
     this.entities = self.props.twoDimensionalEntities.map(function(entity, index) {
       let clientWidth = self.svg._groups[0][0].clientWidth;
       let clientHeight = self.svg._groups[0][0].clientHeight;
-
-      console.log(entity.payload.geo.extent);
 
       let coordInfo = JSON.parse(JSON.stringify(entity.payload.geo.extent));
       let coordSystem = entity.payload.geo.coordinateSystem;
@@ -131,15 +128,11 @@ class FloorMap extends React.Component {
         clientHeight - margin
       );
 
-      console.log(coordInfo);
-
       let currEntity = self.getGraphedEntity(
         coordInfo.extentClassName,
         coordInfo,
         self.getOccupancy(index)
       );
-
-      // console.log(currEntity);
 
       currEntity.on("mouseover", function() {
         d3.select(this);
@@ -156,7 +149,6 @@ class FloorMap extends React.Component {
           .attr("font-size", "20px")
           .attr("fill", "black")
           .text(function(d) {
-            // console.log(self.bufferText(entity.name));
             return entity.name;
           });
 

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "./CoordinateMap.scss";
 
 import { Map, TileLayer, Marker, Popup, Polygon, Tooltip } from "react-leaflet";
-import blueRainbow from "globals/utils/rainbowvis-helper.js";
+import getBlueRainbow from "globals/utils/rainbowvis-helper.js";
 import axios from "axios";
 import authGet from "../../../globals/authentication/AuthGet";
 
@@ -15,11 +15,73 @@ const state = {
 const position = [state.lat, state.lng];
 
 function CoordinateMap(props) {
+
+  let blueRainbow = getBlueRainbow(props.legendMax);
+
   useEffect(() => {
     for (let i = 0; i < props.coordinateEntities.length; i++) {
       // loadBuildingGeolocation(props.coordinateEntities[i]);
     }
   }, [props.coordinateEntities]);
+
+  function getMapCenter() {
+    if (props.entity === null || props.entity === undefined) {
+      return position;
+    }
+    let extent = props.entity.payload.geo.extent;
+    if (extent.extentClassName === "polygon") {
+      let coordinates = extent.verticies.map(function(verticie) {
+        return verticie.latitude + verticie.longitude;
+      });
+
+      const indexOfMax = coordinates.indexOf(Math.max(...coordinates));
+      const indexOfMin = coordinates.indexOf(Math.min(...coordinates));
+
+      return ([
+        (extent.verticies[indexOfMax].latitude + extent.verticies[indexOfMin].latitude) / 2,
+        (extent.verticies[indexOfMax].longitude + extent.verticies[indexOfMin].longitude) / 2,
+      ]);
+    } else if (extent.extentClassName === "rectangle"){
+      return ([
+        (extent.start.latitude + extent.end.latitude) / 2,
+        (extent.start.longitude + extent.end.longitude) / 2
+      ]);
+    }
+
+    // Return default
+    return position;
+  }
+
+  function getZoom() {
+    if (props.entity === null || props.entity === undefined) {
+      return 15;
+    }
+
+    let extent = props.entity.payload.geo.extent;
+    let distance;
+
+    if (extent.extentClassName === "polygon") {
+      let coordinates = extent.verticies.map(function(verticie) {
+        return verticie.latitude + verticie.longitude;
+      });
+
+      const indexOfMax = coordinates.indexOf(Math.max(...coordinates));
+      const indexOfMin = coordinates.indexOf(Math.min(...coordinates));
+
+      distance = Math.abs(extent.verticies[indexOfMax].latitude - extent.verticies[indexOfMin].latitude);
+    } else if (extent.extentClassName === "rectangle"){
+      distance = Math.abs(extent.start.latitude - extent.end.latitude);
+    } else {
+      distance = -1;
+    }
+    if (distance === -1) {
+      return 15;
+    } else if (distance > .0004)  {
+      return 16;
+    } else {
+      return 18;
+    }
+  }
 
   function mapCoordinates(coordinateEntity) {
     if (coordinateEntity.payload === undefined) {
@@ -45,6 +107,12 @@ function CoordinateMap(props) {
     return [];
   }
 
+  function mapCoordinateWrapper(coordinateEntity) {
+    return mapCoordinates(coordinateEntity).filter(function(coordinate) {
+      return !isNaN(coordinate[0]) && !isNaN(coordinate[1]); 
+    });
+  }
+
   function renderPolygons() {
     if (props.entityType === "gps") {
       return props.coordinateEntities.map(function(coordinateEntity, index) {
@@ -53,7 +121,7 @@ function CoordinateMap(props) {
           <Polygon
             key={index}
             onClick={() => props.selectEntity(coordinateEntity)}
-            positions={mapCoordinates(coordinateEntity)}
+            positions={mapCoordinateWrapper(coordinateEntity)}
             color={"#" + blueRainbow.colorAt(occupancy)}
           >
             <Tooltip sticky className="polygon-tooltip box-shadow">
@@ -66,7 +134,7 @@ function CoordinateMap(props) {
       return (
         <Polygon
           onClick={() => props.selectEntity(props.entity)}
-          positions={mapCoordinates(props.entity)}
+          positions={mapCoordinateWrapper(props.entity)}
           color={"#" + blueRainbow.colorAt(10)}
         >
           <Tooltip sticky className="polygon-tooltip box-shadow">
@@ -80,36 +148,16 @@ function CoordinateMap(props) {
 
   function getOccupancy(index) {
     if (props.occupancies[index] !== undefined) {
-      return props.occupancies[index];
+      return props.occupancies[index].payload.value;
     } else {
       return 0;
     }
   }
 
-  function getMapCenter() {
-    if (props.entity === null || props.entity === undefined) {
-      return position;
-    }
+  // Need to use the entity type from the props variable, because props.entityType isn't loaded yet
+  let entityType = props.entity !== null ? props.entity.payload.geo.coordinateSystem.coordinateSystemClassName : "";
 
-    let extent = props.entity.payload.geo.extent;
-    if (extent.extentClassName === "polygon") {
-      console.log([extent.verticies[0].latitude, extent.verticies[0].longitude]);
-      return [extent.verticies[0].latitude, extent.verticies[0].longitude];
-    }
-    // } else if (extent.extentClassName === "rectangle") {
-    // }
-    return position;
-  }
-
-  function getZoom() {
-    if (props.entityType === "gps") {
-      return 15;
-    } else {
-      return 16;
-    }
-  }
-
-  return props.entity !== null ? (
+  return props.entity !== null && (entityType === "gps" || entityType === "cartesian2hfd") ? (
     <Map
       center={getMapCenter()}
       style={{

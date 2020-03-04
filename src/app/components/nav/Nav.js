@@ -108,7 +108,10 @@ function Nav(props) {
         </Breadcrumbs>
       </div>
       <h3>
-        <a href="http://tippersweb.ics.uci.edu/">Tippers Info</a>
+      <a href="http://tippersweb.ics.uci.edu/">
+        <Button label="TIPPERS Info"></Button>
+      </a>
+
         { showLoginButton() }
       </h3>
     </div>
