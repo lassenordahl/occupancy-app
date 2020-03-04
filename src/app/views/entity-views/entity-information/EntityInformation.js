@@ -48,22 +48,22 @@ function EntityInformation(props) {
       <DatePicker label="to" value={toDate} disabled={!realtime} />
 
       <div style={{ height: "24px" }} />
-
+{/* 
       <h2>Entity Class</h2>
       <p>{entity.entityClassName}</p>
 
-      <div style={{ height: "24px" }} />
+      <div style={{ height: "24px" }} /> */}
 
-      <h2>Entity Type</h2>
-      <p>{entity.entityTypeName}</p>
+      {/* <h2>Entity Type</h2>
+      <p>{capitalizeWords(entity.entityTypeName)}</p> */}
 
-      <div style={{ height: "24px" }} />
+      {/* <div style={{ height: "24px" }} /> */}
 
-      <h2>Select a Sub-Entity</h2>
+      <h2>Contained Spaces</h2>
       <Picklist
         value={selectedEntity}
         onChange={value => selectEntity(value)}
-        placeholder="Select a sub-entity"
+        placeholder="Select a space"
       >
         {props.subEntities.map(function(entity, index) {
           return (
@@ -93,8 +93,8 @@ function EntityInformation(props) {
         variant="brand"
         className="box-shadow color-blue"
         style={{ marginTop: "auto", alignSelf: "center" }}
-        onClick={() => props.openDialog(entity.name, "Detailed Entity View")}
-        label="Building Data"
+        onClick={() => props.openDialog(entity, "Detailed Entity View")}
+        label="Analytics"
       ></Button>
     </div>
   );

@@ -55,7 +55,7 @@
       margin-top: $smallSpacing;
       margin-bottom: $smallSpacing;
       display: flex;
-      flex-direction: row;
+      flex-direction: column;
     
       h1 {
         margin-bottom: 0;
@@ -70,7 +70,7 @@
       p {
         margin-top: 4px;
         margin-bottom: 0px;
-        font-size: 1.6em;
+        font-size: 1.2em;
       }
 
       & > div {

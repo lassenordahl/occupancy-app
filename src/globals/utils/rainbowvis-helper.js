@@ -1,7 +1,9 @@
 import Rainbow from 'rainbowvis.js';
 
-let rainbow = new Rainbow();
-rainbow.setSpectrum('#64b1e8', '#3e2ed1');
-rainbow.setNumberRange(0, 100);
-
-export default rainbow;
+export default function getBlueRainbow(max) {
+  let rainbow = new Rainbow();
+  rainbow.setSpectrum('#64b1e8', '#3e2ed1');
+  // Add one to max because max defaults to 0
+  rainbow.setNumberRange(0, max + 1);
+  return rainbow;
+}

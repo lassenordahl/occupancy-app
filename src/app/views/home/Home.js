@@ -32,13 +32,14 @@ function Home(props) {
   const [newRoute, pushRoute] = useState(["occupancy", app_config.id]);
 
   const [entity, setEntity] = useState(null); // Our selected entity
+  const [entityType, setEntityType] = useState(null);
   const [subEntities, setSubEntities] = useState([]); // Sub entities of our current selected entity
   const [occupancies, setOccupancies] = useState([]);
 
-  const [entityType, setEntityType] = useState(null);
+  const [legendMax, setLegendMax] = useState(0);
 
   let windowRoute = serializeLocation(useLocation());
-  // // This UseEffect listens for route changes from the remainder of the application
+
   useEffect(() => {
     props.history.listen(function(location, action) {
       // New route comes from the URL
@@ -74,20 +75,28 @@ function Home(props) {
   }, [firstLoad]);
 
   useEffect(() => {
-    console.log("getting occupancy data for ", subEntities);
     getOccupancyData(subEntities);
   }, [subEntities]);
 
-  function getRedirect() {
-    console.log("redirecting", windowRoute);
+  useEffect(() => {
+    if (occupancies.length > 0) {
+      let max = 0;
+      for (let i = 0; i < occupancies.length; i++) {
+        if (occupancies[i].payload.value > max) {
+          max = occupancies[i].payload.value;
+        }
+      }
+      setLegendMax(max);
+    }
+  }, [occupancies]);
 
+  function getRedirect() {
     let route;
     if (windowRoute.length === 1 && windowRoute[0] === "") {
       route = "/" + newRoute.join("/");
     } else {
       route = "/" + windowRoute.concat(newRoute).join("/");
     }
-    console.log(route);
     return <Redirect to={route}></Redirect>;
   }
 
@@ -134,14 +143,15 @@ function Home(props) {
     }
     authGet(api.entity + "/" + entityId)
       .then(function(response) {
-        let entity = response.data;
+        let newEntity = response.data;
         // Sets the app entity
-
-        setEntity(entity);
+        // console.log('ENTITY AND  TYPE,', newEntity, newEntity.payload.geo.coordinateSystem.coordinateSystemClassName)
+        console.log(newEntity);
+        setEntity(newEntity);
         setEntityType(
-          entity.payload.geo.coordinateSystem.coordinateSystemClassName
+          newEntity.payload.geo.coordinateSystem.coordinateSystemClassName
         );
-        setSubEntities(entity.payload.geo.childSpaces);
+        setSubEntities(newEntity.payload.geo.childSpaces);
       })
       .catch(function(error) {
         console.log("APP ENTITY GET", error);
@@ -149,30 +159,22 @@ function Home(props) {
   }
 
   async function getOccupancyData(subEntities) {
-    console.log(subEntities);
 
     let occupancyResponses = await Promise.all(
       subEntities.map(function(subEntity) {
-        console.log(subEntity);
         return authGet(api.observation, {
-          orderBy: "timestamp",
-          direction: "desc",
-          limit: 50
+          entityId: subEntity.id,
+          orderBy: 'timestamp',
+          direction: 'desc',
+          limit: '1'
         });
       })
     );
 
     let occupancies = occupancyResponses.map(function(response, index) {
-      let occupancyData = response.data;
-      for (var i = 0; i < occupancyData.length; i++) {
-        if (occupancyData[i].payload.entityId === subEntities[index].id) {
-          return occupancyData[i].payload.value;
-        }
-      }
-      return 0;
+      let occupancyData = response.data[0];
+      return occupancyData;
     });
-
-    console.log("OCCUPANCY", occupancyResponses, occupancies);
 
     setOccupancies(occupancies);
   }
@@ -182,20 +184,18 @@ function Home(props) {
   }
 
   function getEntityTypeName(entity) {
-    console.log("ENTITY TYPE NAME", entity);
     return entity.entityTypeName;
   }
 
   // Opens a dialog using the information given
-  function openDialog(title, titleSubscript) {
-    setDialogTitle(title);
+  function openDialog(entity, titleSubscript) {
+    setDialogTitle(entity.name);
     setDialogTitleSubscript(titleSubscript);
     setShowDialog(true);
   }
 
   // Renders the coordinate map on the page if we need to select a geo object (GeoSubGeo, GeoSubNonGeo)
   function renderGPSMap() {
-    // console.log('RENDERING MAP', entitysubEntities);
     return (
       <CoordinateMap
         entity={entity}
@@ -203,6 +203,7 @@ function Home(props) {
         entityType={entityType}
         selectEntity={selectEntity}
         occupancies={occupancies}
+        legendMax={legendMax}
       ></CoordinateMap>
     );
   }
@@ -213,6 +214,7 @@ function Home(props) {
       <FloorMap
         twoDimensionalEntities={subEntities}
         occupancies={occupancies}
+        legendMax={legendMax}
       ></FloorMap>
     );
   }
@@ -230,6 +232,7 @@ function Home(props) {
       return (
         <React.Fragment>
           <h1>{capitalizeWords(entity.name)}</h1>
+          <p>{capitalizeWords(entity.entityTypeName)}</p>
         </React.Fragment>
       );
     }
@@ -247,12 +250,19 @@ function Home(props) {
           entity={entity}
           selectEntity={selectEntity}
           subEntities={subEntities}
-          occupancy={occupancies.reduce(function(a, b) {
-            return a + b;
-          }, 0)}
+          openDialog={openDialog}
+          occupancy={sumOccupancies()}
         ></EntityInformation>
       );
     }
+  }
+
+  function sumOccupancies() {
+    let sum = 0;
+    for (let i = 0; i < occupancies.length; i++) {
+      sum += occupancies[i].payload.value;
+    }
+    return sum;
   }
 
   function renderMap() {
@@ -290,7 +300,7 @@ function Home(props) {
           <h1>Legend</h1>
         </div>
         <div className="legend-content">
-          <Legend></Legend>
+          <Legend legendMax={legendMax}></Legend>
         </div>
       </Card>
 
