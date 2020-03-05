@@ -9,6 +9,9 @@ import { Legend, CoordinateMap, FloorMap } from "app/components";
 import app_config from "globals/config";
 import authGet from "../../../globals/authentication/AuthGet";
 import api from "globals/api";
+import { Spinner } from 'react-rainbow-components';
+import LoadingBar from 'react-top-loading-bar';
+
 
 import { EntityInformation, OccupancyDialog } from "app/views";
 
@@ -37,6 +40,7 @@ function Home(props) {
   const [occupancies, setOccupancies] = useState([]);
 
   const [legendMax, setLegendMax] = useState(0);
+  const [progress, setProgress] = useState(0);
 
   let windowRoute = serializeLocation(useLocation());
 
@@ -141,12 +145,16 @@ function Home(props) {
     if (entityId === null || entityId === "") {
       return;
     }
+    setProgress(30);
     authGet(api.entity + "/" + entityId)
       .then(function(response) {
         let newEntity = response.data;
         // Sets the app entity
         // console.log('ENTITY AND  TYPE,', newEntity, newEntity.payload.geo.coordinateSystem.coordinateSystemClassName)
         console.log(newEntity);
+
+        setProgress(50);
+
         setEntity(newEntity);
         setEntityType(
           newEntity.payload.geo.coordinateSystem.coordinateSystemClassName
@@ -171,11 +179,17 @@ function Home(props) {
       })
     );
 
+    setProgress(80);
+
     let occupancies = occupancyResponses.map(function(response, index) {
       let occupancyData = response.data[0];
+      if (occupancyData === undefined) {
+        occupancyData = {payload:{value:0}};
+      }
       return occupancyData;
     });
 
+    setProgress(100);
     setOccupancies(occupancies);
   }
 
@@ -231,8 +245,14 @@ function Home(props) {
     } else {
       return (
         <React.Fragment>
-          <h1>{capitalizeWords(entity.name)}</h1>
-          <p>{capitalizeWords(entity.entityTypeName)}</p>
+          {/* <div className="information-header-text"> */}
+            <h1>{capitalizeWords(entity.name)}</h1>
+            <p>{capitalizeWords(entity.entityTypeName)}</p>
+          {/* </div> */}
+{/*  
+          <div className="information-spinner">
+            <Spinner size="medium"></Spinner>
+          </div> */}
         </React.Fragment>
       );
     }
@@ -279,6 +299,13 @@ function Home(props) {
 
   return (
     <div className="Home">
+      <LoadingBar
+        progress={progress}
+        height={4}
+        color="blue"
+        className="home-loading-bar"
+      ></LoadingBar>
+
       {firstLoad ? <Redirect to="/"></Redirect> : null}
       {willRedirect ? getRedirect() : null}
 

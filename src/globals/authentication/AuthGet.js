@@ -36,7 +36,10 @@ async function authGet(url, args) {
     }
     catch(error) {
         console.log(error);
-        if (error.response.status === 401) {
+        if (error.response === undefined) {
+            console.error(error)
+            return error;
+        } else if (error.response.status === 401) {
             verifyOrRedirect();
             config = getConfig(args);
             try {
