@@ -54,6 +54,8 @@ class FloorMap extends React.Component {
   getGraphedEntity(shapeType, entityCoordInfo, occupancy) {
     let rainbow = getBlueRainbow(this.props.legendMax);
 
+    console.log(entityCoordInfo);
+
     let self = this;
     if (shapeType === "rectangle") {
       return self.svg
@@ -96,6 +98,8 @@ class FloorMap extends React.Component {
       let range = coordSystem.range;
 
       let margin = 40;
+
+      console.log(entity.payload.geo.extent);
 
 
       coordInfo.start.x = self.scale(

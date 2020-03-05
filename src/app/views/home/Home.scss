@@ -4,6 +4,10 @@
   text-align: center;
   display: flex;
 
+  .home-loading-bar {
+    top: 64px !important;
+  }
+
   .dialog {
     width: calc(100vw - 400px - 108px);
     height: calc(100vh - 64px - 72px);
@@ -73,9 +77,13 @@
         font-size: 1.2em;
       }
 
-      & > div {
-        margin-bottom: $tinySpacing;
+      .information-header-text {
+        flex: 1 1;
       }
+
+      // & > div {
+      //   margin-bottom: $tinySpacing;
+      // }
     }
 
     .information-tab-content {
@@ -152,7 +160,7 @@
   }
 
   .legend-card:hover {
-    opacity: .5;
+    opacity: 0;
   }
 
   .selected-building-info {
