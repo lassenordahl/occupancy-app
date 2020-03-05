@@ -38,6 +38,7 @@ function Home(props) {
   const [entityType, setEntityType] = useState(null);
   const [subEntities, setSubEntities] = useState([]); // Sub entities of our current selected entity
   const [occupancies, setOccupancies] = useState([]);
+  const [occupancy, setOccupancy] = useState(0);
 
   const [legendMax, setLegendMax] = useState(0);
   const [progress, setProgress] = useState(0);
@@ -81,6 +82,12 @@ function Home(props) {
   useEffect(() => {
     getOccupancyData(subEntities);
   }, [subEntities]);
+
+  useEffect(() => {
+    if (entity !== null) {
+      getOccupancy(entity.id);
+    }
+  }, [entity]);
 
   useEffect(() => {
     if (occupancies.length > 0) {
@@ -193,6 +200,19 @@ function Home(props) {
     setOccupancies(occupancies);
   }
 
+  async function getOccupancy(id) {
+    let occupancyResponse = await authGet(api.observation, {
+      entityId: id,
+          orderBy: 'timestamp',
+          direction: 'desc',
+          limit: '1'
+    });
+    console.log(occupancyResponse);
+    if (occupancyResponse.data.length > 0) {
+      setOccupancy(occupancyResponse.data[0].payload.value);
+    }
+  }
+
   function selectEntity(entity) {
     pushRoute([getEntityTypeName(entity), entity.id]);
   }
@@ -271,7 +291,8 @@ function Home(props) {
           selectEntity={selectEntity}
           subEntities={subEntities}
           openDialog={openDialog}
-          occupancy={sumOccupancies()}
+          // occupancy={sumOccupancies()}
+          occupancy = {occupancy}
         ></EntityInformation>
       );
     }
