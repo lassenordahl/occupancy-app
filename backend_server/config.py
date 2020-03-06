@@ -1,4 +1,5 @@
 import os
+import random
 
 TIPPERS_OAUTH_BASE_URL = 'http://128.195.53.189:5001'
 # TIPPERS_OAUTH_BASE_URL = 'http://128.195.53.189.xip.io:5001' # Allows Google Login
@@ -14,6 +15,7 @@ class DevConfig:
 	OAUTH_API_BASE_URL = TIPPERS_OAUTH_BASE_URL+'/api/2/'
 	FRONTEND_REDIRECT_URL = 'http://127.0.0.1:5000/'
 	FRONTEND_STATIC_FILES = '../../../build/static'
+	SESSION_COOKIE_NAME = 'session{}'.format(random.randint(10000, 99999))
 
 class ProdConfig:
 	SECRET_KEY = '45^br8GYKBeWdyE1tCPgISlh6r9xptam@OYX5CgzZKlQMv$xDDUZky5iCYmtQPkAg'
@@ -25,6 +27,7 @@ class ProdConfig:
 	OAUTH_API_BASE_URL = TIPPERS_OAUTH_BASE_URL+'/api/2/'
 	FRONTEND_REDIRECT_URL = 'http://127.0.0.1:5000/'
 	FRONTEND_STATIC_FILES = '../../../build/static'
+	SESSION_COOKIE_NAME = 'session{}'.format(random.randint(10000, 99999))
 
 config = {
 	'development': DevConfig,
