@@ -291,8 +291,8 @@ function Home(props) {
           selectEntity={selectEntity}
           subEntities={subEntities}
           openDialog={openDialog}
-          // occupancy={sumOccupancies()}
-          occupancy = {occupancy}
+          occupancy={sumOccupancies()}
+          // occupancy = {occupancy}
         ></EntityInformation>
       );
     }

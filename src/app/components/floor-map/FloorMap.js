@@ -60,15 +60,15 @@ class FloorMap extends React.Component {
     if (shapeType === "rectangle") {
       return self.svg
         .append("rect")
-        .attr("x", entityCoordInfo.start.x)
-        .attr("y", entityCoordInfo.start.y)
+        .attr("x", entityCoordInfo.start.x + 1)
+        .attr("y", entityCoordInfo.start.y + 1)
         .attr(
           "width",
-          Math.abs(entityCoordInfo.end.x - entityCoordInfo.start.x)
+          Math.abs(entityCoordInfo.end.x - entityCoordInfo.start.x - 2)
         )
         .attr(
           "height",
-          Math.abs(entityCoordInfo.end.y - entityCoordInfo.start.y)
+          Math.abs(entityCoordInfo.end.y - entityCoordInfo.start.y - 2)
         )
         .style("fill", "#" + rainbow.colourAt(occupancy.payload !== undefined ? occupancy.payload.value : 1));
     }
@@ -101,85 +101,72 @@ class FloorMap extends React.Component {
 
       console.log(entity.payload.geo.extent);
 
+      if (entity.payload.geo.extent.extentClassName === "rectangle") {
+        coordInfo.start.x = self.scale(
+          coordInfo.start.x,
+          range.xMin,
+          range.xMax,
+          margin,
+          clientWidth - margin
+        );
+        coordInfo.start.y = self.scale(
+          coordInfo.start.y,
+          range.yMin,
+          range.yMax,
+          margin,
+          clientHeight - margin
+        );
+  
+        coordInfo.end.x = self.scale(
+          coordInfo.end.x,
+          range.xMin,
+          range.xMax,
+          margin,
+          clientWidth - margin
+        );
+        coordInfo.end.y = self.scale(
+          coordInfo.end.y,
+          range.yMin,
+          range.yMax,
+          margin,
+          clientHeight - margin
+        );
+  
+        let currEntity = self.getGraphedEntity(
+          coordInfo.extentClassName,
+          coordInfo,
+          self.getOccupancy(index)
+        );
+  
+        currEntity.on("mouseover", function() {
+          d3.select(this);
+          self.svg
+            .append("text")
+            .attr(
+              "x",
+              coordInfo.start.x +
+                Math.abs(coordInfo.end.x - coordInfo.start.x) / 2 -
+                self.getHalfWidth(entity.name)
+            )
+            .attr("y", coordInfo.start.y - 20)
+            .attr("font-family", "Montserrat")
+            .attr("font-size", "20px")
+            .attr("fill", "black")
+            .text(function(d) {
+              return entity.name;
+            });
+        });
+  
+        currEntity.on("mouseout", function() {
+          d3.select(this);
+          self.drawContent();
+        });
 
-      coordInfo.start.x = self.scale(
-        coordInfo.start.x,
-        range.xMin,
-        range.xMax,
-        margin,
-        clientWidth - margin
-      );
-      coordInfo.start.y = self.scale(
-        coordInfo.start.y,
-        range.yMin,
-        range.yMax,
-        margin,
-        clientHeight - margin
-      );
+        return currEntity;
 
-      coordInfo.end.x = self.scale(
-        coordInfo.end.x,
-        range.xMin,
-        range.xMax,
-        margin,
-        clientWidth - margin
-      );
-      coordInfo.end.y = self.scale(
-        coordInfo.end.y,
-        range.yMin,
-        range.yMax,
-        margin,
-        clientHeight - margin
-      );
-
-      let currEntity = self.getGraphedEntity(
-        coordInfo.extentClassName,
-        coordInfo,
-        self.getOccupancy(index)
-      );
-
-      currEntity.on("mouseover", function() {
-        d3.select(this);
-        self.svg
-          .append("text")
-          .attr(
-            "x",
-            coordInfo.start.x +
-              Math.abs(coordInfo.end.x - coordInfo.start.x) / 2 -
-              self.getHalfWidth(entity.name)
-          )
-          .attr("y", coordInfo.start.y - 20)
-          .attr("font-family", "Montserrat")
-          .attr("font-size", "20px")
-          .attr("fill", "black")
-          .text(function(d) {
-            return entity.name;
-          });
-
-        // .attr(
-        //   "transform",
-        //   "translate(" +
-        //     (-1 * hover_size_bump) / 4 +
-        //     "," +
-        //     (-1 * hover_size_bump) / 4 +
-        //     ")"
-        // )
-        // .attr("width", rectangle_size + hover_size_bump)
-        // .attr("height", rectangle_size + hover_size_bump);
-      });
-
-      currEntity.on("mouseout", function() {
-        d3.select(this);
-        self.drawContent();
-        //     .attr(
-        //       "transform",
-        //       "translate(" + hover_size_bump / 4 + "," + hover_size_bump / 4 + ")"
-        //     )
-        //     .attr("width", rectangle_size)
-        //     .attr("height", rectangle_size);
-      });
-
-      return currEntity;
+      } else {
+        return null;
+      }
     });
   }
 
