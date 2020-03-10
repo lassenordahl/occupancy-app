@@ -6,6 +6,12 @@
   background-color: $blueMain;
   color: white;
 
+  .nav-buttons {
+    display: flex;
+    flex-direction: row;
+    margin-right: $tinySpacing;
+  }
+
   .app-logo {
     height: 30px;
     width: 30px;
@@ -21,11 +27,11 @@
   }
 
   li > button {
-    color: white;
+    color: white !important;
   }
 
   li:last-child > button {
-    color: white;
+    color: white !important;
   }
 
   a {
@@ -42,7 +48,7 @@
     justify-content: start;
     background-color: white;
     border-radius: 25px;
-    height: 35px;
+    height: 40px;
 
     img {
       width: 22px;
@@ -52,6 +58,7 @@
     }
 
     p {
+      font-size: 16px;
       color: $blueMain;
       margin-right: 12px;
       text-decoration: 0 !important;

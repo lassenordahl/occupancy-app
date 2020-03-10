@@ -5,9 +5,25 @@
     align-items: center;
     justify-content: center;
     text-align: center;
+    flex-direction: column;
+
+    .block {
+        margin-top: 4rem;
+        max-width: 80vw;
+        display: flex;
+        justify-content: center;
+        align-items: center; 
+        flex-direction: column;
+    }
+
+    .tutorial-wrapper {
+        display: flex;
+        justify-content: space-evenly;
+        width: 70vw;
+        flex-direction: row;
+        margin-top: 4rem;
+    }
 }
 
-.block {
-    margin-top: 8rem;
-    max-width: 75%;
-}
+
+

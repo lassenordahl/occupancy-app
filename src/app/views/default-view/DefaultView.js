@@ -1,6 +1,12 @@
 import React from "react";
 import "./DefaultView.scss";
 import { Button } from 'react-rainbow-components';
+import { OccupancyButton } from "app/components";
+import { TutorialCard } from "app/containers";
+
+import tutorialFloorplan from "assets/images/tutorial-floorplan.png";
+import tutorialMap from "assets/images/tutorial-map.png";
+
 
 function redirectLoginOrSignup(login) {
   if (login) {
@@ -17,22 +23,24 @@ function DefaultView() {
       <div class="block">
         <h1>Welcome to the TIPPERS Occupancy Tool!</h1>
         <div>Please login or signup with your TIPPERS account to continue:</div>
-        <Button
-        variant="brand"
-        className="box-shadow"
-        style={{'margin': '1.5rem', 'alignSelf': 'center'}}
-        onClick={() => redirectLoginOrSignup(true)}
-        label="Login"
-        >
-        </Button>
-        <Button
-          variant="brand"
-          className="box-shadow color-blue"
-          style={{'margin': '1.5rem', 'alignSelf': 'center'}}
-          onClick={() => redirectLoginOrSignup(false)}
-          label="Signup"
-        >
-        </Button>
+        <OccupancyButton
+          isColored={true}
+          style={{marginTop: '32px'}}
+          onClick={() => redirectLoginOrSignup(true)}
+          label="Login with TIPPERS"
+        />
+      </div>
+      <div className="tutorial-wrapper">
+        <TutorialCard
+          img={tutorialMap}
+          title={"Coordinate Maps"}
+          text={"View maps of entity spaces and their respective occupancies"}
+        />
+        <TutorialCard
+          img={tutorialFloorplan}
+          title={"2D Floorplans"}
+          text={"Explore floorplans of buildings with live analytics for each room"}
+        />
       </div>
     </div>
   );

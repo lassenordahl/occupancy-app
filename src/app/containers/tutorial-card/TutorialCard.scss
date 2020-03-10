@@ -1,0 +1,24 @@
+@import "globals/occupancy-styles.scss";
+
+.TutorialCard {
+  height: 450px;
+  width: 500px;
+  background-color: white;
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  flex-direction: column;
+  
+  img {
+    width: 500px;
+    // margin-top: 50px;
+  }
+
+  h2 {
+    margin-top: 20px;
+  }
+
+  p {
+    width: 80%;
+  }
+}

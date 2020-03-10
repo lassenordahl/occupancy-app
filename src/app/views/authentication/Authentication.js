@@ -27,7 +27,13 @@ class PrivateRoute extends React.Component {
     render() {
         let { component: Component, auth: authStatus, ...rest } = this.props;
         if (this.state.loading) {
-            return (<div>Loading authentication status...</div>);
+            return (
+                <div className="flex-center" style={{'width': '100%', 'height': '100%'}}>
+                    <p>
+                        Loading authentication status...
+                    </p>
+                </div>
+            );
         }
         else if (!this.state.verified) {
             return (<Redirect to='/home' />);

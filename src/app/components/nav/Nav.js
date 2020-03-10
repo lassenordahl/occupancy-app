@@ -8,9 +8,10 @@ import {
   serializeLocation,
   serializeLocationString
 } from "globals/utils/formatting-helper.js";
-import axios from "axios";
 import authGet from "../../../globals/authentication/AuthGet";
 import api from "globals/api";
+import { OccupancyButton } from "app/components";
+
 import tippersLogo from "assets/images/tippers-logo.png";
 import occupancyLogo from "assets/images/occupancy-logo.png";
 
@@ -75,24 +76,32 @@ function Nav(props) {
 
   // Removes everything after this index, lets you click back with the breadcrumbs
   function changeRoute(index) {
-    setFilteredRoute(currentRoute.filter(function(routeItem, rIndex) {
-      return rIndex < index;
-    }));
+    setFilteredRoute(
+      currentRoute.filter(function(routeItem, rIndex) {
+        return rIndex < index;
+      })
+    );
   }
 
   function redirectLogout() {
-    window.location.href = '/logout'
+    window.location.href = "/logout";
   }
 
   function showLoginButton() {
     if (props.auth.authStatus) {
-      return (<Button label="Logout" style={{marginLeft: "1rem"}} onClick={() => redirectLogout()}></Button>)
+      return (
+        <OccupancyButton
+          label="Logout"
+          style={{ marginLeft: "1rem" }}
+          onClick={() => redirectLogout()}
+        >
+        </OccupancyButton>
+      );
     }
   }
 
   return (
     <div className="Nav flex-split box-shadow">
-
       {willRedirect ? getRedirect() : null}
 
       <div className="flex-start-row">
@@ -110,18 +119,16 @@ function Nav(props) {
           })}
         </Breadcrumbs>
       </div>
-      <h3>
-      <a href="http://hub-tippers.ics.uci.edu">
-        <div className="circular-button box-shadow">
-          <img src={tippersLogo}></img>
-          <p>
-            Hub
-          </p>
-        </div>
-      </a>
+      <div className="nav-buttons">
+        <a href="http://hub-tippers.ics.uci.edu">
+          <div className="circular-button box-shadow">
+            <img src={tippersLogo}></img>
+            <p>Hub</p>
+          </div>
+        </a>
 
-        { showLoginButton() }
-      </h3>
+        {showLoginButton()}
+      </div>
     </div>
   );
 }
