@@ -1,6 +1,6 @@
 {
-  "name": "zothacks",
-  "version": "0.1.0",
+  "name": "occupancyapp",
+  "version": "0.6.0",
   "private": true,
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.25",

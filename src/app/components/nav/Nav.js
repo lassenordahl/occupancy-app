@@ -11,6 +11,8 @@ import {
 import axios from "axios";
 import authGet from "../../../globals/authentication/AuthGet";
 import api from "globals/api";
+import tippersLogo from "assets/images/tippers-logo.png";
+import occupancyLogo from "assets/images/occupancy-logo.png";
 
 function Nav(props) {
   let currentRoute = serializeLocation(useLocation());
@@ -94,6 +96,7 @@ function Nav(props) {
       {willRedirect ? getRedirect() : null}
 
       <div className="flex-start-row">
+        <img className="app-logo" src={occupancyLogo}></img>
         <h2>Occupancy Tool</h2>
         <Breadcrumbs class="nav-breadcrumbs" style={{ marginLeft: "16px" }}>
           {entityNames.map(function(entityName, index) {
@@ -108,8 +111,13 @@ function Nav(props) {
         </Breadcrumbs>
       </div>
       <h3>
-      <a href="http://tippersweb.ics.uci.edu/">
-        <Button label="TIPPERS Info"></Button>
+      <a href="http://hub-tippers.ics.uci.edu">
+        <div className="circular-button box-shadow">
+          <img src={tippersLogo}></img>
+          <p>
+            Hub
+          </p>
+        </div>
       </a>
 
         { showLoginButton() }

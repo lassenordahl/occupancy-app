@@ -6,3 +6,4 @@ export { default as SelectedBuilding } from './selected-building/SelectedBuildin
 export { default as FloorMap } from './floor-map/FloorMap';
 export { default as D3Shape } from './d3-shape/D3Shape';
 export { default as DateRangeSelect } from './dialog-components/date-range-select/DateRangeSelect';
+export { default as OccupancyButton } from './buttons/OccupancyButton';

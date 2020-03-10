@@ -12,6 +12,7 @@ import {
 import { NumberFocus } from "app/containers";
 
 import { capitalizeWords } from "globals/utils/formatting-helper";
+import { OccupancyButton } from "../../../components";
 
 function EntityInformation(props) {
   const entity = props.entity;
@@ -48,16 +49,7 @@ function EntityInformation(props) {
       <DatePicker label="to" value={toDate} disabled={!realtime} />
 
       <div style={{ height: "24px" }} />
-{/* 
-      <h2>Entity Class</h2>
-      <p>{entity.entityClassName}</p>
 
-      <div style={{ height: "24px" }} /> */}
-
-      {/* <h2>Entity Type</h2>
-      <p>{capitalizeWords(entity.entityTypeName)}</p> */}
-
-      {/* <div style={{ height: "24px" }} /> */}
 
       <h2>Contained Spaces</h2>
       <Picklist
@@ -65,7 +57,13 @@ function EntityInformation(props) {
         onChange={value => selectEntity(value)}
         placeholder="Select a space"
       >
-        {props.subEntities.map(function(entity, index) {
+        {props.subEntities.sort(function(a, b) {
+          if (a.name < b.name)
+            return -1;
+          if (a.name > b.name)
+            return 1;
+          return 0;
+        }).map(function(entity, index) {
           return (
             <PicklistOption
               key={index}
@@ -89,13 +87,12 @@ function EntityInformation(props) {
         realtime={realtime}
       ></SelectedBuilding>     */}
 
-      <Button
-        variant="brand"
-        className="box-shadow color-blue"
+      <OccupancyButton
+        className="box-shadow"
         style={{ marginTop: "auto", alignSelf: "center" }}
         onClick={() => props.openDialog(entity, "Detailed Entity View")}
         label="Analytics"
-      ></Button>
+      ></OccupancyButton>
     </div>
   );
 }

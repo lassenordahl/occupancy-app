@@ -42,8 +42,6 @@ import { serializeLocation } from "globals/utils/formatting-helper";
 */
 
 function App() {
-  // App entity for the application and the app type
-  const [appEntity, setAppEntity] = useState(null);
 
   const [authStatus, setAuthStatus] = useState(false);
 
@@ -68,9 +66,6 @@ function App() {
                 ></Home>
               )}
             />
-            {/* <Route exact path='/'>
-              <Redirect to={'/' + routes[0]}></Redirect>
-            </Route> */}
             <Route component={InvalidRoute}></Route>
           </Switch>
         </div>
