@@ -9,8 +9,6 @@ const hover_size_bump = 6;
 const rectangle_size = 120;
 
 class FloorMap extends React.Component {
-  
-
   constructor(props) {
     super(props);
 
@@ -50,7 +48,6 @@ class FloorMap extends React.Component {
     }
   }
 
-
   getGraphedEntity(shapeType, entityCoordInfo, occupancy) {
     let rainbow = getBlueRainbow(this.props.legendMax);
 
@@ -70,15 +67,45 @@ class FloorMap extends React.Component {
           "height",
           Math.abs(entityCoordInfo.end.y - entityCoordInfo.start.y - 2)
         )
-        .style("fill", "#" + rainbow.colourAt(occupancy.payload !== undefined ? occupancy.payload.value : 1));
+        .style(
+          "fill",
+          "#" +
+            rainbow.colourAt(
+              occupancy.payload !== undefined ? occupancy.payload.value : 1
+            )
+        );
+    } else if (shapeType === "polygon") {
+      console.log(
+        entityCoordInfo
+          .map(function(verticie) {
+            return [Math.floor(verticie.x), Math.floor(verticie.y)].join(",");
+          })
+          .join(" ")
+      );
+
+      return self.svg
+        .append("polygon")
+        .attr(
+          "points",
+          entityCoordInfo
+            .map(function(verticie) {
+              return [verticie.x, verticie.y].join(",");
+            })
+            .join(" ")
+        )
+        .style(
+          "fill",
+          "#" +
+            rainbow.colourAt(
+              occupancy.payload !== undefined ? occupancy.payload.value : 1
+            )
+        );
     }
   }
 
   getHalfWidth(word) {
     return (word.length / 2) * 11;
   }
-
-  
 
   drawContent() {
     let self = this;
@@ -89,7 +116,10 @@ class FloorMap extends React.Component {
       return;
     }
 
-    this.entities = self.props.twoDimensionalEntities.map(function(entity, index) {
+    this.entities = self.props.twoDimensionalEntities.map(function(
+      entity,
+      index
+    ) {
       let clientWidth = self.svg._groups[0][0].clientWidth;
       let clientHeight = self.svg._groups[0][0].clientHeight;
 
@@ -98,8 +128,6 @@ class FloorMap extends React.Component {
       let range = coordSystem.range;
 
       let margin = 40;
-
-      console.log(entity.payload.geo.extent);
 
       if (entity.payload.geo.extent.extentClassName === "rectangle") {
         coordInfo.start.x = self.scale(
@@ -116,7 +144,7 @@ class FloorMap extends React.Component {
           margin,
           clientHeight - margin
         );
-  
+
         coordInfo.end.x = self.scale(
           coordInfo.end.x,
           range.xMin,
@@ -131,13 +159,13 @@ class FloorMap extends React.Component {
           margin,
           clientHeight - margin
         );
-  
+
         let currEntity = self.getGraphedEntity(
           coordInfo.extentClassName,
           coordInfo,
           self.getOccupancy(index)
         );
-  
+
         currEntity.on("mouseover", function() {
           d3.select(this);
           self.svg
@@ -156,14 +184,44 @@ class FloorMap extends React.Component {
               return entity.name;
             });
         });
-  
+
         currEntity.on("mouseout", function() {
           d3.select(this);
           self.drawContent();
         });
 
         return currEntity;
+        return null;
+      } else if (entity.payload.geo.extent.extentClassName === "polygon") {
+        console.log(entity.payload.geo.extent.verticies);
+        let newVerticies = entity.payload.geo.extent.verticies.map(function(
+          verticie
+        ) {
+          return {
+            x: self.scale(
+              verticie.x,
+              range.xMin,
+              range.xMax,
+              margin,
+              clientWidth - margin
+            ),
+            y: self.scale(
+              verticie.y,
+              range.yMin,
+              range.yMax,
+              margin,
+              clientWidth - margin
+            )
+          };
+        });
 
+        let currEntity = self.getGraphedEntity(
+          "polygon",
+          newVerticies,
+          self.getOccupancy(index)
+        );
+
+        return currEntity;
       } else {
         return null;
       }
