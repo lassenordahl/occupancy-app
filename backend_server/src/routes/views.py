@@ -1,4 +1,4 @@
-gotimport os
+import os
 from src import oauth, config
 from flask import url_for, redirect, Blueprint, render_template, session, request, jsonify, send_from_directory, make_response
 

@@ -88,6 +88,7 @@ function EntityInformation(props) {
       ></SelectedBuilding>     */}
 
       <OccupancyButton
+        isColored={true}
         className="box-shadow"
         style={{ marginTop: "auto", alignSelf: "center" }}
         onClick={() => props.openDialog(entity, "Detailed Entity View")}
