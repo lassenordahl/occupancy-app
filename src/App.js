@@ -50,6 +50,7 @@ function App() {
       <Router history={history}>
         <Nav auth={{authStatus: authStatus}}></Nav>
         <div className="app-content">
+          {/* <DefaultView></DefaultView> */}
           <Switch>
             <Route
               path={"/home"}

@@ -265,14 +265,8 @@ function Home(props) {
     } else {
       return (
         <React.Fragment>
-          {/* <div className="information-header-text"> */}
-            <h1>{capitalizeWords(entity.name)}</h1>
-            <p>{capitalizeWords(entity.entityTypeName)}</p>
-          {/* </div> */}
-{/*  
-          <div className="information-spinner">
-            <Spinner size="medium"></Spinner>
-          </div> */}
+          <h1>{capitalizeWords(entity.name)}</h1>
+          <p>{capitalizeWords(entity.entityTypeName)}</p>
         </React.Fragment>
       );
     }
@@ -309,6 +303,10 @@ function Home(props) {
   function renderMap() {
     if (entityType === null) {
       return null;
+    }
+
+    if (entity.name === "Stanford 1100A" || entity.name === "Stanford 1100B" || entity.name === "Floor 2" || entity.name === "Floor 1") {
+      return render2DMap();
     }
 
     if (entityType === "gps" || entityType === "cartesian2hfd") {
