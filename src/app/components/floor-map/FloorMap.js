@@ -57,15 +57,15 @@ class FloorMap extends React.Component {
     if (shapeType === "rectangle") {
       return self.svg
         .append("rect")
-        .attr("x", entityCoordInfo.start.x + 1)
-        .attr("y", entityCoordInfo.start.y + 1)
+        .attr("x", entityCoordInfo.start.x + 2)
+        .attr("y", entityCoordInfo.start.y + 2)
         .attr(
           "width",
-          Math.abs(entityCoordInfo.end.x - entityCoordInfo.start.x - 2)
+          Math.abs(entityCoordInfo.end.x - entityCoordInfo.start.x - 4)
         )
         .attr(
           "height",
-          Math.abs(entityCoordInfo.end.y - entityCoordInfo.start.y - 2)
+          Math.abs(entityCoordInfo.end.y - entityCoordInfo.start.y - 4)
         )
         .style(
           "fill",
@@ -210,7 +210,7 @@ class FloorMap extends React.Component {
               range.yMin,
               range.yMax,
               margin,
-              clientWidth - margin
+              clientHeight - margin
             )
           };
         });
