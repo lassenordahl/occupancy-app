@@ -341,16 +341,16 @@ function Home(props) {
         </Dialog>
       ) : null}
 
-      <Card className="legend-card" style={{ width: "280px" }}>
+      <Card className="legend-card" style={{ width: "240px" }}>
         <div className="legend-header">
-          <h1>Legend</h1>
+          <h2 style={{marginBottom: '0px'}}>Legend</h2>
         </div>
         <div className="legend-content">
           <Legend legendMax={legendMax}></Legend>
         </div>
       </Card>
 
-      <Card className="information-card" style={{ width: "400px" }}>
+      <Card className="information-card" style={{ width: "360px" }}>
         <div className="information-header">{renderTitle(entity)}</div>
         <div className="information-tab-content">{renderView(entity)}</div>
       </Card>

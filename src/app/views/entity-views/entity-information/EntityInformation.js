@@ -3,7 +3,7 @@ import "./EntityInformation.scss";
 
 import {
   DatePicker,
-  Button,
+  DateTimePicker,
   Picklist,
   PicklistOption,
   CheckboxToggle
@@ -19,8 +19,9 @@ function EntityInformation(props) {
 
   const [selectedEntity, setSelectedEntity] = useState(null);
   const [realtime, setRealtime] = useState(false);
-  const [fromDate] = useState(new Date());
-  const [toDate] = useState(new Date());
+  const [fromDate, setFromDate] = useState(new Date());
+  const [toDate, setToDate] = useState(new Date());
+  const [currentDate, setCurrentDate] = useState(new Date());
 
   useEffect(() => {
     setSelectedEntity(null);
@@ -37,6 +38,15 @@ function EntityInformation(props) {
 
   return (
     <div className="EntityInformation">
+      <h2>Current Date</h2>
+      <DateTimePicker
+        value={currentDate}
+        disabled={realtime}
+        onChange={value => setCurrentDate(value)}
+      />
+
+      <div style={{ height: "24px" }} />
+
       <div className="header-toggle">
         <h2>Date Range</h2>
         <CheckboxToggle
@@ -44,12 +54,11 @@ function EntityInformation(props) {
           onChange={event => setRealtime(!realtime)}
         />
       </div>
-      <DatePicker label="from" value={fromDate} disabled={!realtime} />
+      <DateTimePicker label="from" value={fromDate} disabled={!realtime} />
       <div style={{ height: "16px" }} />
-      <DatePicker label="to" value={toDate} disabled={!realtime} />
+      <DateTimePicker label="to" value={toDate} disabled={!realtime} />
 
       <div style={{ height: "24px" }} />
-
 
       <h2>Contained Spaces</h2>
       <Picklist
@@ -57,22 +66,22 @@ function EntityInformation(props) {
         onChange={value => selectEntity(value)}
         placeholder="Select a space"
       >
-        {props.subEntities.sort(function(a, b) {
-          if (a.name < b.name)
-            return -1;
-          if (a.name > b.name)
-            return 1;
-          return 0;
-        }).map(function(entity, index) {
-          return (
-            <PicklistOption
-              key={index}
-              name={entity.name}
-              label={capitalizeWords(entity.name)}
-              value={entity}
-            />
-          );
-        })}
+        {props.subEntities
+          .sort(function(a, b) {
+            if (a.name < b.name) return -1;
+            if (a.name > b.name) return 1;
+            return 0;
+          })
+          .map(function(entity, index) {
+            return (
+              <PicklistOption
+                key={index}
+                name={entity.name}
+                label={capitalizeWords(entity.name)}
+                value={entity}
+              />
+            );
+          })}
       </Picklist>
 
       <div style={{ height: "24px" }} />
