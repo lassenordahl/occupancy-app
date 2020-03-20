@@ -9,9 +9,8 @@ import { Legend, CoordinateMap, FloorMap } from "app/components";
 import app_config from "globals/config";
 import authGet from "../../../globals/authentication/AuthGet";
 import api from "globals/api";
-import { Spinner } from 'react-rainbow-components';
-import LoadingBar from 'react-top-loading-bar';
-
+import { Spinner } from "react-rainbow-components";
+import LoadingBar from "react-top-loading-bar";
 
 import { EntityInformation, OccupancyDialog } from "app/views";
 
@@ -85,7 +84,7 @@ function Home(props) {
 
   useEffect(() => {
     if (entity !== null) {
-      getOccupancy(entity.id);
+      // getOccupancy(entity.id);
     }
   }, [entity]);
 
@@ -93,8 +92,10 @@ function Home(props) {
     if (occupancies.length > 0) {
       let max = 0;
       for (let i = 0; i < occupancies.length; i++) {
-        if (occupancies[i].payload.value > max) {
-          max = occupancies[i].payload.value;
+        if (occupancies[i].payload !== undefined) {
+          if (occupancies[i].payload.value > max) {
+            max = occupancies[i].payload.value;
+          }
         }
       }
       setLegendMax(max);
@@ -174,14 +175,13 @@ function Home(props) {
   }
 
   async function getOccupancyData(subEntities) {
-
     let occupancyResponses = await Promise.all(
       subEntities.map(function(subEntity) {
         return authGet(api.observation, {
           entityId: subEntity.id,
-          orderBy: 'timestamp',
-          direction: 'desc',
-          limit: '1'
+          orderBy: "timestamp",
+          direction: "desc",
+          limit: "1"
         });
       })
     );
@@ -189,11 +189,15 @@ function Home(props) {
     setProgress(80);
 
     let occupancies = occupancyResponses.map(function(response, index) {
-      let occupancyData = response.data[0];
-      if (occupancyData === undefined) {
-        occupancyData = {payload:{value:0}};
+      if (response.data !== undefined) {
+        let occupancyData = response.data[0];
+        if (occupancyData === undefined) {
+          occupancyData = { payload: { value: 0 } };
+        }
+        return occupancyData;
+      } else {
+        return 0;
       }
-      return occupancyData;
     });
 
     setProgress(100);
@@ -203,9 +207,9 @@ function Home(props) {
   async function getOccupancy(id) {
     let occupancyResponse = await authGet(api.observation, {
       entityId: id,
-          orderBy: 'timestamp',
-          direction: 'desc',
-          limit: '1'
+      orderBy: "timestamp",
+      direction: "desc",
+      limit: "1"
     });
     console.log(occupancyResponse);
     if (occupancyResponse.data.length > 0) {
@@ -295,7 +299,7 @@ function Home(props) {
   function sumOccupancies() {
     let sum = 0;
     for (let i = 0; i < occupancies.length; i++) {
-      sum += occupancies[i].payload.value;
+      sum += occupancies[i].payload === undefined ? 0 : occupancies[i].payload.value;
     }
     return sum;
   }
@@ -305,7 +309,12 @@ function Home(props) {
       return null;
     }
 
-    if (entity.name === "Stanford 1100A" || entity.name === "Stanford 1100B" || entity.name === "Floor 2" || entity.name === "Floor 1") {
+    if (
+      entity.name === "Stanford 1100A" ||
+      entity.name === "Stanford 1100B" ||
+      entity.name === "Floor 2" ||
+      entity.name === "Floor 1"
+    ) {
       return render2DMap();
     }
 

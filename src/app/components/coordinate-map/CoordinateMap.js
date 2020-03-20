@@ -148,7 +148,7 @@ function CoordinateMap(props) {
 
   function getOccupancy(index) {
     if (props.occupancies[index] !== undefined) {
-      return props.occupancies[index].payload.value;
+      return props.occupancies[index].payload === undefined ? 0 : props.occupancies[index].payload.value;
     } else {
       return 0;
     }
