@@ -100,7 +100,7 @@ function EntityInformation(props) {
       <div style={{ height: "24px" }} />
 
       <div className="header-toggle">
-        <h2>Occupancy{props.progress}</h2>
+        <h2>Occupancy</h2>
         <FontAwesomeIcon
           icon={faSync}
           onClick={() => props.refreshOccupancies()}
