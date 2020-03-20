@@ -7,6 +7,14 @@
   }
 
   .number-focus-subtitle {
+    font-size: 1em;
+    color: $darkGray;
+  }
+
+  .number-focus-last-updated {
+    margin-top: .3em;
+    font-size: .8em;
     color: $lightGray;
+
   }
 }

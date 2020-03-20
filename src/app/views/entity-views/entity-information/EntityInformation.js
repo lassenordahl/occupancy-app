@@ -9,9 +9,15 @@ import {
   CheckboxToggle
 } from "react-rainbow-components";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSync } from "@fortawesome/free-solid-svg-icons";
+
 import { NumberFocus } from "app/containers";
 
-import { capitalizeWords } from "globals/utils/formatting-helper";
+import {
+  capitalizeWords,
+  getMostRecentOccupancyTimestamp
+} from "globals/utils/formatting-helper";
 import { OccupancyButton } from "../../../components";
 
 function EntityInformation(props) {
@@ -19,9 +25,6 @@ function EntityInformation(props) {
 
   const [selectedEntity, setSelectedEntity] = useState(null);
   const [realtime, setRealtime] = useState(false);
-  const [fromDate, setFromDate] = useState(new Date());
-  const [toDate, setToDate] = useState(new Date());
-  const [currentDate, setCurrentDate] = useState(new Date());
 
   useEffect(() => {
     setSelectedEntity(null);
@@ -40,9 +43,9 @@ function EntityInformation(props) {
     <div className="EntityInformation">
       <h2>Current Date</h2>
       <DateTimePicker
-        value={currentDate}
+        value={props.currentDate}
         disabled={realtime}
-        onChange={value => setCurrentDate(value)}
+        onChange={value => props.setCurrentDate(value)}
       />
 
       <div style={{ height: "24px" }} />
@@ -54,9 +57,19 @@ function EntityInformation(props) {
           onChange={event => setRealtime(!realtime)}
         />
       </div>
-      <DateTimePicker label="from" value={fromDate} disabled={!realtime} />
+      <DateTimePicker
+        label="from"
+        value={props.fromDate}
+        disabled={!realtime}
+        onChange={value => props.setFromDate(value)}
+      />
       <div style={{ height: "16px" }} />
-      <DateTimePicker label="to" value={toDate} disabled={!realtime} />
+      <DateTimePicker
+        label="to"
+        value={props.toDate}
+        disabled={!realtime}
+        onChange={value => props.setToDate(value)}
+      />
 
       <div style={{ height: "24px" }} />
 
@@ -86,15 +99,22 @@ function EntityInformation(props) {
 
       <div style={{ height: "24px" }} />
 
-      <h2>Occupancy</h2>
-      <NumberFocus subtitle="Occupants">{props.occupancy}</NumberFocus>
-      {/*       
-      
-      <h2>Selected Building</h2>
-      <SelectedBuilding 
-        building={props.building}
-        realtime={realtime}
-      ></SelectedBuilding>     */}
+      <div className="header-toggle">
+        <h2>Occupancy{props.progress}</h2>
+        <FontAwesomeIcon
+          icon={faSync}
+          onClick={() => props.refreshOccupancies()}
+          className="entity-refresh-icon"
+          // className={"entity-refresh-icon" + (props.progress === 0 || props.progress === 100 ? "" : " entity-refresh-spinner")}
+        ></FontAwesomeIcon>
+      </div>
+
+      <NumberFocus
+        subtitle="Occupants"
+        lastUpdated={getMostRecentOccupancyTimestamp(props.occupancies)}
+      >
+        {props.occupancy}
+      </NumberFocus>
 
       <OccupancyButton
         isColored={true}
