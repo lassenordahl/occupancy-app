@@ -3,15 +3,21 @@ import "./EntityInformation.scss";
 
 import {
   DatePicker,
-  Button,
+  DateTimePicker,
   Picklist,
   PicklistOption,
   CheckboxToggle
 } from "react-rainbow-components";
 
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSync } from "@fortawesome/free-solid-svg-icons";
+
 import { NumberFocus } from "app/containers";
 
-import { capitalizeWords } from "globals/utils/formatting-helper";
+import {
+  capitalizeWords,
+  getMostRecentOccupancyTimestamp
+} from "globals/utils/formatting-helper";
 import { OccupancyButton } from "../../../components";
 
 function EntityInformation(props) {
@@ -19,8 +25,6 @@ function EntityInformation(props) {
 
   const [selectedEntity, setSelectedEntity] = useState(null);
   const [realtime, setRealtime] = useState(false);
-  const [fromDate] = useState(new Date());
-  const [toDate] = useState(new Date());
 
   useEffect(() => {
     setSelectedEntity(null);
@@ -37,6 +41,15 @@ function EntityInformation(props) {
 
   return (
     <div className="EntityInformation">
+      <h2>Current Date</h2>
+      <DateTimePicker
+        value={props.currentDate}
+        disabled={realtime}
+        onChange={value => props.setCurrentDate(value)}
+      />
+
+      <div style={{ height: "24px" }} />
+
       <div className="header-toggle">
         <h2>Date Range</h2>
         <CheckboxToggle
@@ -44,12 +57,21 @@ function EntityInformation(props) {
           onChange={event => setRealtime(!realtime)}
         />
       </div>
-      <DatePicker label="from" value={fromDate} disabled={!realtime} />
+      <DateTimePicker
+        label="from"
+        value={props.fromDate}
+        disabled={!realtime}
+        onChange={value => props.setFromDate(value)}
+      />
       <div style={{ height: "16px" }} />
-      <DatePicker label="to" value={toDate} disabled={!realtime} />
+      <DateTimePicker
+        label="to"
+        value={props.toDate}
+        disabled={!realtime}
+        onChange={value => props.setToDate(value)}
+      />
 
       <div style={{ height: "24px" }} />
-
 
       <h2>Contained Spaces</h2>
       <Picklist
@@ -57,35 +79,42 @@ function EntityInformation(props) {
         onChange={value => selectEntity(value)}
         placeholder="Select a space"
       >
-        {props.subEntities.sort(function(a, b) {
-          if (a.name < b.name)
-            return -1;
-          if (a.name > b.name)
-            return 1;
-          return 0;
-        }).map(function(entity, index) {
-          return (
-            <PicklistOption
-              key={index}
-              name={entity.name}
-              label={capitalizeWords(entity.name)}
-              value={entity}
-            />
-          );
-        })}
+        {props.subEntities
+          .sort(function(a, b) {
+            if (a.name < b.name) return -1;
+            if (a.name > b.name) return 1;
+            return 0;
+          })
+          .map(function(entity, index) {
+            return (
+              <PicklistOption
+                key={index}
+                name={entity.name}
+                label={capitalizeWords(entity.name)}
+                value={entity}
+              />
+            );
+          })}
       </Picklist>
 
       <div style={{ height: "24px" }} />
 
-      <h2>Occupancy</h2>
-      <NumberFocus subtitle="Occupants">{props.occupancy}</NumberFocus>
-      {/*       
-      
-      <h2>Selected Building</h2>
-      <SelectedBuilding 
-        building={props.building}
-        realtime={realtime}
-      ></SelectedBuilding>     */}
+      <div className="header-toggle">
+        <h2>Occupancy{props.progress}</h2>
+        <FontAwesomeIcon
+          icon={faSync}
+          onClick={() => props.refreshOccupancies()}
+          className="entity-refresh-icon"
+          // className={"entity-refresh-icon" + (props.progress === 0 || props.progress === 100 ? "" : " entity-refresh-spinner")}
+        ></FontAwesomeIcon>
+      </div>
+
+      <NumberFocus
+        subtitle="Occupants"
+        lastUpdated={getMostRecentOccupancyTimestamp(props.occupancies)}
+      >
+        {props.occupancy}
+      </NumberFocus>
 
       <OccupancyButton
         isColored={true}

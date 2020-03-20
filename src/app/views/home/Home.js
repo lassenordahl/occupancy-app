@@ -9,9 +9,7 @@ import { Legend, CoordinateMap, FloorMap } from "app/components";
 import app_config from "globals/config";
 import authGet from "../../../globals/authentication/AuthGet";
 import api from "globals/api";
-import { Spinner } from 'react-rainbow-components';
 import LoadingBar from 'react-top-loading-bar';
-
 
 import { EntityInformation, OccupancyDialog } from "app/views";
 
@@ -19,6 +17,7 @@ import {
   serializeLocation,
   capitalizeWords
 } from "globals/utils/formatting-helper";
+import moment from "moment";
 
 function Home(props) {
   // Variable to keep track of if we're loading the app for the first time
@@ -34,12 +33,19 @@ function Home(props) {
   const [willRedirect, redirect] = useState(false);
   const [newRoute, pushRoute] = useState(["occupancy", app_config.id]);
 
+  // Entity Information
   const [entity, setEntity] = useState(null); // Our selected entity
   const [entityType, setEntityType] = useState(null);
   const [subEntities, setSubEntities] = useState([]); // Sub entities of our current selected entity
   const [occupancies, setOccupancies] = useState([]);
   const [occupancy, setOccupancy] = useState(0);
 
+  // Date Selections
+  const [fromDate, setFromDate] = useState(new Date());
+  const [toDate, setToDate] = useState(new Date());
+  const [currentDate, setCurrentDate] = useState(new Date());
+
+  // Helper Variables
   const [legendMax, setLegendMax] = useState(0);
   const [progress, setProgress] = useState(0);
 
@@ -49,10 +55,6 @@ function Home(props) {
     props.history.listen(function(location, action) {
       // New route comes from the URL
       let newRoute = serializeLocation(location);
-
-      // setCurrentRoute(newRoute);
-      // parseUrlRoute()
-
       // If we have an entity at the end, we can load it as our home screen
       if (newRoute.length > 0) {
         getEntity(newRoute[newRoute.length - 1]);
@@ -80,7 +82,7 @@ function Home(props) {
   }, [firstLoad]);
 
   useEffect(() => {
-    getOccupancyData(subEntities);
+    getOccupancyData(subEntities, currentDate);
   }, [subEntities]);
 
   useEffect(() => {
@@ -100,6 +102,12 @@ function Home(props) {
       setLegendMax(max);
     }
   }, [occupancies]);
+
+  function refreshOccupancies() {
+    if (subEntities.length > 0) {
+      getOccupancyData(subEntities, currentDate);   
+    }
+  }
 
   function getRedirect() {
     let route;
@@ -173,15 +181,17 @@ function Home(props) {
       });
   }
 
-  async function getOccupancyData(subEntities) {
-
+  async function getOccupancyData(subEntities, time) {
+    console.log('OCCUPANCY DATA', time);
+    console.log(moment(time).format("YYYY-MM-DD hh:mm:ss"));
     let occupancyResponses = await Promise.all(
       subEntities.map(function(subEntity) {
         return authGet(api.observation, {
           entityId: subEntity.id,
           orderBy: 'timestamp',
           direction: 'desc',
-          limit: '1'
+          limit: '1',
+          before: moment(time).format("YYYY-MM-DD hh:mm:ss")
         });
       })
     );
@@ -286,7 +296,16 @@ function Home(props) {
           subEntities={subEntities}
           openDialog={openDialog}
           occupancy={sumOccupancies()}
+          occupancies={occupancies}
           // occupancy = {occupancy}
+          refreshOccupancies={refreshOccupancies}
+          currentDate={currentDate}
+          setCurrentDate={setCurrentDate}
+          fromDate={fromDate}
+          setFromDate={setFromDate}
+          toDate={toDate}
+          setToDate={setToDate}
+          progress={progress}
         ></EntityInformation>
       );
     }
@@ -341,16 +360,16 @@ function Home(props) {
         </Dialog>
       ) : null}
 
-      <Card className="legend-card" style={{ width: "280px" }}>
+      <Card className="legend-card" style={{ width: "240px" }}>
         <div className="legend-header">
-          <h1>Legend</h1>
+          <h2 style={{marginBottom: '0px'}}>Legend</h2>
         </div>
         <div className="legend-content">
           <Legend legendMax={legendMax}></Legend>
         </div>
       </Card>
 
-      <Card className="information-card" style={{ width: "400px" }}>
+      <Card className="information-card" style={{ width: "360px" }}>
         <div className="information-header">{renderTitle(entity)}</div>
         <div className="information-tab-content">{renderView(entity)}</div>
       </Card>
