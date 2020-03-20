@@ -11,6 +11,7 @@ import {
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSync } from "@fortawesome/free-solid-svg-icons";
+import moment from 'moment';
 
 import { NumberFocus } from "app/containers";
 
@@ -57,15 +58,17 @@ function EntityInformation(props) {
           onChange={event => setRealtime(!realtime)}
         />
       </div>
+      <div style={{ height: "16px" }} />
+
       <DateTimePicker
-        label="from"
+        // label="from"
         value={props.fromDate}
         disabled={!realtime}
         onChange={value => props.setFromDate(value)}
       />
       <div style={{ height: "16px" }} />
       <DateTimePicker
-        label="to"
+        // label="to"
         value={props.toDate}
         disabled={!realtime}
         onChange={value => props.setToDate(value)}

@@ -23,7 +23,6 @@ export function serializeLocationString(locationString) {
 }
 
 export function getMostRecentOccupancyTimestamp(occupancies) {
-  console.log(occupancies);
   if (occupancies === null || occupancies === undefined || occupancies.length < 1) {
     return new Date();
   }
@@ -35,6 +34,5 @@ export function getMostRecentOccupancyTimestamp(occupancies) {
       mostRecentDate = occupancies[i].timestamp;
     }
   }
-
-  return new Date(mostRecentDate);
+  return Date(mostRecentDate);
 }
