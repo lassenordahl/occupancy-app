@@ -1,26 +1,14 @@
 import React, { useState, useEffect } from "react";
 import history from "./history";
 import "./App.scss";
-import ApplicationContext from "globals/contexts/ApplicationContext";
-import RouteContext from "globals/contexts/RouteContext";
-import authGet from "globals/authentication/AuthGet";
-import app_config from "globals/config.js";
-import { Spinner } from "react-rainbow-components";
-import {
-  Route,
-  Switch,
-  BrowserRouter as Router,
-  Redirect,
-  useLocation
-} from "react-router-dom";
-import axios from "axios";
-// import { seralizeLocation } from 'globals/formatting-helper';
+
+import { Route, Switch, BrowserRouter as Router } from "react-router-dom";
 
 import { Nav } from "app/components";
 
 import { Home, InvalidRoute, PrivateRoute, DefaultView } from "app/views";
 
-import { serializeLocation } from "globals/utils/formatting-helper";
+import { Application } from "react-rainbow-components";
 
 /*
   3 TYPES OF ROOTS
@@ -41,36 +29,37 @@ import { serializeLocation } from "globals/utils/formatting-helper";
 
 */
 
-function App() {
+var applicationTheme = {
+  rainbow: {
+    palette: {
+      brand: "#2749c4"
+    }
+  }
+};
 
+function App() {
   const [authStatus, setAuthStatus] = useState(false);
 
   return (
     <div className="App">
-      <Router history={history}>
-        <Nav auth={{authStatus: authStatus}}></Nav>
-        <div className="app-content">
-          {/* <DefaultView></DefaultView> */}
-          <Switch>
-            <Route
-              path={"/home"}
-              component={DefaultView}
-            />
-            <Route
-              path={"/"}
-              onChange={() => console.log('changed route')}
-              auth={{authStatus: authStatus, setAuthStatus: setAuthStatus}}
-              component={props => (
-                <Home
-                  {...props}
-                  appRoute={[]}
-                ></Home>
-              )}
-            />
-            <Route component={InvalidRoute}></Route>
-          </Switch>
-        </div>
-      </Router>
+      <Application theme={applicationTheme}>
+        <Router history={history}>
+          <Nav auth={{ authStatus: authStatus }}></Nav>
+          <div className="app-content">
+            {/* <DefaultView></DefaultView> */}
+            <Switch>
+              <Route path={"/home"} component={DefaultView} />
+              <Route
+                path={"/"}
+                onChange={() => console.log("changed route")}
+                auth={{ authStatus: authStatus, setAuthStatus: setAuthStatus }}
+                component={props => <Home {...props} appRoute={[]}></Home>}
+              />
+              <Route component={InvalidRoute}></Route>
+            </Switch>
+          </div>
+        </Router>
+      </Application>
     </div>
   );
 }

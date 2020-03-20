@@ -4,10 +4,6 @@ import "./FloorMap.scss";
 import * as d3 from "d3";
 import getBlueRainbow from "globals/utils/rainbowvis-helper.js";
 
-const margin = 100; // in px
-const hover_size_bump = 6;
-const rectangle_size = 120;
-
 class FloorMap extends React.Component {
   constructor(props) {
     super(props);
@@ -75,14 +71,6 @@ class FloorMap extends React.Component {
             )
         );
     } else if (shapeType === "polygon") {
-      console.log(
-        entityCoordInfo
-          .map(function(verticie) {
-            return [Math.floor(verticie.x), Math.floor(verticie.y)].join(",");
-          })
-          .join(" ")
-      );
-
       return self.svg
         .append("polygon")
         .attr(

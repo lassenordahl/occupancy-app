@@ -7,10 +7,27 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: $tinySpacing;
+    margin-bottom: 8px;
   
     h2 {
       margin-bottom: 0 !important;
     }
+  }
+
+  .entity-refresh-icon:hover {
+    color: gray;
+  }
+
+  @keyframes spin {
+    0% {
+      transform: rotateZ(0);
+    }
+    100% {
+      transform: rotateZ(360deg);
+    }
+  }
+
+  .entity-refresh-spinner {
+    animation: spin 3s linear infinite;
   }
 }
