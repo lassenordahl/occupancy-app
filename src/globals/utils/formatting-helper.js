@@ -36,3 +36,15 @@ export function getMostRecentOccupancyTimestamp(occupancies) {
   }
   return Date(mostRecentDate);
 }
+
+export function getEntityType(entity) {
+  if (entity === null || entity === undefined) {
+    return "invalid";
+  }
+
+  try {
+    return entity.payload.geo.coordinateSystem.coordinateSystemClassName;
+  } catch {
+    return "invalid";
+  }
+}

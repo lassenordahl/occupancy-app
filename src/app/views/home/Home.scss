@@ -117,7 +117,8 @@
     z-index: 1;
     display: flex;
     flex-direction: column;
-    transition: opacity ease-in-out .5s;
+    height: 280px;
+    transition: height ease-in-out .5s;
 
     h1, h2, h3, h4, h5, h6 {
       margin-top: 0;
@@ -130,13 +131,27 @@
     }
 
     .legend-header {
+      display: flex;
       margin: $mediumSpacing;
       margin-bottom: 0;
-      flex-direction: column;
+      margin-top: $mediumSpacing;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      transition: all ease-in-out .5s;
     
       h1 {
         margin-bottom: 0;
       }
+    }
+
+    .legend-header-margin {
+      margin-bottom: $tinySpacing;
+      margin-top: $tinySpacing;
+    }
+
+    svg {
+      font-size: 2em;
     }
 
     .legend-content {
@@ -152,11 +167,20 @@
         height: calc(100% - 72px);
       }
     }
+
+    .legend-content-none {
+      opacity: 0;
+      display: none;
+    }
   }
 
-  .legend-card:hover {
-    opacity: 0;
+  .legend-card-none {
+    height: 68px;
   }
+
+  // .legend-card:hover {
+  //   opacity: 0;
+  // }
 
   .selected-building-info {
     display: flex;
