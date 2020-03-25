@@ -2,7 +2,6 @@ import React from "react";
 import './TutorialCard.scss';
 
 function TutorialCard(props) {
-  console.log(props.img);
   return (
     <div className="TutorialCard box-shadow">
         <img 

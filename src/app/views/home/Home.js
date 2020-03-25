@@ -4,14 +4,14 @@ import "./Home.scss";
 import "leaflet/dist/leaflet.css";
 import { Redirect, useLocation, withRouter } from "react-router";
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faCaretDown, faCaretUp } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCaretDown, faCaretUp } from "@fortawesome/free-solid-svg-icons";
 import { Card, Dialog } from "app/containers";
 import { Legend, CoordinateMap, FloorMap } from "app/components";
 import app_config from "globals/config";
 import authGet from "../../../globals/authentication/AuthGet";
 import api from "globals/api";
-import LoadingBar from 'react-top-loading-bar';
+import LoadingBar from "react-top-loading-bar";
 
 import { EntityInformation, OccupancyDialog } from "app/views";
 
@@ -112,8 +112,7 @@ function Home(props) {
 
   function refreshOccupancies() {
     if (subEntities.length > 0) {
-      console.log(currentDate);
-      getOccupancyData(subEntities, currentDate);   
+      getOccupancyData(subEntities, currentDate);
     }
   }
 
@@ -172,12 +171,7 @@ function Home(props) {
     authGet(api.entity + "/" + entityId)
       .then(function(response) {
         let newEntity = response.data;
-        // Sets the app entity
-        // console.log('ENTITY AND  TYPE,', newEntity, newEntity.payload.geo.coordinateSystem.coordinateSystemClassName)
-        console.log(newEntity);
-
         setProgress(50);
-
         setEntity(newEntity);
         setEntityType(
           newEntity.payload.geo.coordinateSystem.coordinateSystemClassName
@@ -190,15 +184,13 @@ function Home(props) {
   }
 
   async function getOccupancyData(subEntities, time) {
-    console.log('OCCUPANCY DATA', time);
-    console.log(moment(time).format("YYYY-MM-DD hh:mm:ss"));
     let occupancyResponses = await Promise.all(
       subEntities.map(function(subEntity) {
         return authGet(api.observation, {
           entityId: subEntity.id,
-          orderBy: 'timestamp',
-          direction: 'desc',
-          limit: '1',
+          orderBy: "timestamp",
+          direction: "desc",
+          limit: "1",
           before: moment(time).format("YYYY-MM-DD hh:mm:ss")
         });
       })
@@ -229,7 +221,6 @@ function Home(props) {
       direction: "desc",
       limit: "1"
     });
-    console.log(occupancyResponse);
     if (occupancyResponse.data.length > 0) {
       setOccupancy(occupancyResponse.data[0].payload.value);
     }
@@ -326,7 +317,8 @@ function Home(props) {
   function sumOccupancies() {
     let sum = 0;
     for (let i = 0; i < occupancies.length; i++) {
-      sum += occupancies[i].payload === undefined ? 0 : occupancies[i].payload.value;
+      sum +=
+        occupancies[i].payload === undefined ? 0 : occupancies[i].payload.value;
     }
     return sum;
   }
@@ -377,24 +369,45 @@ function Home(props) {
         </Dialog>
       ) : null}
 
-      <Card className={"legend-card " + (transitionLegend ? "legend-card-none" : "")} style={{ width: "240px" }}>
-        <div className={"legend-header " + (transitionLegend ? "legend-header-margin" : "")}>
-          <h2 style={{marginBottom: '0px', fontSize: '1.8em'}}>Legend</h2>
-          { showLegend ? 
-            <FontAwesomeIcon icon={faCaretDown} onClick={function() {
-              setShowLegend(false);
-              setTimeout(() => {
-                setTransitionLegend(true);
-              }, 200); 
-            }}></FontAwesomeIcon> 
-           : <FontAwesomeIcon icon={faCaretUp} onClick={function() {
-              setTransitionLegend(false);
-              setTimeout(() => {
-                setShowLegend(true);
-              }, 500);
-            }}></FontAwesomeIcon>}
+      <Card
+        className={
+          "legend-card " + (transitionLegend ? "legend-card-none" : "")
+        }
+        style={{ width: "240px" }}
+      >
+        <div
+          className={
+            "legend-header " + (transitionLegend ? "legend-header-margin" : "")
+          }
+        >
+          <h2 style={{ marginBottom: "0px", fontSize: "1.8em" }}>Legend</h2>
+          {showLegend ? (
+            <FontAwesomeIcon
+              icon={faCaretDown}
+              onClick={function() {
+                setShowLegend(false);
+                setTimeout(() => {
+                  setTransitionLegend(true);
+                }, 200);
+              }}
+            ></FontAwesomeIcon>
+          ) : (
+            <FontAwesomeIcon
+              icon={faCaretUp}
+              onClick={function() {
+                setTransitionLegend(false);
+                setTimeout(() => {
+                  setShowLegend(true);
+                }, 500);
+              }}
+            ></FontAwesomeIcon>
+          )}
         </div>
-        <div className={"legend-content " + (showLegend ? "" : "legend-content-none")}>
+        <div
+          className={
+            "legend-content " + (showLegend ? "" : "legend-content-none")
+          }
+        >
           <Legend legendMax={legendMax}></Legend>
         </div>
       </Card>

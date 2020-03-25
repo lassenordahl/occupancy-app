@@ -35,7 +35,6 @@ async function authGet(url, args) {
         return response;
     }
     catch(error) {
-        console.log(error);
         if (error.response === undefined) {
             console.error(error)
             return error;

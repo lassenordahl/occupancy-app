@@ -51,7 +51,6 @@ function App() {
               <Route path={"/home"} component={DefaultView} />
               <Route
                 path={"/"}
-                onChange={() => console.log("changed route")}
                 auth={{ authStatus: authStatus, setAuthStatus: setAuthStatus }}
                 component={props => <Home {...props} appRoute={[]}></Home>}
               />

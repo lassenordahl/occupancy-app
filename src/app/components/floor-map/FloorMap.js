@@ -47,8 +47,6 @@ class FloorMap extends React.Component {
   getGraphedEntity(shapeType, entityCoordInfo, occupancy) {
     let rainbow = getBlueRainbow(this.props.legendMax);
 
-    console.log(entityCoordInfo);
-
     let self = this;
     if (shapeType === "rectangle") {
       return self.svg
@@ -179,9 +177,7 @@ class FloorMap extends React.Component {
         });
 
         return currEntity;
-        return null;
       } else if (entity.payload.geo.extent.extentClassName === "polygon") {
-        console.log(entity.payload.geo.extent.verticies);
         let newVerticies = entity.payload.geo.extent.verticies.map(function(
           verticie
         ) {

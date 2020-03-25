@@ -32,6 +32,10 @@ function EntityInformation(props) {
     setSelectedEntity(null);
   }, [props.subEntities]);
 
+  useEffect(() => {
+    console.log(props.progress);
+  }, [props.progress]);
+
   function selectEntity(entitySelection) {
     setSelectedEntity(entitySelection);
     props.selectEntity(entitySelection.value);
@@ -102,7 +106,11 @@ function EntityInformation(props) {
           })}
       </Picklist>
       <div style={{ height: "12px" }} />
-      {getEntityType(entity) === "cartesian2d" ? <p style={{textAlign: 'center'}}>Cannot select a contained entity of a cartesian2d level.</p> : null}
+      {getEntityType(entity) === "cartesian2d" ? (
+        <p style={{ textAlign: "center" }}>
+          Cannot select a contained entity of a cartesian2d level.
+        </p>
+      ) : null}
 
       <div style={{ height: "24px" }} />
 
