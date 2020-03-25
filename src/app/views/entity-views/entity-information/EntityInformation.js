@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import "./EntityInformation.scss";
 
 import {
@@ -27,13 +27,21 @@ function EntityInformation(props) {
 
   const [selectedEntity, setSelectedEntity] = useState(null);
   const [realtime, setRealtime] = useState(false);
+  const [spinSync, setSpinSync] = useState(false);
+
 
   useEffect(() => {
     setSelectedEntity(null);
   }, [props.subEntities]);
 
   useEffect(() => {
-    console.log(props.progress);
+    // Doing this little weird thing as a quick fix 
+    // The progress doesn't update as a prop when it goes from 80 => 100
+    // This is likely due to the occupancy call being async rather than synchronous 
+    setSpinSync(true);
+    setTimeout(() => {
+      setSpinSync(false);
+    }, 1000);
   }, [props.progress]);
 
   function selectEntity(entitySelection) {
@@ -119,8 +127,8 @@ function EntityInformation(props) {
         <FontAwesomeIcon
           icon={faSync}
           onClick={() => props.refreshOccupancies()}
-          className="entity-refresh-icon"
-          // className={"entity-refresh-icon" + (props.progress === 0 || props.progress === 100 ? "" : " entity-refresh-spinner")}
+          // className="entity-refresh-icon"
+          className={"entity-refresh-icon " + (spinSync ? " entity-refresh-spinner" : "")}
         ></FontAwesomeIcon>
       </div>
 

@@ -6,5 +6,5 @@ let baseUrl = "http://uci-tippers.ics.uci.edu/api";
 
 export default {
   entity: baseUrl + "/entity",
-  observation: baseUrl + "/observation/5"
+  observation: baseUrl + "/observation/1"
 }

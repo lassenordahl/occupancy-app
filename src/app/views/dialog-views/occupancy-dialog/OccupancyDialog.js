@@ -249,7 +249,6 @@ function OccupancyDialog(props) {
         </React.Fragment>
         : <Spinner></Spinner>
       }
-      
     </div>
   );
 }

@@ -50,7 +50,7 @@ function Home(props) {
 
   // Helper Variables
   const [legendMax, setLegendMax] = useState(0);
-  const [progress, setProgress] = useState(0);
+  const [progress, setProgress] = useState(100);
   const [showLegend, setShowLegend] = useState(true);
   const [transitionLegend, setTransitionLegend] = useState(false);
 
