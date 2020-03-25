@@ -154,6 +154,10 @@
       font-size: 2em;
     }
 
+    svg:hover {
+      cursor: pointer;
+    }
+
     .legend-content {
       width: 100%;
       flex: 1 1;

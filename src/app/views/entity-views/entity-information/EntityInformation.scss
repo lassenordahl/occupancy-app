@@ -30,4 +30,8 @@
   .entity-refresh-spinner {
     animation: spin 3s linear infinite;
   }
+
+  svg:hover {
+    cursor: pointer;
+  }
 }
