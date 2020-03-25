@@ -4,6 +4,8 @@ import "./Home.scss";
 import "leaflet/dist/leaflet.css";
 import { Redirect, useLocation, withRouter } from "react-router";
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCaretDown, faCaretUp } from '@fortawesome/free-solid-svg-icons'
 import { Card, Dialog } from "app/containers";
 import { Legend, CoordinateMap, FloorMap } from "app/components";
 import app_config from "globals/config";
@@ -18,6 +20,7 @@ import {
   capitalizeWords
 } from "globals/utils/formatting-helper";
 import moment from "moment";
+import { transition } from "d3";
 
 function Home(props) {
   // Variable to keep track of if we're loading the app for the first time
@@ -48,6 +51,8 @@ function Home(props) {
   // Helper Variables
   const [legendMax, setLegendMax] = useState(0);
   const [progress, setProgress] = useState(0);
+  const [showLegend, setShowLegend] = useState(true);
+  const [transitionLegend, setTransitionLegend] = useState(false);
 
   let windowRoute = serializeLocation(useLocation());
 
@@ -107,6 +112,7 @@ function Home(props) {
 
   function refreshOccupancies() {
     if (subEntities.length > 0) {
+      console.log(currentDate);
       getOccupancyData(subEntities, currentDate);   
     }
   }
@@ -371,11 +377,24 @@ function Home(props) {
         </Dialog>
       ) : null}
 
-      <Card className="legend-card" style={{ width: "240px" }}>
-        <div className="legend-header">
-          <h2 style={{marginBottom: '0px'}}>Legend</h2>
+      <Card className={"legend-card " + (transitionLegend ? "legend-card-none" : "")} style={{ width: "240px" }}>
+        <div className={"legend-header " + (transitionLegend ? "legend-header-margin" : "")}>
+          <h2 style={{marginBottom: '0px', fontSize: '1.8em'}}>Legend</h2>
+          { showLegend ? 
+            <FontAwesomeIcon icon={faCaretDown} onClick={function() {
+              setShowLegend(false);
+              setTimeout(() => {
+                setTransitionLegend(true);
+              }, 200); 
+            }}></FontAwesomeIcon> 
+           : <FontAwesomeIcon icon={faCaretUp} onClick={function() {
+              setTransitionLegend(false);
+              setTimeout(() => {
+                setShowLegend(true);
+              }, 500);
+            }}></FontAwesomeIcon>}
         </div>
-        <div className="legend-content">
+        <div className={"legend-content " + (showLegend ? "" : "legend-content-none")}>
           <Legend legendMax={legendMax}></Legend>
         </div>
       </Card>

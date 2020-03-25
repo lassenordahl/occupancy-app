@@ -11,13 +11,14 @@ import {
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSync } from "@fortawesome/free-solid-svg-icons";
-import moment from 'moment';
+import moment from "moment";
 
 import { NumberFocus } from "app/containers";
 
 import {
   capitalizeWords,
-  getMostRecentOccupancyTimestamp
+  getMostRecentOccupancyTimestamp,
+  getEntityType
 } from "globals/utils/formatting-helper";
 import { OccupancyButton } from "../../../components";
 
@@ -81,6 +82,7 @@ function EntityInformation(props) {
         value={selectedEntity}
         onChange={value => selectEntity(value)}
         placeholder="Select a space"
+        disabled={getEntityType(entity) === "cartesian2d"}
       >
         {props.subEntities
           .sort(function(a, b) {
@@ -99,6 +101,8 @@ function EntityInformation(props) {
             );
           })}
       </Picklist>
+      <div style={{ height: "12px" }} />
+      {getEntityType(entity) === "cartesian2d" ? <p style={{textAlign: 'center'}}>Cannot select a contained entity of a cartesian2d level.</p> : null}
 
       <div style={{ height: "24px" }} />
 
