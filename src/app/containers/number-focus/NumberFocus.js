@@ -13,7 +13,7 @@ function NumberFocus(props) {
         {props.subtitle}
       </p>
       {
-        props.lastUpdated !== null ?
+        (props.lastUpdated !== null && props.lastUpdated !== undefined) ?
         <p className="number-focus-last-updated">
           Last Updated: {moment(props.lastUpdated).format("MMMM Do YYYY, h:mm:ss a")}
         </p>

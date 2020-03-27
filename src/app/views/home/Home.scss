@@ -9,7 +9,7 @@
   }
 
   .dialog {
-    width: calc(100vw - 400px - 108px);
+    width: calc(100vw - 400px - 72px);
     height: calc(100vh - 64px - 72px);
     background-color: white;
     left: $mediumSpacing;
@@ -54,31 +54,31 @@
       width: 100%;
     }
 
-    .information-header {
-      margin: $mediumSpacing;
-      margin-top: $smallSpacing;
-      margin-bottom: $smallSpacing;
-      display: flex;
-      flex-direction: column;
-    
-      h1 {
-        margin-bottom: 0;
-        font-size: 28px;
-      }
+    .information-header-wrapper {
+      background-color: $titleBackground;
 
-      p {
-        margin-top: 4px;
-        margin-bottom: 0px;
-        font-size: 1.2em;
+      .information-header {
+        margin: $mediumSpacing;
+        margin-top: $smallSpacing;
+        margin-bottom: $smallSpacing;
+        display: flex;
+        flex-direction: column;
+      
+        h1 {
+          margin-bottom: 0;
+          font-size: 28px;
+        }
+  
+        p {
+          margin-top: 4px;
+          margin-bottom: 0px;
+          font-size: 1.2em;
+        }
+  
+        .information-header-text {
+          flex: 1 1;
+        }
       }
-
-      .information-header-text {
-        flex: 1 1;
-      }
-
-      // & > div {
-      //   margin-bottom: $tinySpacing;
-      // }
     }
 
     .information-tab-content {

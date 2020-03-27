@@ -47,6 +47,7 @@ function Home(props) {
   const [fromDate, setFromDate] = useState(new Date());
   const [toDate, setToDate] = useState(new Date());
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [realtime, setRealtime] = useState(false);
 
   // Helper Variables
   const [legendMax, setLegendMax] = useState(0);
@@ -236,6 +237,7 @@ function Home(props) {
 
   // Opens a dialog using the information given
   function openDialog(entity, titleSubscript) {
+    setRealtime(true);
     setDialogTitle(entity.name);
     setDialogTitleSubscript(titleSubscript);
     setShowDialog(true);
@@ -309,6 +311,8 @@ function Home(props) {
           toDate={toDate}
           setToDate={setToDate}
           progress={progress}
+          realtime={realtime}
+          setRealtime={setRealtime}
         ></EntityInformation>
       );
     }
@@ -413,7 +417,9 @@ function Home(props) {
       </Card>
 
       <Card className="information-card" style={{ width: "360px" }}>
-        <div className="information-header">{renderTitle(entity)}</div>
+        <div className="information-header-wrapper">
+          <div className="information-header">{renderTitle(entity)}</div>
+        </div>
         <div className="information-tab-content">{renderView(entity)}</div>
       </Card>
     </div>
