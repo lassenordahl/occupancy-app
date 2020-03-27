@@ -25,7 +25,6 @@ function EntityInformation(props) {
   const entity = props.entity;
 
   const [selectedEntity, setSelectedEntity] = useState(null);
-  const [realtime, setRealtime] = useState(false);
   const [spinSync, setSpinSync] = useState(false);
 
   useEffect(() => {
@@ -56,7 +55,7 @@ function EntityInformation(props) {
       <h2>Current Date</h2>
       <DateTimePicker
         value={props.currentDate}
-        disabled={realtime}
+        disabled={props.realtime}
         onChange={value => props.setCurrentDate(value)}
       />
 
@@ -65,8 +64,8 @@ function EntityInformation(props) {
       <div className="header-toggle">
         <h2>Date Range</h2>
         <CheckboxToggle
-          value={realtime}
-          onChange={event => setRealtime(!realtime)}
+          value={props.realtime}
+          onChange={event => props.setRealtime(!props.realtime)}
         />
       </div>
       <div style={{ height: "16px" }} />
@@ -74,14 +73,14 @@ function EntityInformation(props) {
       <DateTimePicker
         // label="from"
         value={props.fromDate}
-        disabled={!realtime}
+        disabled={!props.realtime}
         onChange={value => props.setFromDate(value)}
       />
       <div style={{ height: "16px" }} />
       <DateTimePicker
         // label="to"
         value={props.toDate}
-        disabled={!realtime}
+        disabled={!props.realtime}
         onChange={value => props.setToDate(value)}
       />
 
