@@ -10,29 +10,32 @@
   z-index: 1000;
 
   .dialog-navbar {
-    height: 64px;
-    margin-bottom: $smallSpacing;
+    height: 84px;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    background-color: $background;
 
     & > div {
       display: flex;
-      align-items: flex-start;
+      align-items: center;
+      margin-left: $mediumSpacing;
 
       h3 {
         margin: 0;
         margin-left: $smallSpacing;
-        margin-top: 11px;
+        margin-top: 7px;
       }
     }
     
     svg {
-      font-size: 2.4em;
-      cursor: pointer;
+      font-size: 2em;
+      align-self: center;
+      margin-right: $smallSpacing;
     }
 
     svg:hover {
+      cursor: pointer;
       color: $lightGray;
     }
   }
@@ -40,7 +43,7 @@
   .dialog-content {
     display: flex;
     width: 100%;
-    height: calc(100% - 124px);
+    height: calc(100% - 64px);
     margin-top: 0;
 
     // div:last-child {

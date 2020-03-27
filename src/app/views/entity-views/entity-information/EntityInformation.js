@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from "react";
 import "./EntityInformation.scss";
 
 import {
-  DatePicker,
   DateTimePicker,
   Picklist,
   PicklistOption,
