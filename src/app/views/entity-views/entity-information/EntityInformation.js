@@ -28,7 +28,6 @@ function EntityInformation(props) {
   const [realtime, setRealtime] = useState(false);
   const [spinSync, setSpinSync] = useState(false);
 
-
   useEffect(() => {
     setSelectedEntity(null);
   }, [props.subEntities]);

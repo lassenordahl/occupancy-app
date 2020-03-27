@@ -413,7 +413,9 @@ function Home(props) {
       </Card>
 
       <Card className="information-card" style={{ width: "360px" }}>
-        <div className="information-header">{renderTitle(entity)}</div>
+        <div className="information-header-wrapper">
+          <div className="information-header">{renderTitle(entity)}</div>
+        </div>
         <div className="information-tab-content">{renderView(entity)}</div>
       </Card>
     </div>

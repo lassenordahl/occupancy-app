@@ -5,6 +5,23 @@
   flex: 1 1;
   flex-direction: row;
 
+  .rc-slider-handle {
+    border: solid 2px #2749c4;
+  }
+
+  .rc-slider-handle:hover {
+    border: solid 2px #566fc7;
+  }
+
+  .rc-slider-handle-dragging {
+    border-color: #2749c4 !important;
+    box-shadow: 0 0 0 5px #3f5bbf !important;
+  }
+
+  .rc-slider-handle-click-focused {
+    border-color: #2749c4 !important;
+  }
+
   .header-toggle {
     display: flex;
     flex-direction: row;
@@ -19,6 +36,28 @@
 
     p {
       width: 90%;
+    }
+
+    .dialog-entity-list-item {
+      font-size: 1.2em;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      margin: $tinySpacing;
+
+      svg:hover {
+        color: gray;
+        cursor: pointer;
+      }
+    }
+
+    .dialog-entity-list-item:first-child {
+      margin-top: $mediumSpacing;
+    }
+
+
+    .dialog-entity-list-item:not(:last-child) {
+      margin-bottom: 0;
     }
   }
 
