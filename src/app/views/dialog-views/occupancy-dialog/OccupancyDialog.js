@@ -232,10 +232,8 @@ function OccupancyDialog(props) {
   }
 
   function processData() {
-    console.log("processdata is called");
     // Get all the datasets
     let datasets = entityOccupantData.map(function(occupancyDataObject, index) {
-      console.log(occupancyDataObject);
       return getChartJSDataset(
         getGraphColor(index),
         index < comparedEntities.length
@@ -265,11 +263,18 @@ function OccupancyDialog(props) {
   }
 
   function removeComparedEntity(removedEntity) {
+    let removedIndex = -1;
     setComparedEntities(
-      _.reject(comparedEntities, function(entity) {
+      _.reject(comparedEntities, function(entity, index) {
+        if (entity.id === removedEntity.id) {
+          removedIndex = index;
+        }
         return entity.id === removedEntity.id;
       })
     );
+    setEntityOccupantData(_.reject(entityOccupantData, function(occupantData, index) {
+      return removedIndex === index;
+    }));
   }
 
   return (
