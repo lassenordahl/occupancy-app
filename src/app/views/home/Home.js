@@ -17,7 +17,7 @@ import { EntityInformation, OccupancyDialog } from "app/views";
 
 import {
   serializeLocation,
-  capitalizeWords
+  capitalizeWords,
 } from "globals/utils/formatting-helper";
 import moment from "moment";
 import { transition } from "d3";
@@ -25,6 +25,7 @@ import { transition } from "d3";
 function Home(props) {
   // Variable to keep track of if we're loading the app for the first time
   const [firstLoad, setFirstLoad] = useState(true);
+  const [errorLoading, setErrorLoading] = useState(false);
 
   // Dialog Information
   const [showDialog, setShowDialog] = useState(false);
@@ -37,6 +38,7 @@ function Home(props) {
   const [newRoute, pushRoute] = useState(["occupancy", app_config.id]);
 
   // Entity Information
+  // const [entity, setEntity] = useState({id: 1, name: 'ucitest'}); // Our selected entity
   const [entity, setEntity] = useState(null); // Our selected entity
   const [entityType, setEntityType] = useState(null);
   const [subEntities, setSubEntities] = useState([]); // Sub entities of our current selected entity
@@ -58,7 +60,7 @@ function Home(props) {
   let windowRoute = serializeLocation(useLocation());
 
   useEffect(() => {
-    props.history.listen(function(location, action) {
+    props.history.listen(function (location, action) {
       // New route comes from the URL
       let newRoute = serializeLocation(location);
       // If we have an entity at the end, we can load it as our home screen
@@ -170,7 +172,7 @@ function Home(props) {
     }
     setProgress(30);
     authGet(api.entity + "/" + entityId)
-      .then(function(response) {
+      .then(function (response) {
         let newEntity = response.data;
         setProgress(50);
         setEntity(newEntity);
@@ -178,28 +180,30 @@ function Home(props) {
           newEntity.payload.geo.coordinateSystem.coordinateSystemClassName
         );
         setSubEntities(newEntity.payload.geo.childSpaces);
+        setErrorLoading(false);
       })
-      .catch(function(error) {
+      .catch(function (error) {
         console.log("APP ENTITY GET", error);
+        setErrorLoading(true);
       });
   }
 
   async function getOccupancyData(subEntities, time) {
     let occupancyResponses = await Promise.all(
-      subEntities.map(function(subEntity) {
+      subEntities.map(function (subEntity) {
         return authGet(api.observation, {
           entityId: subEntity.id,
           orderBy: "timestamp",
           direction: "desc",
           limit: "1",
-          before: moment(time).format("YYYY-MM-DD hh:mm:ss")
+          before: moment(time).format("YYYY-MM-DD hh:mm:ss"),
         });
       })
     );
 
     setProgress(80);
 
-    let occupancies = occupancyResponses.map(function(response, index) {
+    let occupancies = occupancyResponses.map(function (response, index) {
       if (response.data !== undefined) {
         let occupancyData = response.data[0];
         if (occupancyData === undefined) {
@@ -220,7 +224,7 @@ function Home(props) {
       entityId: id,
       orderBy: "timestamp",
       direction: "desc",
-      limit: "1"
+      limit: "1",
     });
     if (occupancyResponse.data.length > 0) {
       setOccupancy(occupancyResponse.data[0].payload.value);
@@ -328,6 +332,15 @@ function Home(props) {
   }
 
   function renderMap() {
+    if (errorLoading) {
+      return (
+        <React.Fragment>
+          <h2 className="home-error">Error loading given entity :(</h2>
+          <p className="home-error">It's okay, we'll fix it soon!</p>
+        </React.Fragment>
+      );
+    }
+
     if (entityType === null) {
       return null;
     }
@@ -373,55 +386,60 @@ function Home(props) {
         </Dialog>
       ) : null}
 
-      <Card
-        className={
-          "legend-card " + (transitionLegend ? "legend-card-none" : "")
-        }
-        style={{ width: "240px" }}
-      >
-        <div
+      { !errorLoading ? (
+        <Card
           className={
-            "legend-header " + (transitionLegend ? "legend-header-margin" : "")
+            "fade-in legend-card " + (transitionLegend ? "legend-card-none" : "")
           }
+          style={{ width: "240px" }}
         >
-          <h2 style={{ marginBottom: "0px", fontSize: "1.8em" }}>Legend</h2>
-          {showLegend ? (
-            <FontAwesomeIcon
-              icon={faCaretDown}
-              onClick={function() {
-                setShowLegend(false);
-                setTimeout(() => {
-                  setTransitionLegend(true);
-                }, 200);
-              }}
-            ></FontAwesomeIcon>
-          ) : (
-            <FontAwesomeIcon
-              icon={faCaretUp}
-              onClick={function() {
-                setTransitionLegend(false);
-                setTimeout(() => {
-                  setShowLegend(true);
-                }, 500);
-              }}
-            ></FontAwesomeIcon>
-          )}
-        </div>
-        <div
-          className={
-            "legend-content " + (showLegend ? "" : "legend-content-none")
-          }
-        >
-          <Legend legendMax={legendMax}></Legend>
-        </div>
-      </Card>
+          <div
+            className={
+              "legend-header " +
+              (transitionLegend ? "legend-header-margin" : "")
+            }
+          >
+            <h2 style={{ marginBottom: "0px", fontSize: "1.8em" }}>Legend</h2>
+            {showLegend ? (
+              <FontAwesomeIcon
+                icon={faCaretDown}
+                onClick={function () {
+                  setShowLegend(false);
+                  setTimeout(() => {
+                    setTransitionLegend(true);
+                  }, 200);
+                }}
+              ></FontAwesomeIcon>
+            ) : (
+              <FontAwesomeIcon
+                icon={faCaretUp}
+                onClick={function () {
+                  setTransitionLegend(false);
+                  setTimeout(() => {
+                    setShowLegend(true);
+                  }, 500);
+                }}
+              ></FontAwesomeIcon>
+            )}
+          </div>
+          <div
+            className={
+              "legend-content " + (showLegend ? "" : "legend-content-none")
+            }
+          >
+            <Legend legendMax={legendMax}></Legend>
+          </div>
+        </Card>
+      ) : null}
 
-      <Card className="information-card" style={{ width: "360px" }}>
-        <div className="information-header-wrapper">
-          <div className="information-header">{renderTitle(entity)}</div>
-        </div>
-        <div className="information-tab-content">{renderView(entity)}</div>
-      </Card>
+      { !errorLoading ? (
+        <Card className="fade-in information-card" style={{ width: "360px" }}>
+          <div className="information-header-wrapper">
+            <div className="information-header">{renderTitle(entity)}</div>
+          </div>
+          <div className="information-tab-content">{renderView(entity)}</div>
+        </Card>
+      ) : null}
     </div>
   );
 }

@@ -32,9 +32,9 @@ function EntityInformation(props) {
   }, [props.subEntities]);
 
   useEffect(() => {
-    // Doing this little weird thing as a quick fix 
+    // Doing this little weird thing as a quick fix
     // The progress doesn't update as a prop when it goes from 80 => 100
-    // This is likely due to the occupancy call being async rather than synchronous 
+    // This is likely due to the occupancy call being async rather than synchronous
     setSpinSync(true);
     setTimeout(() => {
       setSpinSync(false);
@@ -63,10 +63,10 @@ function EntityInformation(props) {
 
       <div className="header-toggle">
         <h2>Date Range</h2>
-        <CheckboxToggle
+        {/* <CheckboxToggle
           value={props.realtime}
           onChange={event => props.setRealtime(!props.realtime)}
-        />
+        /> */}
       </div>
       <div style={{ height: "16px" }} />
 
@@ -111,13 +111,15 @@ function EntityInformation(props) {
           })}
       </Picklist>
       <div style={{ height: "12px" }} />
-      {getEntityType(entity) === "cartesian2d" ? (
-        <p style={{ textAlign: "center" }}>
-          Cannot select a contained entity of a cartesian2d level.
-        </p>
-      ) : null}
 
-      <div style={{ height: "24px" }} />
+      {getEntityType(entity) === "cartesian2d" ? (
+        <React.Fragment>
+          <p style={{ textAlign: "center" }}>
+            Cannot select a contained entity of a cartesian2d level.
+          </p>
+          <div stsyle={{ height: "24px" }}></div>
+        </React.Fragment>
+      ) : null}
 
       <div className="header-toggle">
         <h2>Occupancy</h2>
@@ -125,7 +127,9 @@ function EntityInformation(props) {
           icon={faSync}
           onClick={() => props.refreshOccupancies()}
           // className="entity-refresh-icon"
-          className={"entity-refresh-icon " + (spinSync ? " entity-refresh-spinner" : "")}
+          className={
+            "entity-refresh-icon " + (spinSync ? " entity-refresh-spinner" : "")
+          }
         ></FontAwesomeIcon>
       </div>
 

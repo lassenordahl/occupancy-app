@@ -24,10 +24,12 @@ import { Card, NumberFocus } from "app/containers";
 import {
   getChartJSData,
   getChartJSDataset,
-  getChartJSOptions
+  getChartJSOptions,
+  getGraphColor
 } from "globals/utils/chartjs-helper";
 
 import { capitalizeWords } from "globals/utils/formatting-helper";
+import { create } from "d3";
 
 const createSliderWithTooltip = Slider.createSliderWithTooltip;
 const Range = createSliderWithTooltip(Slider.Range);
@@ -35,8 +37,8 @@ const Range = createSliderWithTooltip(Slider.Range);
 function OccupancyDialog(props) {
   // List of entitity ID's
   const [comparedEntities, setComparedEntities] = useState([props.entity]);
+  const [entityOccupantData, setEntityOccupantData] = useState([]);
   const [showSpinner, setShowSpinner] = useState(true);
-  const [observationValues, setObservationValues] = useState(null);
   const [occupancyData, setOccupancyData] = useState(null);
   const [filteredOccupancyData, setFilteredOccupancyData] = useState(null);
 
@@ -57,18 +59,13 @@ function OccupancyDialog(props) {
   }, [showSpinner]);
 
   useEffect(() => {
-    if (props.entityId !== null) {
-      getOccupancyInformation(props.entityId);
-    }
-  }, [props.entityId]);
+    getOccupancyInformation(props.entity, true);
+    // if (props.entity !== null) {
+    //   getOccupancyInformation(props.entity);
+    // }
+  }, [props.entity]);
 
-  useEffect(() => {
-    if (observationValues !== null) {
-      mapObservationValues();
-    }
-  }, [observationValues]);
-
-  function mapObservationValues() {
+  function mapObservationValues(observationValues, createFilteredData) {
     let maxVal = Number.MIN_SAFE_INTEGER;
     let minVal = Number.MAX_SAFE_INTEGER;
     let total = 0;
@@ -87,23 +84,32 @@ function OccupancyDialog(props) {
       return moment(observation.timestamp).format("MMM Do h:mm:ss");
     });
 
-    setMax(maxVal);
-    setMin(minVal);
-    setAvg((total / observationValues.length).toFixed(1));
+    // setMax(maxVal);
+    // setMin(minVal);
+    // setAvg((total / observationValues.length).toFixed(1));
 
-    setOccupancyData({
+    if (createFilteredData) {
+      setFilteredOccupancyData({
+        data: data.slice(),
+        timestamps: timestamps.slice()
+      })
+    }
+
+    return {
       data: data,
       timestamps: timestamps
-    });
-
-    setFilteredOccupancyData({
-      data: data.slice(),
-      timestamps: timestamps.slice()
-    });
+    };
   }
 
-  function getOccupancyInformation(entityId) {
-    setObservationValues(
+  // setFilteredOccupancyData({
+  //   data: occupancyObject.data.slice(),
+  //   timestamps: occupancyData.timestamps.slice()
+  // })
+
+  // Get the occupancy information for every comparable entity
+  function getOccupancyInformation(entity, createFilteredData) {
+    // Make the call  for the occupancy data
+    let occupancyObject = mapObservationValues(
       {
         resultCode: 400,
         message: "Values found with search parameters.",
@@ -113,7 +119,7 @@ function OccupancyDialog(props) {
             timestamp: 1574717000,
             payload: {
               entityId: 3,
-              value: 100
+              value: Math.floor(Math.random() * 100)
             },
             deviceId: 2
           },
@@ -122,7 +128,7 @@ function OccupancyDialog(props) {
             timestamp: 1574717000,
             payload: {
               entityId: 3,
-              value: 100
+              value: Math.floor(Math.random() * 100)
             },
             deviceId: 2
           },
@@ -131,7 +137,7 @@ function OccupancyDialog(props) {
             timestamp: 1574717000,
             payload: {
               entityId: 3,
-              value: 100
+              value: Math.floor(Math.random() * 100)
             },
             deviceId: 2
           },
@@ -140,7 +146,7 @@ function OccupancyDialog(props) {
             timestamp: 1574717000,
             payload: {
               entityId: 3,
-              value: 53
+              value: Math.floor(Math.random() * 100)
             },
             deviceId: 2
           },
@@ -149,7 +155,7 @@ function OccupancyDialog(props) {
             timestamp: 1574717000,
             payload: {
               entityId: 3,
-              value: 52
+              value: Math.floor(Math.random() * 100)
             },
             deviceId: 2
           },
@@ -158,7 +164,7 @@ function OccupancyDialog(props) {
             timestamp: 1574717000,
             payload: {
               entityId: 3,
-              value: 21
+              value: Math.floor(Math.random() * 100)
             },
             deviceId: 2
           },
@@ -167,7 +173,7 @@ function OccupancyDialog(props) {
             timestamp: 1574717000,
             payload: {
               entityId: 3,
-              value: 29
+              value: Math.floor(Math.random() * 100)
             },
             deviceId: 2
           },
@@ -176,7 +182,7 @@ function OccupancyDialog(props) {
             timestamp: 1574717000,
             payload: {
               entityId: 3,
-              value: 11
+              value: Math.floor(Math.random() * 100)
             },
             deviceId: 2
           },
@@ -185,7 +191,7 @@ function OccupancyDialog(props) {
             timestamp: 1574717000,
             payload: {
               entityId: 3,
-              value: 76
+              value: Math.floor(Math.random() * 100)
             },
             deviceId: 2
           },
@@ -194,7 +200,7 @@ function OccupancyDialog(props) {
             timestamp: 1574717000,
             payload: {
               entityId: 3,
-              value: 76
+              value: Math.floor(Math.random() * 100)
             },
             deviceId: 2
           },
@@ -203,7 +209,7 @@ function OccupancyDialog(props) {
             timestamp: 1574717000,
             payload: {
               entityId: 3,
-              value: 73
+              value: Math.floor(Math.random() * 100)
             },
             deviceId: 2
           },
@@ -212,39 +218,50 @@ function OccupancyDialog(props) {
             timestamp: 1574717000,
             payload: {
               entityId: 3,
-              value: 68
+              value: Math.floor(Math.random() * 100)
             },
             deviceId: 2
           }
         ]
-      }.values
+      }.values,
+      createFilteredData
     );
+
+    // Add the occupancy data to the observation values
+    setEntityOccupantData([...entityOccupantData, occupancyObject]);
   }
 
   function processData() {
-    let dataset = getChartJSDataset(
-      {
-        r: 39,
-        g: 73,
-        b: 196
-      },
-      "Occupancy",
-      filteredOccupancyData.data
-    );
+    console.log("processdata is called");
+    // Get all the datasets
+    let datasets = entityOccupantData.map(function(occupancyDataObject, index) {
+      console.log(occupancyDataObject);
+      return getChartJSDataset(
+        getGraphColor(index),
+        index < comparedEntities.length
+          ? comparedEntities[index].name
+          : "Occupancy",
+        occupancyDataObject.data // TODO this should be filtered for the first index
+      );
+    });
 
-    return getChartJSData(filteredOccupancyData.timestamps, [dataset]);
+    return getChartJSData(entityOccupantData[0].timestamps, datasets);
   }
 
+  // Set the filtered occupancy data to what the timeline range is
   function setTimelines(value) {
     setFilteredOccupancyData({
-      data: occupancyData.data.slice(value[0], value[1]),
-      timestamps: occupancyData.timestamps.slice(value[0], value[1])
+      data: entityOccupantData[0].data.slice(value[0], value[1]),
+      timestamps: entityOccupantData[0].timestamps.slice(value[0], value[1])
     });
   }
 
+  // Add a comparable entityy
   function addToComparedEntities(newEntity) {
     console.log(newEntity);
     setComparedEntities([...comparedEntities, newEntity]);
+    getOccupancyInformation(newEntity);
+    // setEntityOccupantData([...entityOccupantData, ])
   }
 
   function removeComparedEntity(removedEntity) {
@@ -259,125 +276,106 @@ function OccupancyDialog(props) {
     <div className="OccupancyDialog">
       {!showSpinner ? (
         <React.Fragment>
-          <Fade duration={1500}>
-            <div className="dialog-graph-params">
-              <h2>Occupancy Statistics</h2>
-              <p>
-                The minimum occupancy over the selected time period was {min}
-              </p>
-              <div style={{ height: "12px" }}></div>
-              <p>
-                The maximum occupancy over the selected time period was {max}
-              </p>
-              <div style={{ height: "12px" }}></div>
-              <p>
-                The average occupancy over the selected time period was {avg}
-              </p>
-
-              <div className="header-toggle">
-                <h2>Projected Date Range</h2>
-                <CheckboxToggle
-                  value={projected}
-                  onChange={event => setProjected(!projected)}
-                />
-              </div>
-              <div style={{ height: "16px" }} />
-              <DateTimePicker
-                // label="from"
-                value={projectedFromDate}
-                disabled={!projected}
+          <div className="dialog-graph-params">
+            <div className="header-toggle">
+              <h2>Projected Date Range</h2>
+              <CheckboxToggle
+                value={projected}
+                onChange={event => setProjected(!projected)}
               />
-              <div style={{ height: "16px" }} />
-              <DateTimePicker
-                // label="to"
-                value={projectedToDate}
-                disabled={!projected}
-              />
-
-              <h2>Compare Spaces</h2>
-              <Picklist
-                // value={selectedEntity}
-                onChange={option => addToComparedEntities(option.value)}
-                placeholder="Select a comparable entity"
-              >
-                {[
-                  { name: "test", id: 1 },
-                  { name: "test2", id: 2 }
-                ]
-                  .sort(function(a, b) {
-                    if (a.name < b.name) return -1;
-                    if (a.name > b.name) return 1;
-                    return 0;
-                  })
-                  .filter(function(entity) {
-                    console.log(comparedEntities.map(entity => entity.id));
-                    return !comparedEntities
-                      .map(entity => entity.id)
-                      .includes(entity.id);
-                  })
-                  .map(function(entity, index) {
-                    return (
-                      <PicklistOption
-                        key={index}
-                        name={entity.name}
-                        label={capitalizeWords(entity.name)}
-                        value={entity}
-                      />
-                    );
-                  })}
-              </Picklist>
-              {comparedEntities.slice(1).map(function(entity) {
-                return (
-                  <div className="dialog-entity-list-item">
-                    <p>{entity.name}</p>
-                    <FontAwesomeIcon
-                      icon={faTimes}
-                      onClick={() => removeComparedEntity(entity)}
-                    ></FontAwesomeIcon>
-                  </div>
-                );
-              })}
             </div>
-          </Fade>
-          <Fade duration={1500}>
-            <Card className="dialog-graph-info">
-              <div className="div1">
-                <div>
-                  <h2>Occupancy Data</h2>
-                  <div style={{ height: "16px" }} />
-                  {occupancyData != null ? (
-                    <Line
-                      data={processData()}
-                      options={getChartJSOptions()}
-                    ></Line>
-                  ) : null}
-                  <h2>Timeline</h2>
-                  <div style={{ height: "16px" }} />
-                  <div style={{ marginLeft: "36px", marginRight: "36px" }}>
-                    <Range
-                      min={0}
-                      max={occupancyData.data.length - 1}
-                      defaultValue={[0, occupancyData.data.length - 1]}
-                      tipFormatter={value =>
-                        `${occupancyData.timestamps[value]}`
-                      }
-                      trackStyle={[{ backgroundColor: "#2749c4" }]}
-                      onChange={setTimelines}
+            <div style={{ height: "16px" }} />
+            <DateTimePicker
+              // label="from"
+              value={projectedFromDate}
+              disabled={!projected}
+            />
+            <div style={{ height: "16px" }} />
+            <DateTimePicker
+              // label="to"
+              value={projectedToDate}
+              disabled={!projected}
+            />
+
+            <h2>Compare Spaces</h2>
+            <Picklist
+              // value={selectedEntity}
+              onChange={option => addToComparedEntities(option.value)}
+              placeholder="Select a comparable entity"
+            >
+              {[
+                { name: "test", id: 1 },
+                { name: "test2", id: 2 },
+                { name: "test3", id: 3 },
+                { name: "test4", id: 4 },
+                { name: "test5", id: 5 },
+                { name: "test6", id: 6 }
+              ]
+                .sort(function(a, b) {
+                  if (a.name < b.name) return -1;
+                  if (a.name > b.name) return 1;
+                  return 0;
+                })
+                .filter(function(entity) {
+                  return !comparedEntities
+                    .map(entity => entity.id)
+                    .includes(entity.id);
+                })
+                .map(function(entity, index) {
+                  return (
+                    <PicklistOption
+                      key={index}
+                      name={entity.name}
+                      label={capitalizeWords(entity.name)}
+                      value={entity}
                     />
-                  </div>
+                  );
+                })}
+            </Picklist>
+            {comparedEntities.slice(1).map(function(entity) {
+              return (
+                <div className="dialog-entity-list-item">
+                  <p>{entity.name}</p>
+                  <FontAwesomeIcon
+                    icon={faTimes}
+                    onClick={() => removeComparedEntity(entity)}
+                  ></FontAwesomeIcon>
+                </div>
+              );
+            })}
+          </div>
+          <Card className="dialog-graph-info">
+            <div className="div1">
+              <div>
+                <h2>Occupancy Data</h2>
+                <div style={{ height: "16px" }} />
+                <Line data={processData()} options={getChartJSOptions()}></Line>
+                <h2>Timeline</h2>
+                <div style={{ height: "16px" }} />
+                <div style={{ marginLeft: "36px", marginRight: "36px" }}>
+                  <Range
+                    min={0}
+                    max={entityOccupantData[0].data.length - 1}
+                    defaultValue={[0, entityOccupantData[0].data.length - 1]}
+                    tipFormatter={value =>
+                      `${entityOccupantData[0].timestamps[value]}`
+                    }
+                    trackStyle={[{ backgroundColor: "#2749c4" }]}
+                    onChange={setTimelines}
+                  />
                 </div>
               </div>
-              <div className="div2">
-                <NumberFocus subtitle="Min Occupants">{min}</NumberFocus>
-              </div>
-              <div className="div3">
-                <NumberFocus subtitle="Max Occupants">{max}</NumberFocus>
-              </div>
-              <div className="div4">
-                <NumberFocus subtitle="Average Occupants">{avg}</NumberFocus>
-              </div>
-            </Card>
-          </Fade>
+            </div>
+            <div className="div2">
+              <NumberFocus subtitle="Min Occupants">{min}</NumberFocus>
+            </div>
+            <div className="div3">
+              <NumberFocus subtitle="Max Occupants">{max}</NumberFocus>
+            </div>
+            <div className="div4">
+              <NumberFocus subtitle="Average Occupants">{avg}</NumberFocus>
+            </div>
+          </Card>
         </React.Fragment>
       ) : (
         <Spinner></Spinner>
