@@ -10,7 +10,7 @@ import {
   Picklist,
   PicklistOption,
   DateTimePicker,
-  CheckboxToggle
+  CheckboxToggle,
 } from "react-rainbow-components";
 import Slider from "rc-slider";
 import _ from "lodash";
@@ -25,7 +25,7 @@ import {
   getChartJSData,
   getChartJSDataset,
   getChartJSOptions,
-  getGraphColor
+  getGraphColor,
 } from "globals/utils/chartjs-helper";
 
 import { capitalizeWords } from "globals/utils/formatting-helper";
@@ -41,6 +41,10 @@ function OccupancyDialog(props) {
   const [showSpinner, setShowSpinner] = useState(true);
   const [occupancyData, setOccupancyData] = useState(null);
   const [filteredOccupancyData, setFilteredOccupancyData] = useState(null);
+
+  // Filter Variables
+  const [filterMin, setFilterMin] = useState(null);
+  const [filterMax, setFilterMax] = useState(null);
 
   // Variables for containing max, min, and average information
   const [min, setMin] = useState(0);
@@ -69,7 +73,7 @@ function OccupancyDialog(props) {
     let maxVal = Number.MIN_SAFE_INTEGER;
     let minVal = Number.MAX_SAFE_INTEGER;
     let total = 0;
-    let data = observationValues.map(function(observation) {
+    let data = observationValues.map(function (observation) {
       total += observation.payload.value;
       if (observation.payload.value > maxVal) {
         maxVal = observation.payload.value;
@@ -80,24 +84,20 @@ function OccupancyDialog(props) {
       return observation.payload.value;
     });
 
-    let timestamps = observationValues.map(function(observation) {
+    let timestamps = observationValues.map(function (observation) {
       return moment(observation.timestamp).format("MMM Do h:mm:ss");
     });
 
-    // setMax(maxVal);
-    // setMin(minVal);
-    // setAvg((total / observationValues.length).toFixed(1));
-
-    if (createFilteredData) {
-      setFilteredOccupancyData({
-        data: data.slice(),
-        timestamps: timestamps.slice()
-      })
-    }
+    // if (createFilteredData) {
+    //   setFilteredOccupancyData({
+    //     data: data.slice(),
+    //     timestamps: timestamps.slice(),
+    //   });
+    // }
 
     return {
       data: data,
-      timestamps: timestamps
+      timestamps: timestamps,
     };
   }
 
@@ -119,110 +119,110 @@ function OccupancyDialog(props) {
             timestamp: 1574717000,
             payload: {
               entityId: 3,
-              value: Math.floor(Math.random() * 100)
+              value: Math.floor(Math.random() * 100),
             },
-            deviceId: 2
+            deviceId: 2,
           },
           {
             id: 7,
             timestamp: 1574717000,
             payload: {
               entityId: 3,
-              value: Math.floor(Math.random() * 100)
+              value: Math.floor(Math.random() * 100),
             },
-            deviceId: 2
+            deviceId: 2,
           },
           {
             id: 8,
             timestamp: 1574717000,
             payload: {
               entityId: 3,
-              value: Math.floor(Math.random() * 100)
+              value: Math.floor(Math.random() * 100),
             },
-            deviceId: 2
+            deviceId: 2,
           },
           {
             id: 9,
             timestamp: 1574717000,
             payload: {
               entityId: 3,
-              value: Math.floor(Math.random() * 100)
+              value: Math.floor(Math.random() * 100),
             },
-            deviceId: 2
+            deviceId: 2,
           },
           {
             id: 10,
             timestamp: 1574717000,
             payload: {
               entityId: 3,
-              value: Math.floor(Math.random() * 100)
+              value: Math.floor(Math.random() * 100),
             },
-            deviceId: 2
+            deviceId: 2,
           },
           {
             id: 11,
             timestamp: 1574717000,
             payload: {
               entityId: 3,
-              value: Math.floor(Math.random() * 100)
+              value: Math.floor(Math.random() * 100),
             },
-            deviceId: 2
+            deviceId: 2,
           },
           {
             id: 12,
             timestamp: 1574717000,
             payload: {
               entityId: 3,
-              value: Math.floor(Math.random() * 100)
+              value: Math.floor(Math.random() * 100),
             },
-            deviceId: 2
+            deviceId: 2,
           },
           {
             id: 13,
             timestamp: 1574717000,
             payload: {
               entityId: 3,
-              value: Math.floor(Math.random() * 100)
+              value: Math.floor(Math.random() * 100),
             },
-            deviceId: 2
+            deviceId: 2,
           },
           {
             id: 14,
             timestamp: 1574717000,
             payload: {
               entityId: 3,
-              value: Math.floor(Math.random() * 100)
+              value: Math.floor(Math.random() * 100),
             },
-            deviceId: 2
+            deviceId: 2,
           },
           {
             id: 15,
             timestamp: 1574717000,
             payload: {
               entityId: 3,
-              value: Math.floor(Math.random() * 100)
+              value: Math.floor(Math.random() * 100),
             },
-            deviceId: 2
+            deviceId: 2,
           },
           {
             id: 16,
             timestamp: 1574717000,
             payload: {
               entityId: 3,
-              value: Math.floor(Math.random() * 100)
+              value: Math.floor(Math.random() * 100),
             },
-            deviceId: 2
+            deviceId: 2,
           },
           {
             id: 17,
             timestamp: 1574717000,
             payload: {
               entityId: 3,
-              value: Math.floor(Math.random() * 100)
+              value: Math.floor(Math.random() * 100),
             },
-            deviceId: 2
-          }
-        ]
+            deviceId: 2,
+          },
+        ],
       }.values,
       createFilteredData
     );
@@ -233,48 +233,73 @@ function OccupancyDialog(props) {
 
   function processData() {
     // Get all the datasets
-    let datasets = entityOccupantData.map(function(occupancyDataObject, index) {
+    let datasets = entityOccupantData.map(function (
+      occupancyDataObject,
+      index
+    ) {
+
       return getChartJSDataset(
         getGraphColor(index),
         index < comparedEntities.length
           ? comparedEntities[index].name
           : "Occupancy",
-        occupancyDataObject.data // TODO this should be filtered for the first index
+        filterMin !== null && filterMax !== null
+          ? occupancyDataObject.data.slice(filterMin, filterMax)
+          : occupancyDataObject.data
       );
     });
 
-    return getChartJSData(entityOccupantData[0].timestamps, datasets);
+    return getChartJSData(
+      filterMin !== null && filterMax !== null
+        ? entityOccupantData[0].timestamps.slice(filterMin, filterMax)
+        : entityOccupantData[0].timestamps,
+      datasets
+    );
+  }
+
+  function getSubset(arr, min, max, isInt) {
+    let subset = [];
+    for (let i = min; i < max; i++) {
+      if (isInt)
+        subset.push(parseInt(arr[i].toString()));
+    }
+    console.log('SUBSETS', arr, subset);
+    return subset;
   }
 
   // Set the filtered occupancy data to what the timeline range is
   function setTimelines(value) {
-    setFilteredOccupancyData({
-      data: entityOccupantData[0].data.slice(value[0], value[1]),
-      timestamps: entityOccupantData[0].timestamps.slice(value[0], value[1])
-    });
+    setFilterMin(value[0]);
+    setFilterMax(value[1]);
+
+    console.log("FILTERED");
+    console.log(entityOccupantData.map(function(occupancyDataObject, index) {
+      // return (occupancyDataObject.data);
+      return(occupancyDataObject.data.slice(value[0], value[1]));
+    }));
   }
 
   // Add a comparable entityy
   function addToComparedEntities(newEntity) {
-    console.log(newEntity);
     setComparedEntities([...comparedEntities, newEntity]);
     getOccupancyInformation(newEntity);
-    // setEntityOccupantData([...entityOccupantData, ])
   }
 
   function removeComparedEntity(removedEntity) {
     let removedIndex = -1;
     setComparedEntities(
-      _.reject(comparedEntities, function(entity, index) {
+      _.reject(comparedEntities, function (entity, index) {
         if (entity.id === removedEntity.id) {
           removedIndex = index;
         }
         return entity.id === removedEntity.id;
       })
     );
-    setEntityOccupantData(_.reject(entityOccupantData, function(occupantData, index) {
-      return removedIndex === index;
-    }));
+    setEntityOccupantData(
+      _.reject(entityOccupantData, function (occupantData, index) {
+        return removedIndex === index;
+      })
+    );
   }
 
   return (
@@ -286,7 +311,7 @@ function OccupancyDialog(props) {
               <h2>Projected Date Range</h2>
               <CheckboxToggle
                 value={projected}
-                onChange={event => setProjected(!projected)}
+                onChange={(event) => setProjected(!projected)}
               />
             </div>
             <div style={{ height: "16px" }} />
@@ -305,28 +330,28 @@ function OccupancyDialog(props) {
             <h2>Compare Spaces</h2>
             <Picklist
               // value={selectedEntity}
-              onChange={option => addToComparedEntities(option.value)}
+              onChange={(option) => addToComparedEntities(option.value)}
               placeholder="Select a comparable entity"
             >
               {[
-                { name: "test", id: 1 },
+                { name: "test1", id: 1 },
                 { name: "test2", id: 2 },
                 { name: "test3", id: 3 },
                 { name: "test4", id: 4 },
                 { name: "test5", id: 5 },
-                { name: "test6", id: 6 }
+                { name: "test6", id: 6 },
               ]
-                .sort(function(a, b) {
+                .sort(function (a, b) {
                   if (a.name < b.name) return -1;
                   if (a.name > b.name) return 1;
                   return 0;
                 })
-                .filter(function(entity) {
+                .filter(function (entity) {
                   return !comparedEntities
-                    .map(entity => entity.id)
+                    .map((entity) => entity.id)
                     .includes(entity.id);
                 })
-                .map(function(entity, index) {
+                .map(function (entity, index) {
                   return (
                     <PicklistOption
                       key={index}
@@ -337,7 +362,7 @@ function OccupancyDialog(props) {
                   );
                 })}
             </Picklist>
-            {comparedEntities.slice(1).map(function(entity) {
+            {comparedEntities.slice(1).map(function (entity) {
               return (
                 <div className="dialog-entity-list-item">
                   <p>{entity.name}</p>
@@ -360,9 +385,9 @@ function OccupancyDialog(props) {
                 <div style={{ marginLeft: "36px", marginRight: "36px" }}>
                   <Range
                     min={0}
-                    max={entityOccupantData[0].data.length - 1}
+                    max={entityOccupantData[0].timestamps.length - 1}
                     defaultValue={[0, entityOccupantData[0].data.length - 1]}
-                    tipFormatter={value =>
+                    tipFormatter={(value) =>
                       `${entityOccupantData[0].timestamps[value]}`
                     }
                     trackStyle={[{ backgroundColor: "#2749c4" }]}
