@@ -6,9 +6,9 @@ import moment from 'moment'
 function NumberFocus(props) {
   return (
     <div className="NumberFocus flex-center" style={{...props.style}}>
-      <p className="number-focus-number" style={{'marginBottom': 0}}>
+      <div className="number-focus-number">
         {props.children}
-      </p>
+      </div>
       <p className="number-focus-subtitle">
         {props.subtitle}
       </p>

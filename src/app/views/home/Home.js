@@ -90,7 +90,7 @@ function Home(props) {
   }, [firstLoad]);
 
   useEffect(() => {
-    getOccupancyData(subEntities, currentDate);
+    // getOccupancyData(subEntities, currentDate);
   }, [subEntities]);
 
   useEffect(() => {

@@ -20,6 +20,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 
 import { Card, NumberFocus } from "app/containers";
+import { SkeletonPulse } from "app/components";
 
 import {
   getChartJSData,
@@ -47,9 +48,9 @@ function OccupancyDialog(props) {
   const [filterMax, setFilterMax] = useState(null);
 
   // Variables for containing max, min, and average information
-  const [min, setMin] = useState(0);
-  const [max, setMax] = useState(0);
-  const [avg, setAvg] = useState(0);
+  const [min, setMin] = useState(null);
+  const [max, setMax] = useState(null);
+  const [avg, setAvg] = useState(null);
 
   // Projected Dates and projected enable variable
   const [projected, setProjected] = useState(false);
@@ -69,17 +70,22 @@ function OccupancyDialog(props) {
     // }
   }, [props.entity]);
 
-  function mapObservationValues(observationValues, createFilteredData) {
+  function mapObservationValues(observationValues, isFirstIndex) {
     let maxVal = Number.MIN_SAFE_INTEGER;
+    let maxTimestamp = null;
     let minVal = Number.MAX_SAFE_INTEGER;
+    let minTimestamp = null;
     let total = 0;
+
     let data = observationValues.map(function (observation) {
       total += observation.payload.value;
       if (observation.payload.value > maxVal) {
         maxVal = observation.payload.value;
+        maxTimestamp = observation.timestamp;
       }
       if (observation.payload.value < minVal) {
         minVal = observation.payload.value;
+        minTimestamp = observation.timestamp;
       }
       return observation.payload.value;
     });
@@ -88,12 +94,27 @@ function OccupancyDialog(props) {
       return moment(observation.timestamp).format("MMM Do h:mm:ss");
     });
 
-    // if (createFilteredData) {
-    //   setFilteredOccupancyData({
-    //     data: data.slice(),
-    //     timestamps: timestamps.slice(),
-    //   });
-    // }
+    setMin({
+      value: minVal,
+      timestamp: minTimestamp
+    });
+
+    setMax({
+      value: maxVal,
+      timestamp: maxTimestamp
+    });
+
+    setAvg(Math.floor(total / observationValues.length));
+
+    // We need to have a filtered data object because chartJS has an issue where it will splice the first element of the array
+    // without making a copy, thus to not lose data on splicing the first object, we need to have another array
+    // that is repopulated with data from the first index everytime we change the timeline
+    if (isFirstIndex) {
+      setFilteredOccupancyData({
+        data: data.slice(),
+        timestamps: timestamps.slice(),
+      });
+    }
 
     return {
       data: data,
@@ -101,13 +122,8 @@ function OccupancyDialog(props) {
     };
   }
 
-  // setFilteredOccupancyData({
-  //   data: occupancyObject.data.slice(),
-  //   timestamps: occupancyData.timestamps.slice()
-  // })
-
   // Get the occupancy information for every comparable entity
-  function getOccupancyInformation(entity, createFilteredData) {
+  function getOccupancyInformation(entity, isFirstIndex) {
     // Make the call  for the occupancy data
     let occupancyObject = mapObservationValues(
       {
@@ -116,7 +132,7 @@ function OccupancyDialog(props) {
         values: [
           {
             id: 6,
-            timestamp: 1574717000,
+            timestamp: 1583376545000,
             payload: {
               entityId: 3,
               value: Math.floor(Math.random() * 100),
@@ -125,7 +141,7 @@ function OccupancyDialog(props) {
           },
           {
             id: 7,
-            timestamp: 1574717000,
+            timestamp: 1583376545000,
             payload: {
               entityId: 3,
               value: Math.floor(Math.random() * 100),
@@ -134,7 +150,7 @@ function OccupancyDialog(props) {
           },
           {
             id: 8,
-            timestamp: 1574717000,
+            timestamp: 1583376545000,
             payload: {
               entityId: 3,
               value: Math.floor(Math.random() * 100),
@@ -143,7 +159,7 @@ function OccupancyDialog(props) {
           },
           {
             id: 9,
-            timestamp: 1574717000,
+            timestamp: 1583376545000,
             payload: {
               entityId: 3,
               value: Math.floor(Math.random() * 100),
@@ -152,7 +168,7 @@ function OccupancyDialog(props) {
           },
           {
             id: 10,
-            timestamp: 1574717000,
+            timestamp: 1583376545000,
             payload: {
               entityId: 3,
               value: Math.floor(Math.random() * 100),
@@ -161,7 +177,7 @@ function OccupancyDialog(props) {
           },
           {
             id: 11,
-            timestamp: 1574717000,
+            timestamp: 1583376545000,
             payload: {
               entityId: 3,
               value: Math.floor(Math.random() * 100),
@@ -170,7 +186,7 @@ function OccupancyDialog(props) {
           },
           {
             id: 12,
-            timestamp: 1574717000,
+            timestamp: 1583376545000,
             payload: {
               entityId: 3,
               value: Math.floor(Math.random() * 100),
@@ -179,7 +195,7 @@ function OccupancyDialog(props) {
           },
           {
             id: 13,
-            timestamp: 1574717000,
+            timestamp: 1583376545000,
             payload: {
               entityId: 3,
               value: Math.floor(Math.random() * 100),
@@ -188,7 +204,7 @@ function OccupancyDialog(props) {
           },
           {
             id: 14,
-            timestamp: 1574717000,
+            timestamp: 1583376545000,
             payload: {
               entityId: 3,
               value: Math.floor(Math.random() * 100),
@@ -197,7 +213,7 @@ function OccupancyDialog(props) {
           },
           {
             id: 15,
-            timestamp: 1574717000,
+            timestamp: 1583376545000,
             payload: {
               entityId: 3,
               value: Math.floor(Math.random() * 100),
@@ -206,7 +222,7 @@ function OccupancyDialog(props) {
           },
           {
             id: 16,
-            timestamp: 1574717000,
+            timestamp: 1583376545000,
             payload: {
               entityId: 3,
               value: Math.floor(Math.random() * 100),
@@ -215,7 +231,7 @@ function OccupancyDialog(props) {
           },
           {
             id: 17,
-            timestamp: 1574717000,
+            timestamp: 1583376545000,
             payload: {
               entityId: 3,
               value: Math.floor(Math.random() * 100),
@@ -224,7 +240,7 @@ function OccupancyDialog(props) {
           },
         ],
       }.values,
-      createFilteredData
+      isFirstIndex
     );
 
     // Add the occupancy data to the observation values
@@ -237,34 +253,18 @@ function OccupancyDialog(props) {
       occupancyDataObject,
       index
     ) {
-
       return getChartJSDataset(
         getGraphColor(index),
         index < comparedEntities.length
           ? comparedEntities[index].name
           : "Occupancy",
-        filterMin !== null && filterMax !== null
-          ? occupancyDataObject.data.slice(filterMin, filterMax)
-          : occupancyDataObject.data
+        index === 0
+          ? filteredOccupancyData.data
+          : occupancyDataObject.data.slice(filterMin, filterMax)
       );
     });
 
-    return getChartJSData(
-      filterMin !== null && filterMax !== null
-        ? entityOccupantData[0].timestamps.slice(filterMin, filterMax)
-        : entityOccupantData[0].timestamps,
-      datasets
-    );
-  }
-
-  function getSubset(arr, min, max, isInt) {
-    let subset = [];
-    for (let i = min; i < max; i++) {
-      if (isInt)
-        subset.push(parseInt(arr[i].toString()));
-    }
-    console.log('SUBSETS', arr, subset);
-    return subset;
+    return getChartJSData(filteredOccupancyData.timestamps, datasets);
   }
 
   // Set the filtered occupancy data to what the timeline range is
@@ -272,11 +272,10 @@ function OccupancyDialog(props) {
     setFilterMin(value[0]);
     setFilterMax(value[1]);
 
-    console.log("FILTERED");
-    console.log(entityOccupantData.map(function(occupancyDataObject, index) {
-      // return (occupancyDataObject.data);
-      return(occupancyDataObject.data.slice(value[0], value[1]));
-    }));
+    setFilteredOccupancyData({
+      data: entityOccupantData[0].data.slice(value[0], value[1]),
+      timestamps: entityOccupantData[0].timestamps.slice(value[0], value[1]),
+    });
   }
 
   // Add a comparable entityy
@@ -397,13 +396,37 @@ function OccupancyDialog(props) {
               </div>
             </div>
             <div className="div2">
-              <NumberFocus subtitle="Min Occupants">{min}</NumberFocus>
+              <NumberFocus subtitle="Min Occupants" lastUpdated={ min !== null ? min.timestamp : null }>
+                {min !== null ? (
+                  min.value
+                ) : (
+                  <SkeletonPulse
+                    style={{ width: "50px", height: "50px", margin: "20px" }}
+                  />
+                )}
+              </NumberFocus>
             </div>
             <div className="div3">
-              <NumberFocus subtitle="Max Occupants">{max}</NumberFocus>
+              <NumberFocus subtitle="Max Occupants" lastUpdated={ max !== null ? max.timestamp : null }>
+                {max !== null ? (
+                  max.value
+                ) : (
+                  <SkeletonPulse
+                    style={{ width: "50px", height: "50px", margin: "20px" }}
+                  />
+                )}
+              </NumberFocus>
             </div>
             <div className="div4">
-              <NumberFocus subtitle="Average Occupants">{avg}</NumberFocus>
+              <NumberFocus subtitle="Average Occupants">
+                {avg !== null ? (
+                  avg
+                ) : (
+                  <SkeletonPulse
+                    style={{ width: "50px", height: "50px", margin: "20px" }}
+                  />
+                )}
+              </NumberFocus>
             </div>
           </Card>
         </React.Fragment>
