@@ -144,7 +144,7 @@ function EntityInformation(props) {
         isColored={true}
         className="box-shadow"
         style={{ marginTop: "auto", alignSelf: "center" }}
-        onClick={() => props.openDialog(entity, "Detailed Entity View")}
+        onClick={() => props.openDialog(entity, "Analytics")}
         label="Analytics"
       ></OccupancyButton>
     </div>

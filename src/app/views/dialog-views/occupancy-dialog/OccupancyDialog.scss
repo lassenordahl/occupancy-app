@@ -55,7 +55,6 @@
       margin-top: $mediumSpacing;
     }
 
-
     .dialog-entity-list-item:not(:last-child) {
       margin-bottom: 0;
     }
@@ -75,17 +74,41 @@
     grid-column-gap: 36px;
     grid-row-gap: 36px;
 
-    .div1 { 
-      grid-area: 1 / 1 / 4 / 4; 
-      
+    .range-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 16px;
+    }
+
+    .div1 {
+      grid-area: 1 / 1 / 4 / 4;
+
       & > div {
         margin: $largeSpacing;
         margin-top: $mediumSpacing;
       }
     }
 
-    .div2 { grid-area: 4 / 1 / 5 / 2; }
-    .div3 { grid-area: 4 / 2 / 5 / 3; }
-    .div4 { grid-area: 4 / 3 / 5 / 4; }
+    .div2 {
+      grid-area: 4 / 1 / 5 / 2;
+
+      & > div {
+        margin: $mediumSpacing;
+      }
+    }
+    .div3 {
+      grid-area: 4 / 2 / 5 / 3;
+
+      & > div {
+        margin: $mediumSpacing;
+      }
+    }
+    .div4 {
+      grid-area: 4 / 3 / 5 / 4;
+      
+      & > div {
+        margin: $mediumSpacing;
+      }
+    }
   }
 }

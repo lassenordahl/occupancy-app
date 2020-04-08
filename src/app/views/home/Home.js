@@ -7,7 +7,7 @@ import { Redirect, useLocation, withRouter } from "react-router";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCaretDown, faCaretUp } from "@fortawesome/free-solid-svg-icons";
 import { Card, Dialog } from "app/containers";
-import { Legend, CoordinateMap, FloorMap } from "app/components";
+import { Legend, CoordinateMap, FloorMap, SkeletonPulse } from "app/components";
 import app_config from "globals/config";
 import authGet from "../../../globals/authentication/AuthGet";
 import api from "globals/api";
@@ -84,13 +84,12 @@ function Home(props) {
 
   useEffect(() => {
     if (firstLoad) {
-      parseUrlRoute(windowRoute);
       setFirstLoad(false);
     }
   }, [firstLoad]);
 
   useEffect(() => {
-    // getOccupancyData(subEntities, currentDate);
+    getOccupancyData(subEntities, currentDate);
   }, [subEntities]);
 
   useEffect(() => {
@@ -127,43 +126,6 @@ function Home(props) {
       route = "/" + windowRoute.concat(newRoute).join("/");
     }
     return <Redirect to={route}></Redirect>;
-  }
-
-  async function parseUrlRoute(route, baseAppRoute) {
-    // console.log('parse url route');
-    // if (route.length === 1 && route[0] === "") {
-    //   console.log(app_config);
-    //   pushRoute(['occupancy', app_config.id]);
-    //   return;
-    // }
-    // let entityIds = route.filter(function(routeElement, index) {
-    //   return index % 2 === 1;
-    // });
-    // // Get all the entities listed in the URL
-    // let entityResponses = await Promise.all(
-    //   entityIds.map(function(id) {
-    //     return authGet(api.entity + "/" + id);
-    //   })
-    // );
-    // if (entityResponses.length === 0) {
-    //   // If we have no valid entities, use the valid route that was given at the root of the application
-    //   // setCurrentRoute(baseAppRoute);
-    // } else {
-    //   // pushRoute(route);
-    //   let entities = entityResponses.map(function(response) {
-    //     return response.data;
-    //   });
-    //   let selectedEntity = entities[entities.length - 1];
-    //   console.log(selectedEntity);
-    //   let selectedEntityType =
-    //     selectedEntity.payload.geo.coordinateSystem.coordinateSystemClassName;
-    //   setEntity(selectedEntity);
-    //   setEntityType(selectedEntityType);
-    //   if (selectedEntity.payload.geo.childSpaces !== undefined) {
-    //     setSubEntities(selectedEntity.payload.geo.childSpaces);
-    //   }
-    //   // getSubEntities(selectedEntityType, selectedEntity.id);
-    // }
   }
 
   function getEntity(entityId) {
@@ -280,7 +242,10 @@ function Home(props) {
   // Renders a title based on the type of app we currently have loading
   function renderTitle(entity) {
     if (entity === null || entity === undefined) {
-      return null;
+      return (<React.Fragment>
+        <SkeletonPulse style={{'width': '100%', height: '3em'}}></SkeletonPulse>
+        <SkeletonPulse style={{'width': '100%', height: '2em', 'marginTop': '8px'}}></SkeletonPulse>
+      </React.Fragment>);
     } else {
       return (
         <React.Fragment>
@@ -386,10 +351,11 @@ function Home(props) {
         </Dialog>
       ) : null}
 
-      { !errorLoading ? (
+      {!errorLoading ? (
         <Card
           className={
-            "fade-in legend-card " + (transitionLegend ? "legend-card-none" : "")
+            "fade-in legend-card " +
+            (transitionLegend ? "legend-card-none" : "")
           }
           style={{ width: "240px" }}
         >
@@ -432,7 +398,7 @@ function Home(props) {
         </Card>
       ) : null}
 
-      { !errorLoading ? (
+      {!errorLoading ? (
         <Card className="fade-in information-card" style={{ width: "360px" }}>
           <div className="information-header-wrapper">
             <div className="information-header">{renderTitle(entity)}</div>

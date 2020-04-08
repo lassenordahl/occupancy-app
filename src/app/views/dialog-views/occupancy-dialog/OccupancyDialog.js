@@ -306,7 +306,7 @@ function OccupancyDialog(props) {
       {!showSpinner ? (
         <React.Fragment>
           <div className="dialog-graph-params">
-            <div className="header-toggle">
+            {/* <div className="header-toggle">
               <h2>Projected Date Range</h2>
               <CheckboxToggle
                 value={projected}
@@ -324,7 +324,7 @@ function OccupancyDialog(props) {
               // label="to"
               value={projectedToDate}
               disabled={!projected}
-            />
+            /> */}
 
             <h2>Compare Spaces</h2>
             <Picklist
@@ -381,7 +381,7 @@ function OccupancyDialog(props) {
                 <Line data={processData()} options={getChartJSOptions()}></Line>
                 <h2>Timeline</h2>
                 <div style={{ height: "16px" }} />
-                <div style={{ marginLeft: "36px", marginRight: "36px" }}>
+                <div style={{ marginLeft: "48px", marginRight: "48px" }}>
                   <Range
                     min={0}
                     max={entityOccupantData[0].timestamps.length - 1}
@@ -393,10 +393,18 @@ function OccupancyDialog(props) {
                     onChange={setTimelines}
                   />
                 </div>
+                <div className="range-labels">
+                  <p>
+                    {entityOccupantData[0].timestamps[0]}
+                  </p>
+                  <p>
+                    {entityOccupantData[0].timestamps[entityOccupantData[0].timestamps.length - 1]}
+                  </p>
+                </div>
               </div>
             </div>
             <div className="div2">
-              <NumberFocus subtitle="Min Occupants" lastUpdated={ min !== null ? min.timestamp : null }>
+              <NumberFocus subtitle="Minimum" lastUpdated={ min !== null ? min.timestamp : null }>
                 {min !== null ? (
                   min.value
                 ) : (
@@ -407,7 +415,7 @@ function OccupancyDialog(props) {
               </NumberFocus>
             </div>
             <div className="div3">
-              <NumberFocus subtitle="Max Occupants" lastUpdated={ max !== null ? max.timestamp : null }>
+              <NumberFocus subtitle="Maximum" lastUpdated={ max !== null ? max.timestamp : null }>
                 {max !== null ? (
                   max.value
                 ) : (
@@ -418,7 +426,7 @@ function OccupancyDialog(props) {
               </NumberFocus>
             </div>
             <div className="div4">
-              <NumberFocus subtitle="Average Occupants">
+              <NumberFocus subtitle="Average Average">
                 {avg !== null ? (
                   avg
                 ) : (

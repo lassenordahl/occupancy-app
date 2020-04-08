@@ -10,28 +10,30 @@
   z-index: 1000;
 
   .dialog-navbar {
-    height: 84px;
+    height: 112px;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    align-items: center;
     background-color: $titleBackground;
 
     & > div {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
+      flex-direction: column;
       margin-left: $mediumSpacing;
 
       h3 {
         margin: 0;
-        margin-left: $smallSpacing;
-        margin-top: 7px;
+        margin-top: 6px;
       }
     }
     
     svg {
       font-size: 2em;
-      align-self: center;
+      align-self: flex-start;
       margin-right: $smallSpacing;
+      margin-top: $smallSpacing;
     }
 
     svg:hover {
