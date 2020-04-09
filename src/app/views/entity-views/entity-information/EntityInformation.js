@@ -56,7 +56,10 @@ function EntityInformation(props) {
       <DateTimePicker
         value={props.currentDate}
         disabled={props.realtime}
-        onChange={value => props.setCurrentDate(value)}
+        onChange={value => {
+          props.setCurrentDate(value);
+          props.refreshOccupancies();
+        }}
       />
 
       <div style={{ height: "24px" }} />
