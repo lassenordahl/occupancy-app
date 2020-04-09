@@ -56,7 +56,10 @@ function EntityInformation(props) {
       <DateTimePicker
         value={props.currentDate}
         disabled={props.realtime}
-        onChange={value => props.setCurrentDate(value)}
+        onChange={value => {
+          props.setCurrentDate(value);
+          props.refreshOccupancies();
+        }}
       />
 
       <div style={{ height: "24px" }} />
@@ -144,7 +147,7 @@ function EntityInformation(props) {
         isColored={true}
         className="box-shadow"
         style={{ marginTop: "auto", alignSelf: "center" }}
-        onClick={() => props.openDialog(entity, "Detailed Entity View")}
+        onClick={() => props.openDialog(entity, "Analytics")}
         label="Analytics"
       ></OccupancyButton>
     </div>

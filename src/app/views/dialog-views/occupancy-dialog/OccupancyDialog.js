@@ -10,7 +10,7 @@ import {
   Picklist,
   PicklistOption,
   DateTimePicker,
-  CheckboxToggle
+  CheckboxToggle,
 } from "react-rainbow-components";
 import Slider from "rc-slider";
 import _ from "lodash";
@@ -20,12 +20,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 
 import { Card, NumberFocus } from "app/containers";
+import { SkeletonPulse } from "app/components";
 
 import {
   getChartJSData,
   getChartJSDataset,
   getChartJSOptions,
-  getGraphColor
+  getGraphColor,
 } from "globals/utils/chartjs-helper";
 
 import { capitalizeWords } from "globals/utils/formatting-helper";
@@ -42,10 +43,14 @@ function OccupancyDialog(props) {
   const [occupancyData, setOccupancyData] = useState(null);
   const [filteredOccupancyData, setFilteredOccupancyData] = useState(null);
 
+  // Filter Variables
+  const [filterMin, setFilterMin] = useState(null);
+  const [filterMax, setFilterMax] = useState(null);
+
   // Variables for containing max, min, and average information
-  const [min, setMin] = useState(0);
-  const [max, setMax] = useState(0);
-  const [avg, setAvg] = useState(0);
+  const [min, setMin] = useState(null);
+  const [max, setMax] = useState(null);
+  const [avg, setAvg] = useState(null);
 
   // Projected Dates and projected enable variable
   const [projected, setProjected] = useState(false);
@@ -65,49 +70,60 @@ function OccupancyDialog(props) {
     // }
   }, [props.entity]);
 
-  function mapObservationValues(observationValues, createFilteredData) {
+  function mapObservationValues(observationValues, isFirstIndex) {
     let maxVal = Number.MIN_SAFE_INTEGER;
+    let maxTimestamp = null;
     let minVal = Number.MAX_SAFE_INTEGER;
+    let minTimestamp = null;
     let total = 0;
-    let data = observationValues.map(function(observation) {
+
+    let data = observationValues.map(function (observation) {
       total += observation.payload.value;
       if (observation.payload.value > maxVal) {
         maxVal = observation.payload.value;
+        maxTimestamp = observation.timestamp;
       }
       if (observation.payload.value < minVal) {
         minVal = observation.payload.value;
+        minTimestamp = observation.timestamp;
       }
       return observation.payload.value;
     });
 
-    let timestamps = observationValues.map(function(observation) {
+    let timestamps = observationValues.map(function (observation) {
       return moment(observation.timestamp).format("MMM Do h:mm:ss");
     });
 
-    // setMax(maxVal);
-    // setMin(minVal);
-    // setAvg((total / observationValues.length).toFixed(1));
+    setMin({
+      value: minVal,
+      timestamp: minTimestamp
+    });
 
-    if (createFilteredData) {
+    setMax({
+      value: maxVal,
+      timestamp: maxTimestamp
+    });
+
+    setAvg(Math.floor(total / observationValues.length));
+
+    // We need to have a filtered data object because chartJS has an issue where it will splice the first element of the array
+    // without making a copy, thus to not lose data on splicing the first object, we need to have another array
+    // that is repopulated with data from the first index everytime we change the timeline
+    if (isFirstIndex) {
       setFilteredOccupancyData({
         data: data.slice(),
-        timestamps: timestamps.slice()
-      })
+        timestamps: timestamps.slice(),
+      });
     }
 
     return {
       data: data,
-      timestamps: timestamps
+      timestamps: timestamps,
     };
   }
 
-  // setFilteredOccupancyData({
-  //   data: occupancyObject.data.slice(),
-  //   timestamps: occupancyData.timestamps.slice()
-  // })
-
   // Get the occupancy information for every comparable entity
-  function getOccupancyInformation(entity, createFilteredData) {
+  function getOccupancyInformation(entity, isFirstIndex) {
     // Make the call  for the occupancy data
     let occupancyObject = mapObservationValues(
       {
@@ -116,115 +132,115 @@ function OccupancyDialog(props) {
         values: [
           {
             id: 6,
-            timestamp: 1574717000,
+            timestamp: 1583376545000,
             payload: {
               entityId: 3,
-              value: Math.floor(Math.random() * 100)
+              value: Math.floor(Math.random() * 100),
             },
-            deviceId: 2
+            deviceId: 2,
           },
           {
             id: 7,
-            timestamp: 1574717000,
+            timestamp: 1583376545000,
             payload: {
               entityId: 3,
-              value: Math.floor(Math.random() * 100)
+              value: Math.floor(Math.random() * 100),
             },
-            deviceId: 2
+            deviceId: 2,
           },
           {
             id: 8,
-            timestamp: 1574717000,
+            timestamp: 1583376545000,
             payload: {
               entityId: 3,
-              value: Math.floor(Math.random() * 100)
+              value: Math.floor(Math.random() * 100),
             },
-            deviceId: 2
+            deviceId: 2,
           },
           {
             id: 9,
-            timestamp: 1574717000,
+            timestamp: 1583376545000,
             payload: {
               entityId: 3,
-              value: Math.floor(Math.random() * 100)
+              value: Math.floor(Math.random() * 100),
             },
-            deviceId: 2
+            deviceId: 2,
           },
           {
             id: 10,
-            timestamp: 1574717000,
+            timestamp: 1583376545000,
             payload: {
               entityId: 3,
-              value: Math.floor(Math.random() * 100)
+              value: Math.floor(Math.random() * 100),
             },
-            deviceId: 2
+            deviceId: 2,
           },
           {
             id: 11,
-            timestamp: 1574717000,
+            timestamp: 1583376545000,
             payload: {
               entityId: 3,
-              value: Math.floor(Math.random() * 100)
+              value: Math.floor(Math.random() * 100),
             },
-            deviceId: 2
+            deviceId: 2,
           },
           {
             id: 12,
-            timestamp: 1574717000,
+            timestamp: 1583376545000,
             payload: {
               entityId: 3,
-              value: Math.floor(Math.random() * 100)
+              value: Math.floor(Math.random() * 100),
             },
-            deviceId: 2
+            deviceId: 2,
           },
           {
             id: 13,
-            timestamp: 1574717000,
+            timestamp: 1583376545000,
             payload: {
               entityId: 3,
-              value: Math.floor(Math.random() * 100)
+              value: Math.floor(Math.random() * 100),
             },
-            deviceId: 2
+            deviceId: 2,
           },
           {
             id: 14,
-            timestamp: 1574717000,
+            timestamp: 1583376545000,
             payload: {
               entityId: 3,
-              value: Math.floor(Math.random() * 100)
+              value: Math.floor(Math.random() * 100),
             },
-            deviceId: 2
+            deviceId: 2,
           },
           {
             id: 15,
-            timestamp: 1574717000,
+            timestamp: 1583376545000,
             payload: {
               entityId: 3,
-              value: Math.floor(Math.random() * 100)
+              value: Math.floor(Math.random() * 100),
             },
-            deviceId: 2
+            deviceId: 2,
           },
           {
             id: 16,
-            timestamp: 1574717000,
+            timestamp: 1583376545000,
             payload: {
               entityId: 3,
-              value: Math.floor(Math.random() * 100)
+              value: Math.floor(Math.random() * 100),
             },
-            deviceId: 2
+            deviceId: 2,
           },
           {
             id: 17,
-            timestamp: 1574717000,
+            timestamp: 1583376545000,
             payload: {
               entityId: 3,
-              value: Math.floor(Math.random() * 100)
+              value: Math.floor(Math.random() * 100),
             },
-            deviceId: 2
-          }
-        ]
+            deviceId: 2,
+          },
+        ],
       }.values,
-      createFilteredData
+      isFirstIndex
     );
 
     // Add the occupancy data to the observation values
@@ -232,42 +248,55 @@ function OccupancyDialog(props) {
   }
 
   function processData() {
-    console.log("processdata is called");
     // Get all the datasets
-    let datasets = entityOccupantData.map(function(occupancyDataObject, index) {
-      console.log(occupancyDataObject);
+    let datasets = entityOccupantData.map(function (
+      occupancyDataObject,
+      index
+    ) {
       return getChartJSDataset(
         getGraphColor(index),
         index < comparedEntities.length
           ? comparedEntities[index].name
           : "Occupancy",
-        occupancyDataObject.data // TODO this should be filtered for the first index
+        index === 0
+          ? filteredOccupancyData.data
+          : occupancyDataObject.data.slice(filterMin, filterMax)
       );
     });
 
-    return getChartJSData(entityOccupantData[0].timestamps, datasets);
+    return getChartJSData(filteredOccupancyData.timestamps, datasets);
   }
 
   // Set the filtered occupancy data to what the timeline range is
   function setTimelines(value) {
+    setFilterMin(value[0]);
+    setFilterMax(value[1]);
+
     setFilteredOccupancyData({
       data: entityOccupantData[0].data.slice(value[0], value[1]),
-      timestamps: entityOccupantData[0].timestamps.slice(value[0], value[1])
+      timestamps: entityOccupantData[0].timestamps.slice(value[0], value[1]),
     });
   }
 
   // Add a comparable entityy
   function addToComparedEntities(newEntity) {
-    console.log(newEntity);
     setComparedEntities([...comparedEntities, newEntity]);
     getOccupancyInformation(newEntity);
-    // setEntityOccupantData([...entityOccupantData, ])
   }
 
   function removeComparedEntity(removedEntity) {
+    let removedIndex = -1;
     setComparedEntities(
-      _.reject(comparedEntities, function(entity) {
+      _.reject(comparedEntities, function (entity, index) {
+        if (entity.id === removedEntity.id) {
+          removedIndex = index;
+        }
         return entity.id === removedEntity.id;
+      })
+    );
+    setEntityOccupantData(
+      _.reject(entityOccupantData, function (occupantData, index) {
+        return removedIndex === index;
       })
     );
   }
@@ -277,11 +306,11 @@ function OccupancyDialog(props) {
       {!showSpinner ? (
         <React.Fragment>
           <div className="dialog-graph-params">
-            <div className="header-toggle">
+            {/* <div className="header-toggle">
               <h2>Projected Date Range</h2>
               <CheckboxToggle
                 value={projected}
-                onChange={event => setProjected(!projected)}
+                onChange={(event) => setProjected(!projected)}
               />
             </div>
             <div style={{ height: "16px" }} />
@@ -295,33 +324,33 @@ function OccupancyDialog(props) {
               // label="to"
               value={projectedToDate}
               disabled={!projected}
-            />
+            /> */}
 
             <h2>Compare Spaces</h2>
             <Picklist
               // value={selectedEntity}
-              onChange={option => addToComparedEntities(option.value)}
+              onChange={(option) => addToComparedEntities(option.value)}
               placeholder="Select a comparable entity"
             >
               {[
-                { name: "test", id: 1 },
+                { name: "test1", id: 1 },
                 { name: "test2", id: 2 },
                 { name: "test3", id: 3 },
                 { name: "test4", id: 4 },
                 { name: "test5", id: 5 },
-                { name: "test6", id: 6 }
+                { name: "test6", id: 6 },
               ]
-                .sort(function(a, b) {
+                .sort(function (a, b) {
                   if (a.name < b.name) return -1;
                   if (a.name > b.name) return 1;
                   return 0;
                 })
-                .filter(function(entity) {
+                .filter(function (entity) {
                   return !comparedEntities
-                    .map(entity => entity.id)
+                    .map((entity) => entity.id)
                     .includes(entity.id);
                 })
-                .map(function(entity, index) {
+                .map(function (entity, index) {
                   return (
                     <PicklistOption
                       key={index}
@@ -332,9 +361,9 @@ function OccupancyDialog(props) {
                   );
                 })}
             </Picklist>
-            {comparedEntities.slice(1).map(function(entity) {
+            {comparedEntities.slice(1).map(function (entity, index) {
               return (
-                <div className="dialog-entity-list-item">
+                <div className="dialog-entity-list-item" key={index}>
                   <p>{entity.name}</p>
                   <FontAwesomeIcon
                     icon={faTimes}
@@ -352,28 +381,60 @@ function OccupancyDialog(props) {
                 <Line data={processData()} options={getChartJSOptions()}></Line>
                 <h2>Timeline</h2>
                 <div style={{ height: "16px" }} />
-                <div style={{ marginLeft: "36px", marginRight: "36px" }}>
+                <div style={{ marginLeft: "48px", marginRight: "48px" }}>
                   <Range
                     min={0}
-                    max={entityOccupantData[0].data.length - 1}
+                    max={entityOccupantData[0].timestamps.length - 1}
                     defaultValue={[0, entityOccupantData[0].data.length - 1]}
-                    tipFormatter={value =>
+                    tipFormatter={(value) =>
                       `${entityOccupantData[0].timestamps[value]}`
                     }
                     trackStyle={[{ backgroundColor: "#2749c4" }]}
                     onChange={setTimelines}
                   />
                 </div>
+                <div className="range-labels">
+                  <p>
+                    {entityOccupantData[0].timestamps[0]}
+                  </p>
+                  <p>
+                    {entityOccupantData[0].timestamps[entityOccupantData[0].timestamps.length - 1]}
+                  </p>
+                </div>
               </div>
             </div>
             <div className="div2">
-              <NumberFocus subtitle="Min Occupants">{min}</NumberFocus>
+              <NumberFocus subtitle="Minimum" lastUpdated={ min !== null ? min.timestamp : null }>
+                {min !== null ? (
+                  min.value
+                ) : (
+                  <SkeletonPulse
+                    style={{ width: "50px", height: "50px", margin: "20px" }}
+                  />
+                )}
+              </NumberFocus>
             </div>
             <div className="div3">
-              <NumberFocus subtitle="Max Occupants">{max}</NumberFocus>
+              <NumberFocus subtitle="Maximum" lastUpdated={ max !== null ? max.timestamp : null }>
+                {max !== null ? (
+                  max.value
+                ) : (
+                  <SkeletonPulse
+                    style={{ width: "50px", height: "50px", margin: "20px" }}
+                  />
+                )}
+              </NumberFocus>
             </div>
             <div className="div4">
-              <NumberFocus subtitle="Average Occupants">{avg}</NumberFocus>
+              <NumberFocus subtitle="Average Average">
+                {avg !== null ? (
+                  avg
+                ) : (
+                  <SkeletonPulse
+                    style={{ width: "50px", height: "50px", margin: "20px" }}
+                  />
+                )}
+              </NumberFocus>
             </div>
           </Card>
         </React.Fragment>
