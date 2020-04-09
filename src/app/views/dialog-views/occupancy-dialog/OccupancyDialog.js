@@ -125,123 +125,123 @@ function OccupancyDialog(props) {
   // Get the occupancy information for every comparable entity
   function getOccupancyInformation(entity, isFirstIndex) {
     // Make the call  for the occupancy data
-    // let occupancyObject = mapObservationValues(
-    //   {
-    //     resultCode: 400,
-    //     message: "Values found with search parameters.",
-    //     values: [
-    //       {
-    //         id: 6,
-    //         timestamp: 1583376545000,
-    //         payload: {
-    //           entityId: 3,
-    //           value: Math.floor(Math.random() * 100),
-    //         },
-    //         deviceId: 2,
-    //       },
-    //       {
-    //         id: 7,
-    //         timestamp: 1583376545000,
-    //         payload: {
-    //           entityId: 3,
-    //           value: Math.floor(Math.random() * 100),
-    //         },
-    //         deviceId: 2,
-    //       },
-    //       {
-    //         id: 8,
-    //         timestamp: 1583376545000,
-    //         payload: {
-    //           entityId: 3,
-    //           value: Math.floor(Math.random() * 100),
-    //         },
-    //         deviceId: 2,
-    //       },
-    //       {
-    //         id: 9,
-    //         timestamp: 1583376545000,
-    //         payload: {
-    //           entityId: 3,
-    //           value: Math.floor(Math.random() * 100),
-    //         },
-    //         deviceId: 2,
-    //       },
-    //       {
-    //         id: 10,
-    //         timestamp: 1583376545000,
-    //         payload: {
-    //           entityId: 3,
-    //           value: Math.floor(Math.random() * 100),
-    //         },
-    //         deviceId: 2,
-    //       },
-    //       {
-    //         id: 11,
-    //         timestamp: 1583376545000,
-    //         payload: {
-    //           entityId: 3,
-    //           value: Math.floor(Math.random() * 100),
-    //         },
-    //         deviceId: 2,
-    //       },
-    //       {
-    //         id: 12,
-    //         timestamp: 1583376545000,
-    //         payload: {
-    //           entityId: 3,
-    //           value: Math.floor(Math.random() * 100),
-    //         },
-    //         deviceId: 2,
-    //       },
-    //       {
-    //         id: 13,
-    //         timestamp: 1583376545000,
-    //         payload: {
-    //           entityId: 3,
-    //           value: Math.floor(Math.random() * 100),
-    //         },
-    //         deviceId: 2,
-    //       },
-    //       {
-    //         id: 14,
-    //         timestamp: 1583376545000,
-    //         payload: {
-    //           entityId: 3,
-    //           value: Math.floor(Math.random() * 100),
-    //         },
-    //         deviceId: 2,
-    //       },
-    //       {
-    //         id: 15,
-    //         timestamp: 1583376545000,
-    //         payload: {
-    //           entityId: 3,
-    //           value: Math.floor(Math.random() * 100),
-    //         },
-    //         deviceId: 2,
-    //       },
-    //       {
-    //         id: 16,
-    //         timestamp: 1583376545000,
-    //         payload: {
-    //           entityId: 3,
-    //           value: Math.floor(Math.random() * 100),
-    //         },
-    //         deviceId: 2,
-    //       },
-    //       {
-    //         id: 17,
-    //         timestamp: 1583376545000,
-    //         payload: {
-    //           entityId: 3,
-    //           value: Math.floor(Math.random() * 100),
-    //         },
-    //         deviceId: 2,
-    //       },
-    //     ],
-    //   }.values,
-    //   isFirstIndex
-    // );
+    let occupancyObject = mapObservationValues(
+      {
+        resultCode: 400,
+        message: "Values found with search parameters.",
+        values: [
+          {
+            id: 6,
+            timestamp: 1583376545000,
+            payload: {
+              entityId: 3,
+              value: Math.floor(Math.random() * 100),
+            },
+            deviceId: 2,
+          },
+          {
+            id: 7,
+            timestamp: 1583376545000,
+            payload: {
+              entityId: 3,
+              value: Math.floor(Math.random() * 100),
+            },
+            deviceId: 2,
+          },
+          {
+            id: 8,
+            timestamp: 1583376545000,
+            payload: {
+              entityId: 3,
+              value: Math.floor(Math.random() * 100),
+            },
+            deviceId: 2,
+          },
+          {
+            id: 9,
+            timestamp: 1583376545000,
+            payload: {
+              entityId: 3,
+              value: Math.floor(Math.random() * 100),
+            },
+            deviceId: 2,
+          },
+          {
+            id: 10,
+            timestamp: 1583376545000,
+            payload: {
+              entityId: 3,
+              value: Math.floor(Math.random() * 100),
+            },
+            deviceId: 2,
+          },
+          {
+            id: 11,
+            timestamp: 1583376545000,
+            payload: {
+              entityId: 3,
+              value: Math.floor(Math.random() * 100),
+            },
+            deviceId: 2,
+          },
+          {
+            id: 12,
+            timestamp: 1583376545000,
+            payload: {
+              entityId: 3,
+              value: Math.floor(Math.random() * 100),
+            },
+            deviceId: 2,
+          },
+          {
+            id: 13,
+            timestamp: 1583376545000,
+            payload: {
+              entityId: 3,
+              value: Math.floor(Math.random() * 100),
+            },
+            deviceId: 2,
+          },
+          {
+            id: 14,
+            timestamp: 1583376545000,
+            payload: {
+              entityId: 3,
+              value: Math.floor(Math.random() * 100),
+            },
+            deviceId: 2,
+          },
+          {
+            id: 15,
+            timestamp: 1583376545000,
+            payload: {
+              entityId: 3,
+              value: Math.floor(Math.random() * 100),
+            },
+            deviceId: 2,
+          },
+          {
+            id: 16,
+            timestamp: 1583376545000,
+            payload: {
+              entityId: 3,
+              value: Math.floor(Math.random() * 100),
+            },
+            deviceId: 2,
+          },
+          {
+            id: 17,
+            timestamp: 1583376545000,
+            payload: {
+              entityId: 3,
+              value: Math.floor(Math.random() * 100),
+            },
+            deviceId: 2,
+          },
+        ],
+      }.values,
+      isFirstIndex
+    );
 
     // Add the occupancy data to the observation values
     setEntityOccupantData([...entityOccupantData, occupancyObject]);
