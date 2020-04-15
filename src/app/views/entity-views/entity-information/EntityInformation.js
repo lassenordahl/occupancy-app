@@ -131,7 +131,6 @@ function EntityInformation(props) {
         ></FontAwesomeIcon>
       </div>
       <div style={{ height: "16px" }} />
-
       <NumberFocus
         subtitle="Occupants"
         lastUpdated={getMostRecentOccupancyTimestamp(props.occupancies)}

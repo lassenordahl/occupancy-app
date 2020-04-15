@@ -9,6 +9,7 @@ function Legend(props) {
 
   let blueRainbow = getBlueRainbow(props.legendMax);
 
+  // Utilize different segmented colors for ranges in our app
   const ranges = [
     {
       color: "#" + blueRainbow.colorAt(Math.floor(props.legendMax * .25)),

@@ -1,6 +1,5 @@
 import React from "react";
 import "./DefaultView.scss";
-import { Button } from 'react-rainbow-components';
 import { OccupancyButton } from "app/components";
 import { TutorialCard } from "app/containers";
 
