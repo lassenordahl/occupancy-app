@@ -5,11 +5,9 @@ import "rc-tooltip/assets/bootstrap.css";
 
 import moment from "moment";
 import { Line } from "react-chartjs-2";
-import { Spinner, Picklist, PicklistOption } from "react-rainbow-components";
 import Slider from "rc-slider";
 import _ from "lodash";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import { Picklist, PicklistOption } from "react-rainbow-components";
 
 import { Card, NumberFocus } from "app/containers";
 import { SkeletonPulse } from "app/components";
@@ -25,21 +23,6 @@ import authGet from "globals/authentication/AuthGet";
 
 const createSliderWithTooltip = Slider.createSliderWithTooltip;
 const Range = createSliderWithTooltip(Slider.Range);
-
-window.addEventListener('keydown', function(event) { 
-  if (event.defaultPrevented) {
-    return; // Should do nothing if the default action has been cancelled
-  }
-  let handled = false;
-  if (event.keyCode == 123) {
-    handled = true;
-    debugger;  // 123 is the keyCode of F12
-  }
-  if (handled) {
-    // Suppress "double action" if event handled
-    event.preventDefault();
-  }
-});
 
 function OccupancyDialog(props) {
   // List of entitity ID's
@@ -57,23 +40,19 @@ function OccupancyDialog(props) {
   const [max, setMax] = useState(null);
   const [avg, setAvg] = useState(null);
 
-  // Projected Dates and projected enable variable
-  // const [projected, setProjected] = useState(false);
-  // const [projectedFromDate, setProjectedFromDate] = useState(new Date());
-  // const [projectedToDate, setProjectedToDate] = useState(new Date());
-
-  
-
+  // Upon getting an entity load the occupancy information
   useEffect(() => {
     getOccupancyInformation(props.entity, true);
   }, [props.entity]);
 
+  // When the dates change load the occupancy data again
   useEffect(() => {
     getOccupancyInformation(props.entity, true);
   }, [props.fromDate, props.toDate]);
 
+  // Take in if we're going to use the first index,
+  // If we're the first index (primary entity for this dialog), then we should load the max/min/avg values
   function mapObservationValues(observationValues, isFirstIndex) {
-    console.log(observationValues);
     let maxVal = Number.MIN_SAFE_INTEGER;
     let maxTimestamp = null;
     let minVal = Number.MAX_SAFE_INTEGER;
@@ -93,9 +72,13 @@ function OccupancyDialog(props) {
       return observation.payload.value;
     });
 
+    // Format timestamps to correct output
     let timestamps = observationValues.map(function (observation) {
-      return moment(observation.timestamp).format("MMM Do h:mm:ss");
+      return moment(observation.timestamp).toDate();
+      // return moment(observation.timestamp).format("MMM Do h:mm:ss");
     });
+
+    console.log(timestamps);
 
     setMin({
       value: minVal,
@@ -153,12 +136,16 @@ function OccupancyDialog(props) {
       });
   }
 
+  // Process the data for the ChartJS chart
   function processData() {
     // Get all the datasets
     let datasets = entityOccupantData.map(function (
       occupancyDataObject,
       index
     ) {
+      // For each entity, pass in the filtered data
+      // Except for the first index, we have another array that is ALREADY filtered because 
+      // ChartJS will cause issues with slicing that array and we'll permanently sub slice it and lose data
       return getChartJSDataset(
         getGraphColor(index),
         index < comparedEntities.length
@@ -170,6 +157,7 @@ function OccupancyDialog(props) {
       );
     });
 
+    // Get the ChartJS Data configuration
     return getChartJSData(filteredOccupancyData.timestamps, datasets);
   }
 
@@ -178,6 +166,8 @@ function OccupancyDialog(props) {
     setFilterMin(value[0]);
     setFilterMax(value[1]);
 
+    // Generate a new object from the filtered occupancy data
+    // Reasons are mentioned above in the processData function
     setFilteredOccupancyData({
       data: entityOccupantData[0].data.slice(value[0], value[1]),
       timestamps: entityOccupantData[0].timestamps.slice(value[0], value[1]),
@@ -186,6 +176,7 @@ function OccupancyDialog(props) {
 
   // Add a comparable entityy
   function addToComparedEntities(newEntity) {
+    // Add to compared entities, make an occupancy request for the information
     setComparedEntities([...comparedEntities, newEntity]);
     getOccupancyInformation(newEntity);
   }
@@ -207,34 +198,15 @@ function OccupancyDialog(props) {
     );
   }
 
+  // Used for formatting dates
+  function formatDateTime(datetime) {
+    return moment(datetime).format("MMM Do h:mm:ss");;
+  }
+
   return (
     <div className="OccupancyDialog">
       <div className="dialog-graph-params">
-        <h2>
-          Occupancy Dialog
-        </h2>
-      
-        {/* <div className="header-toggle">
-              <h2>Projected Date Range</h2>
-              <CheckboxToggle
-                value={projected}
-                onChange={(event) => setProjected(!projected)}
-              />
-            </div>
-            <div style={{ height: "16px" }} />
-            <DateTimePicker
-              // label="from"
-              value={projectedFromDate}
-              disabled={!projected}
-            />
-            <div style={{ height: "16px" }} />
-            <DateTimePicker
-              // label="to"
-              value={projectedToDate}
-              disabled={!projected}
-            /> */}
-
-        {/* <h2>Compare Spaces</h2>
+        <h2>Compare Spaces</h2>
         <Picklist
           // value={selectedEntity}
           onChange={(option) => addToComparedEntities(option.value)}
@@ -268,7 +240,7 @@ function OccupancyDialog(props) {
                 />
               );
             })}
-        </Picklist> */}
+        </Picklist>
 
         {/* {comparedEntities.slice(1).map(function (entity, index) {
           return (
@@ -315,25 +287,25 @@ function OccupancyDialog(props) {
                           entityOccupantData[0].data.length - 1,
                         ]}
                         tipFormatter={(value) =>
-                          `${entityOccupantData[0].timestamps[value]}`
+                          `${formatDateTime(entityOccupantData[0].timestamps[value])}`
                         }
                         trackStyle={[{ backgroundColor: "#2749c4" }]}
                         onChange={setTimelines}
                       />
                     </div>
                     <div className="range-labels">
-                      <p>{entityOccupantData[0].timestamps[0]}</p>
+                      <p>{formatDateTime(entityOccupantData[0].timestamps[0])}</p>
                       <p>
                         {
-                          entityOccupantData[0].timestamps[
+                          formatDateTime(entityOccupantData[0].timestamps[
                             entityOccupantData[0].timestamps.length - 1
-                          ]
+                          ])
                         }
                       </p>
                     </div>
                   </React.Fragment>
                 ) : (
-                  <SkeletonPulse style={{ width: "100%", height: "128px" }} />
+                  <SkeletonPulse style={{ width: "100%", height: "64px" }} />
                 )}
                 
               </div>
@@ -391,7 +363,7 @@ function OccupancyDialog(props) {
             </div>
           </React.Fragment>
         ) : (
-          <div className="dialog-no-data-screen">
+          <div className="dialog-no-data-screen fade-in">
             <h3>No data available</h3>
             <p>(Maybe check your bounding date range!)</p>
           </div>

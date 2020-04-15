@@ -10,8 +10,8 @@ function Dialog(props) {
 
   return (
     <Card 
-      className={`Dialog box-shadow ${props.className}`}
-      style={{...props.style}}
+      className={`fade-in Dialog box-shadow ${props.className}`}
+      style={{...props.style, animationDuration: "0.5s"}}
     > 
       <div className="dialog-navbar">
         <div>

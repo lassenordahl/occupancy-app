@@ -15,16 +15,20 @@ class FloorMap extends React.Component {
 
   componentDidMount() {
     this.drawContent();
+    // Re-render everything if our window changes
     window.addEventListener("resize", this.drawContent);
   }
   componentDidUpdate() {
     this.drawContent();
   }
 
+  // Helper function to scale an input from one scale to another
   scale(num, in_min, in_max, out_min, out_max) {
     return ((num - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min;
   }
 
+  // Adds whitespace to text so it is centered on a D3 SVG
+  // This is necessary because there are no D3 functions that can find the center of an SVG so we have to do a little approximation
   bufferText(text, length = 10) {
     if (text.length >= length) {
       return text;
@@ -36,6 +40,7 @@ class FloorMap extends React.Component {
     }
   }
 
+  // Get the occupancy at the given index
   getOccupancy(index) {
     if (this.props.occupancies[index] !== undefined) {
       return this.props.occupancies[index];
@@ -44,10 +49,13 @@ class FloorMap extends React.Component {
     }
   }
 
+  // Creates a graphable D3 entity for the d3 instance we're running on the page
   getGraphedEntity(shapeType, entityCoordInfo, occupancy) {
     let rainbow = getBlueRainbow(this.props.legendMax);
 
     let self = this;
+
+    // Depending on the type of shape, we need to generate a differently formated SVG
     if (shapeType === "rectangle") {
       return self.svg
         .append("rect")
@@ -74,7 +82,7 @@ class FloorMap extends React.Component {
         .attr(
           "points",
           entityCoordInfo
-            .map(function(verticie) {
+            .map(function (verticie) {
               return [verticie.x, verticie.y].join(",");
             })
             .join(" ")
@@ -89,6 +97,8 @@ class FloorMap extends React.Component {
     }
   }
 
+  // Returns the size of half of a word scaled to the given buffer size 
+  // uhh after writing that it sounds super weird I'm sorry I don't remember exactly what it's used for :P
   getHalfWidth(word) {
     return (word.length / 2) * 11;
   }
@@ -96,19 +106,24 @@ class FloorMap extends React.Component {
   drawContent() {
     let self = this;
 
+    // Remove everything from the canvas
     self.svg.selectAll("*").remove();
 
+    // Fixes a weird null error on resizing SVG's, not sure what the cause was but some change in here started it but it
+    // was an easy fix with this little null check
     if (self.svg._groups[0][0] === null) {
       return;
     }
 
-    this.entities = self.props.twoDimensionalEntities.map(function(
+    // For every entity given to us, we want to grpah it
+    this.entities = self.props.twoDimensionalEntities.map(function (
       entity,
       index
     ) {
       let clientWidth = self.svg._groups[0][0].clientWidth;
       let clientHeight = self.svg._groups[0][0].clientHeight;
 
+      // Neat little trick to deep copy an object, used because we want to keep the shape of an object but scale the values without changing the originals at their references
       let coordInfo = JSON.parse(JSON.stringify(entity.payload.geo.extent));
       let coordSystem = entity.payload.geo.coordinateSystem;
       let range = coordSystem.range;
@@ -152,7 +167,8 @@ class FloorMap extends React.Component {
           self.getOccupancy(index)
         );
 
-        currEntity.on("mouseover", function() {
+        // Add mouseover tooltips
+        currEntity.on("mouseover", function () {
           d3.select(this);
           self.svg
             .append("text")
@@ -166,19 +182,19 @@ class FloorMap extends React.Component {
             .attr("font-family", "Montserrat")
             .attr("font-size", "20px")
             .attr("fill", "black")
-            .text(function(d) {
+            .text(function (d) {
               return entity.name;
             });
         });
 
-        currEntity.on("mouseout", function() {
+        currEntity.on("mouseout", function () {
           d3.select(this);
           self.drawContent();
         });
 
         return currEntity;
       } else if (entity.payload.geo.extent.extentClassName === "polygon") {
-        let newVerticies = entity.payload.geo.extent.verticies.map(function(
+        let newVerticies = entity.payload.geo.extent.verticies.map(function (
           verticie
         ) {
           return {
@@ -195,7 +211,7 @@ class FloorMap extends React.Component {
               range.yMax,
               margin,
               clientHeight - margin
-            )
+            ),
           };
         });
 
@@ -218,7 +234,7 @@ class FloorMap extends React.Component {
         <div className="floormap-map-wrapper">
           <svg
             className="floormap-canvas"
-            ref={handle => (this.svg = d3.select(handle))}
+            ref={(handle) => (this.svg = d3.select(handle))}
           ></svg>
         </div>
         <div className="floormap-margin"></div>

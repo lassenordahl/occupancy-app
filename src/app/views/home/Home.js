@@ -20,7 +20,6 @@ import {
   capitalizeWords,
 } from "globals/utils/formatting-helper";
 import moment from "moment";
-import { transition } from "d3";
 
 function Home(props) {
   // Variable to keep track of if we're loading the app for the first time
