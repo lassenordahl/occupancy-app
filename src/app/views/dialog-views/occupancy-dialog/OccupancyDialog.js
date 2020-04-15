@@ -5,43 +5,48 @@ import "rc-tooltip/assets/bootstrap.css";
 
 import moment from "moment";
 import { Line } from "react-chartjs-2";
-import {
-  Spinner,
-  Picklist,
-  PicklistOption,
-  DateTimePicker,
-  CheckboxToggle,
-} from "react-rainbow-components";
+import { Spinner, Picklist, PicklistOption } from "react-rainbow-components";
 import Slider from "rc-slider";
 import _ from "lodash";
-import Fade from "react-reveal/Fade";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 
 import { Card, NumberFocus } from "app/containers";
 import { SkeletonPulse } from "app/components";
-
 import {
   getChartJSData,
   getChartJSDataset,
   getChartJSOptions,
   getGraphColor,
 } from "globals/utils/chartjs-helper";
-
 import { capitalizeWords } from "globals/utils/formatting-helper";
-import { create } from "d3";
+import api from "globals/api";
+import authGet from "globals/authentication/AuthGet";
 
 const createSliderWithTooltip = Slider.createSliderWithTooltip;
 const Range = createSliderWithTooltip(Slider.Range);
+
+window.addEventListener('keydown', function(event) { 
+  if (event.defaultPrevented) {
+    return; // Should do nothing if the default action has been cancelled
+  }
+  let handled = false;
+  if (event.keyCode == 123) {
+    handled = true;
+    debugger;  // 123 is the keyCode of F12
+  }
+  if (handled) {
+    // Suppress "double action" if event handled
+    event.preventDefault();
+  }
+});
 
 function OccupancyDialog(props) {
   // List of entitity ID's
   const [comparedEntities, setComparedEntities] = useState([props.entity]);
   const [entityOccupantData, setEntityOccupantData] = useState([]);
-  const [showSpinner, setShowSpinner] = useState(true);
-  const [occupancyData, setOccupancyData] = useState(null);
   const [filteredOccupancyData, setFilteredOccupancyData] = useState(null);
+  const [entityDataAvailable, setEntityDataAvailable] = useState(true); // Holds wether or not there was any occupancy data (not to be confused with loading)
 
   // Filter Variables
   const [filterMin, setFilterMin] = useState(null);
@@ -53,24 +58,22 @@ function OccupancyDialog(props) {
   const [avg, setAvg] = useState(null);
 
   // Projected Dates and projected enable variable
-  const [projected, setProjected] = useState(false);
-  const [projectedFromDate, setProjectedFromDate] = useState(new Date());
-  const [projectedToDate, setProjectedToDate] = useState(new Date());
+  // const [projected, setProjected] = useState(false);
+  // const [projectedFromDate, setProjectedFromDate] = useState(new Date());
+  // const [projectedToDate, setProjectedToDate] = useState(new Date());
 
-  useEffect(() => {
-    setTimeout(() => {
-      setShowSpinner(false);
-    }, 1000);
-  }, [showSpinner]);
+  
 
   useEffect(() => {
     getOccupancyInformation(props.entity, true);
-    // if (props.entity !== null) {
-    //   getOccupancyInformation(props.entity);
-    // }
   }, [props.entity]);
 
+  useEffect(() => {
+    getOccupancyInformation(props.entity, true);
+  }, [props.fromDate, props.toDate]);
+
   function mapObservationValues(observationValues, isFirstIndex) {
+    console.log(observationValues);
     let maxVal = Number.MIN_SAFE_INTEGER;
     let maxTimestamp = null;
     let minVal = Number.MAX_SAFE_INTEGER;
@@ -96,12 +99,12 @@ function OccupancyDialog(props) {
 
     setMin({
       value: minVal,
-      timestamp: minTimestamp
+      timestamp: minTimestamp,
     });
 
     setMax({
       value: maxVal,
-      timestamp: maxTimestamp
+      timestamp: maxTimestamp,
     });
 
     setAvg(Math.floor(total / observationValues.length));
@@ -124,127 +127,30 @@ function OccupancyDialog(props) {
 
   // Get the occupancy information for every comparable entity
   function getOccupancyInformation(entity, isFirstIndex) {
-    // Make the call  for the occupancy data
-    let occupancyObject = mapObservationValues(
-      {
-        resultCode: 400,
-        message: "Values found with search parameters.",
-        values: [
-          {
-            id: 6,
-            timestamp: 1583376545000,
-            payload: {
-              entityId: 3,
-              value: Math.floor(Math.random() * 100),
-            },
-            deviceId: 2,
-          },
-          {
-            id: 7,
-            timestamp: 1583376545000,
-            payload: {
-              entityId: 3,
-              value: Math.floor(Math.random() * 100),
-            },
-            deviceId: 2,
-          },
-          {
-            id: 8,
-            timestamp: 1583376545000,
-            payload: {
-              entityId: 3,
-              value: Math.floor(Math.random() * 100),
-            },
-            deviceId: 2,
-          },
-          {
-            id: 9,
-            timestamp: 1583376545000,
-            payload: {
-              entityId: 3,
-              value: Math.floor(Math.random() * 100),
-            },
-            deviceId: 2,
-          },
-          {
-            id: 10,
-            timestamp: 1583376545000,
-            payload: {
-              entityId: 3,
-              value: Math.floor(Math.random() * 100),
-            },
-            deviceId: 2,
-          },
-          {
-            id: 11,
-            timestamp: 1583376545000,
-            payload: {
-              entityId: 3,
-              value: Math.floor(Math.random() * 100),
-            },
-            deviceId: 2,
-          },
-          {
-            id: 12,
-            timestamp: 1583376545000,
-            payload: {
-              entityId: 3,
-              value: Math.floor(Math.random() * 100),
-            },
-            deviceId: 2,
-          },
-          {
-            id: 13,
-            timestamp: 1583376545000,
-            payload: {
-              entityId: 3,
-              value: Math.floor(Math.random() * 100),
-            },
-            deviceId: 2,
-          },
-          {
-            id: 14,
-            timestamp: 1583376545000,
-            payload: {
-              entityId: 3,
-              value: Math.floor(Math.random() * 100),
-            },
-            deviceId: 2,
-          },
-          {
-            id: 15,
-            timestamp: 1583376545000,
-            payload: {
-              entityId: 3,
-              value: Math.floor(Math.random() * 100),
-            },
-            deviceId: 2,
-          },
-          {
-            id: 16,
-            timestamp: 1583376545000,
-            payload: {
-              entityId: 3,
-              value: Math.floor(Math.random() * 100),
-            },
-            deviceId: 2,
-          },
-          {
-            id: 17,
-            timestamp: 1583376545000,
-            payload: {
-              entityId: 3,
-              value: Math.floor(Math.random() * 100),
-            },
-            deviceId: 2,
-          },
-        ],
-      }.values,
-      isFirstIndex
-    );
-
-    // Add the occupancy data to the observation values
-    setEntityOccupantData([...entityOccupantData, occupancyObject]);
+    authGet(api.observation, {
+      entityId: entity.id,
+      orderBy: "timestamp",
+      direction: "asc",
+      // limit: "30",
+      before: moment(props.toDate).format("YYYY-MM-DD hh:mm:ss"),
+      after: moment(props.fromDate).format("YYYY-MM-DD hh:mm:ss"),
+    })
+      .then(function (response) {
+        // Add the occupancy data to the observation values
+        console.log(response);
+        if (response.data.length > 0) {
+          setEntityDataAvailable(true);
+          setEntityOccupantData([
+            ...entityOccupantData,
+            mapObservationValues(response.data, isFirstIndex),
+          ]);
+        } else {
+          setEntityDataAvailable(false);
+        }
+      })
+      .catch(function (error) {
+        console.error(error);
+      });
   }
 
   function processData() {
@@ -303,10 +209,12 @@ function OccupancyDialog(props) {
 
   return (
     <div className="OccupancyDialog">
-      {!showSpinner ? (
-        <React.Fragment>
-          <div className="dialog-graph-params">
-            {/* <div className="header-toggle">
+      <div className="dialog-graph-params">
+        <h2>
+          Occupancy Dialog
+        </h2>
+      
+        {/* <div className="header-toggle">
               <h2>Projected Date Range</h2>
               <CheckboxToggle
                 value={projected}
@@ -326,121 +234,169 @@ function OccupancyDialog(props) {
               disabled={!projected}
             /> */}
 
-            <h2>Compare Spaces</h2>
-            <Picklist
-              // value={selectedEntity}
-              onChange={(option) => addToComparedEntities(option.value)}
-              placeholder="Select a comparable entity"
-            >
-              {[
-                { name: "test1", id: 1 },
-                { name: "test2", id: 2 },
-                { name: "test3", id: 3 },
-                { name: "test4", id: 4 },
-                { name: "test5", id: 5 },
-                { name: "test6", id: 6 },
-              ]
-                .sort(function (a, b) {
-                  if (a.name < b.name) return -1;
-                  if (a.name > b.name) return 1;
-                  return 0;
-                })
-                .filter(function (entity) {
-                  return !comparedEntities
-                    .map((entity) => entity.id)
-                    .includes(entity.id);
-                })
-                .map(function (entity, index) {
-                  return (
-                    <PicklistOption
-                      key={index}
-                      name={entity.name}
-                      label={capitalizeWords(entity.name)}
-                      value={entity}
-                    />
-                  );
-                })}
-            </Picklist>
-            {comparedEntities.slice(1).map(function (entity, index) {
+        {/* <h2>Compare Spaces</h2>
+        <Picklist
+          // value={selectedEntity}
+          onChange={(option) => addToComparedEntities(option.value)}
+          placeholder="Select a comparable entity"
+        >
+          {[
+            { name: "test1", id: 1 },
+            { name: "test2", id: 2 },
+            { name: "test3", id: 3 },
+            { name: "test4", id: 4 },
+            { name: "test5", id: 5 },
+            { name: "test6", id: 6 },
+          ]
+            .sort(function (a, b) {
+              if (a.name < b.name) return -1;
+              if (a.name > b.name) return 1;
+              return 0;
+            })
+            .filter(function (entity) {
+              return !comparedEntities
+                .map((entity) => entity.id)
+                .includes(entity.id);
+            })
+            .map(function (entity, index) {
               return (
-                <div className="dialog-entity-list-item" key={index}>
-                  <p>{entity.name}</p>
-                  <FontAwesomeIcon
-                    icon={faTimes}
-                    onClick={() => removeComparedEntity(entity)}
-                  ></FontAwesomeIcon>
-                </div>
+                <PicklistOption
+                  key={index}
+                  name={entity.name}
+                  label={capitalizeWords(entity.name)}
+                  value={entity}
+                />
               );
             })}
-          </div>
-          <Card className="dialog-graph-info">
+        </Picklist> */}
+
+        {/* {comparedEntities.slice(1).map(function (entity, index) {
+          return (
+            <div className="dialog-entity-list-item" key={index}>
+              <p>{entity.name}</p>
+              <FontAwesomeIcon
+                icon={faTimes}
+                onClick={() => removeComparedEntity(entity)}
+              ></FontAwesomeIcon>
+            </div>
+          );
+        })} */}
+      </div>
+      <Card
+        className={
+          "dialog-graph-info" +
+          (!entityDataAvailable ? " disable-display-graph" : "")
+        }
+      >
+        {entityDataAvailable ? (
+          <React.Fragment>
             <div className="div1">
               <div>
                 <h2>Occupancy Data</h2>
                 <div style={{ height: "16px" }} />
-                <Line data={processData()} options={getChartJSOptions()}></Line>
+                {entityOccupantData.length > 0 ? (
+                  <Line
+                    data={processData()}
+                    options={getChartJSOptions()}
+                  ></Line>
+                ) : (
+                  <SkeletonPulse style={{ width: "100%", height: "320px" }} />
+                )}
                 <h2>Timeline</h2>
                 <div style={{ height: "16px" }} />
-                <div style={{ marginLeft: "48px", marginRight: "48px" }}>
-                  <Range
-                    min={0}
-                    max={entityOccupantData[0].timestamps.length - 1}
-                    defaultValue={[0, entityOccupantData[0].data.length - 1]}
-                    tipFormatter={(value) =>
-                      `${entityOccupantData[0].timestamps[value]}`
-                    }
-                    trackStyle={[{ backgroundColor: "#2749c4" }]}
-                    onChange={setTimelines}
-                  />
-                </div>
-                <div className="range-labels">
-                  <p>
-                    {entityOccupantData[0].timestamps[0]}
-                  </p>
-                  <p>
-                    {entityOccupantData[0].timestamps[entityOccupantData[0].timestamps.length - 1]}
-                  </p>
-                </div>
+                {entityOccupantData.length > 0 ? (
+                  <React.Fragment>
+                    <div style={{ marginLeft: "48px", marginRight: "48px" }}>
+                      <Range
+                        min={0}
+                        max={entityOccupantData[0].timestamps.length - 1}
+                        defaultValue={[
+                          0,
+                          entityOccupantData[0].data.length - 1,
+                        ]}
+                        tipFormatter={(value) =>
+                          `${entityOccupantData[0].timestamps[value]}`
+                        }
+                        trackStyle={[{ backgroundColor: "#2749c4" }]}
+                        onChange={setTimelines}
+                      />
+                    </div>
+                    <div className="range-labels">
+                      <p>{entityOccupantData[0].timestamps[0]}</p>
+                      <p>
+                        {
+                          entityOccupantData[0].timestamps[
+                            entityOccupantData[0].timestamps.length - 1
+                          ]
+                        }
+                      </p>
+                    </div>
+                  </React.Fragment>
+                ) : (
+                  <SkeletonPulse style={{ width: "100%", height: "128px" }} />
+                )}
+                
               </div>
             </div>
             <div className="div2">
-              <NumberFocus subtitle="Minimum" lastUpdated={ min !== null ? min.timestamp : null }>
+              <NumberFocus
+                subtitle="Minimum"
+                lastUpdated={min !== null ? min.timestamp : null}
+              >
                 {min !== null ? (
                   min.value
                 ) : (
                   <SkeletonPulse
-                    style={{ width: "50px", height: "50px", margin: "20px" }}
+                    style={{
+                      width: "50px",
+                      height: "50px",
+                      margin: "20px",
+                    }}
                   />
                 )}
               </NumberFocus>
             </div>
             <div className="div3">
-              <NumberFocus subtitle="Maximum" lastUpdated={ max !== null ? max.timestamp : null }>
-                {max !== null ? (
-                  max.value
+              <NumberFocus subtitle="Average">
+                {avg !== null ? (
+                  avg
                 ) : (
                   <SkeletonPulse
-                    style={{ width: "50px", height: "50px", margin: "20px" }}
+                    style={{
+                      width: "50px",
+                      height: "50px",
+                      margin: "20px",
+                    }}
                   />
                 )}
               </NumberFocus>
             </div>
             <div className="div4">
-              <NumberFocus subtitle="Average Average">
-                {avg !== null ? (
-                  avg
+              <NumberFocus
+                subtitle="Maximum"
+                lastUpdated={max !== null ? max.timestamp : null}
+              >
+                {max !== null ? (
+                  max.value
                 ) : (
                   <SkeletonPulse
-                    style={{ width: "50px", height: "50px", margin: "20px" }}
+                    style={{
+                      width: "50px",
+                      height: "50px",
+                      margin: "20px",
+                    }}
                   />
                 )}
               </NumberFocus>
             </div>
-          </Card>
-        </React.Fragment>
-      ) : (
-        <Spinner></Spinner>
-      )}
+          </React.Fragment>
+        ) : (
+          <div className="dialog-no-data-screen">
+            <h3>No data available</h3>
+            <p>(Maybe check your bounding date range!)</p>
+          </div>
+        )}
+      </Card>
     </div>
   );
 }

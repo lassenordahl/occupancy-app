@@ -120,7 +120,11 @@ function CoordinateMap(props) {
         return (
           <Polygon
             key={index}
-            onClick={() => props.selectEntity(coordinateEntity)}
+            onClick={() => {
+              if (coordinateEntity.id !== props.entity.id) {
+                props.selectEntity(coordinateEntity)
+              }
+            }}
             positions={mapCoordinateWrapper(coordinateEntity)}
             color={"#" + blueRainbow.colorAt(occupancy)}
           >
@@ -133,7 +137,6 @@ function CoordinateMap(props) {
     } else if (props.entityType === "cartesian2hfd") {
       return (
         <Polygon
-          onClick={() => props.selectEntity(props.entity)}
           positions={mapCoordinateWrapper(props.entity)}
           color={"#" + blueRainbow.colorAt(10)}
         >

@@ -60,6 +60,15 @@
     }
   }
 
+  .dialog-no-data-screen {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+
   .dialog-graph-info {
     width: 60%;
     height: 90%;
@@ -111,4 +120,8 @@
       }
     }
   }
+}
+
+.disable-display-graph {
+  display: flex !important;
 }

@@ -1,16 +1,14 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import "./EntityInformation.scss";
 
 import {
   DateTimePicker,
   Picklist,
   PicklistOption,
-  CheckboxToggle
 } from "react-rainbow-components";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSync } from "@fortawesome/free-solid-svg-icons";
-import moment from "moment";
 
 import { NumberFocus } from "app/containers";
 
@@ -52,7 +50,7 @@ function EntityInformation(props) {
 
   return (
     <div className="EntityInformation">
-      <h2>Current Date</h2>
+      <h2 style={{marginBottom: '16px'}}>Current Date</h2>
       <DateTimePicker
         value={props.currentDate}
         disabled={props.realtime}
@@ -61,8 +59,7 @@ function EntityInformation(props) {
           props.refreshOccupancies();
         }}
       />
-
-      <div style={{ height: "24px" }} />
+      <div style={{ height: "16px" }} />
 
       <div className="header-toggle">
         <h2>Date Range</h2>
@@ -72,7 +69,6 @@ function EntityInformation(props) {
         /> */}
       </div>
       <div style={{ height: "16px" }} />
-
       <DateTimePicker
         // label="from"
         value={props.fromDate}
@@ -86,7 +82,6 @@ function EntityInformation(props) {
         disabled={!props.realtime}
         onChange={value => props.setToDate(value)}
       />
-
       <div style={{ height: "24px" }} />
 
       <h2>Contained Spaces</h2>
@@ -113,7 +108,7 @@ function EntityInformation(props) {
             );
           })}
       </Picklist>
-      <div style={{ height: "12px" }} />
+      <div style={{ height: "16px" }} />
 
       {getEntityType(entity) === "cartesian2d" ? (
         <React.Fragment>
@@ -135,6 +130,7 @@ function EntityInformation(props) {
           }
         ></FontAwesomeIcon>
       </div>
+      <div style={{ height: "16px" }} />
 
       <NumberFocus
         subtitle="Occupants"
