@@ -45,8 +45,11 @@ function Home(props) {
   const [occupancies, setOccupancies] = useState([]);
   const [occupancy, setOccupancy] = useState(0);
 
+  let oneWeekAgo = new Date();
+  oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
   // Date Selections
-  const [fromDate, setFromDate] = useState(new Date());
+  const [fromDate, setFromDate] = useState(oneWeekAgo);
   const [toDate, setToDate] = useState(new Date());
   const [currentDate, setCurrentDate] = useState(new Date());
   const [realtime, setRealtime] = useState(false);
@@ -90,7 +93,7 @@ function Home(props) {
 
   useEffect(() => {
     getOccupancyData(subEntities, currentDate);
-  }, [subEntities]);
+  }, [subEntities, currentDate]);
 
   useEffect(() => {
     if (entity !== null) {
@@ -236,7 +239,7 @@ function Home(props) {
 
   // Renders the dialog
   function renderDialogView(type) {
-    return <OccupancyDialog type={type} entity={entity} />;
+    return <OccupancyDialog type={type} entity={entity} fromDate={fromDate} toDate={toDate}/>;
   }
 
   // Renders a title based on the type of app we currently have loading
