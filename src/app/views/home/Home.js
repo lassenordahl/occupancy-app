@@ -51,7 +51,7 @@ function Home(props) {
   const [fromDate, setFromDate] = useState(oneWeekAgo);
   const [toDate, setToDate] = useState(new Date());
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [realtime, setRealtime] = useState(false);
+  const [realtime, setRealtime] = useState(true);
 
   // Helper Variables
   const [legendMax, setLegendMax] = useState(0);
@@ -205,7 +205,7 @@ function Home(props) {
 
   // Opens a dialog using the information given
   function openDialog(entity, titleSubscript) {
-    setRealtime(true);
+    setRealtime(false);
     setDialogTitle(entity.name);
     setDialogTitleSubscript(titleSubscript);
     setShowDialog(true);
@@ -345,7 +345,10 @@ function Home(props) {
       {showDialog ? (
         <Dialog
           className="dialog"
-          closeDialog={() => setShowDialog(false)}
+          closeDialog={() => {
+            setRealtime(true);
+            setShowDialog(false)
+          }}
           title={dialogTitle}
           titleSubscript={dialogTitleSubscript}
         >
