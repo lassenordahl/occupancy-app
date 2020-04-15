@@ -18,17 +18,17 @@ function CoordinateMap(props) {
 
   let blueRainbow = getBlueRainbow(props.legendMax);
 
-  useEffect(() => {
-    for (let i = 0; i < props.coordinateEntities.length; i++) {
-      // loadBuildingGeolocation(props.coordinateEntities[i]);
-    }
-  }, [props.coordinateEntities]);
-
+  // Gets the coordinates for the center of the map so we can always center in on an object
   function getMapCenter() {
+    // Obvious comment here!
     if (props.entity === null || props.entity === undefined) {
       return position;
     }
+
     let extent = props.entity.payload.geo.extent;
+
+    // If we're using a polygon, we can calculate it by finding the minimum and maximum coordinate index
+    // If we're using a rectangle, easy peasy lemon squeezy we can just divide them by two
     if (extent.extentClassName === "polygon") {
       let coordinates = extent.verticies.map(function(verticie) {
         return verticie.latitude + verticie.longitude;
@@ -52,6 +52,7 @@ function CoordinateMap(props) {
     return position;
   }
 
+  // Get how far we should be zoomed into the map, numbers are kinda arbitrary and just apply to the leaflet instance
   function getZoom() {
     if (props.entity === null || props.entity === undefined) {
       return 15;
@@ -60,6 +61,7 @@ function CoordinateMap(props) {
     let extent = props.entity.payload.geo.extent;
     let distance;
 
+    // For a polygon, we can just say the difference is the min and max, similar to the code in the above function
     if (extent.extentClassName === "polygon") {
       let coordinates = extent.verticies.map(function(verticie) {
         return verticie.latitude + verticie.longitude;
@@ -74,6 +76,9 @@ function CoordinateMap(props) {
     } else {
       distance = -1;
     }
+
+    // Arbitrary zoom levels based on testing
+    // TODO: fine tune this more
     if (distance === -1) {
       return 15;
     } else if (distance > .0004)  {
@@ -83,12 +88,15 @@ function CoordinateMap(props) {
     }
   }
 
+  // Maps the coordinates coming in from the TIPPERS Api to the format that leaflet can graph
   function mapCoordinates(coordinateEntity) {
     if (coordinateEntity.payload === undefined) {
       return [];
     }
 
     let extent = coordinateEntity.payload.geo.extent;
+
+    // Coordinate structure is different depending on if it's a polygon or a rectangle, but pretty simple nonetheless
     if (extent.extentClassName === "polygon") {
       return extent.verticies.map(function(verticie) {
         return [verticie.latitude, verticie.longitude];
@@ -107,13 +115,19 @@ function CoordinateMap(props) {
     return [];
   }
 
+  // Filter out invalid values for the coordinatesm this can help solve some issues with invalid data coming from the API
+  // TODO: Might not be necessary anymore? I can't remember
   function mapCoordinateWrapper(coordinateEntity) {
     return mapCoordinates(coordinateEntity).filter(function(coordinate) {
       return !isNaN(coordinate[0]) && !isNaN(coordinate[1]); 
     });
   }
 
+  // Renders the polygons on the react leaflet instance
   function renderPolygons() {
+    // If we're in GPS mode, we need to render a list of coordinate entities that has been passed down from the main entity
+    // These are all children of a larger "space", say UCI's campus
+    // If we're not in GPS mode, say cartesian2hfd, we can zoom in on the single entity that is being loaded by the application
     if (props.entityType === "gps") {
       return props.coordinateEntities.map(function(coordinateEntity, index) {
         let occupancy = getOccupancy(index)
@@ -149,6 +163,7 @@ function CoordinateMap(props) {
     return null;
   }
 
+  // Gets the occupancy for the given value
   function getOccupancy(index) {
     if (props.occupancies[index] !== undefined) {
       return props.occupancies[index].payload === undefined ? 0 : props.occupancies[index].payload.value;
