@@ -74,8 +74,11 @@ function OccupancyDialog(props) {
 
     // Format timestamps to correct output
     let timestamps = observationValues.map(function (observation) {
-      return moment(observation.timestamp).format("MMM Do h:mm:ss");
+      return moment(observation.timestamp).toDate();
+      // return moment(observation.timestamp).format("MMM Do h:mm:ss");
     });
+
+    console.log(timestamps);
 
     setMin({
       value: minVal,
@@ -195,6 +198,11 @@ function OccupancyDialog(props) {
     );
   }
 
+  // Used for formatting dates
+  function formatDateTime(datetime) {
+    return moment(datetime).format("MMM Do h:mm:ss");;
+  }
+
   return (
     <div className="OccupancyDialog">
       <div className="dialog-graph-params">
@@ -279,19 +287,19 @@ function OccupancyDialog(props) {
                           entityOccupantData[0].data.length - 1,
                         ]}
                         tipFormatter={(value) =>
-                          `${entityOccupantData[0].timestamps[value]}`
+                          `${formatDateTime(entityOccupantData[0].timestamps[value])}`
                         }
                         trackStyle={[{ backgroundColor: "#2749c4" }]}
                         onChange={setTimelines}
                       />
                     </div>
                     <div className="range-labels">
-                      <p>{entityOccupantData[0].timestamps[0]}</p>
+                      <p>{formatDateTime(entityOccupantData[0].timestamps[0])}</p>
                       <p>
                         {
-                          entityOccupantData[0].timestamps[
+                          formatDateTime(entityOccupantData[0].timestamps[
                             entityOccupantData[0].timestamps.length - 1
-                          ]
+                          ])
                         }
                       </p>
                     </div>
@@ -355,7 +363,7 @@ function OccupancyDialog(props) {
             </div>
           </React.Fragment>
         ) : (
-          <div className="dialog-no-data-screen">
+          <div className="dialog-no-data-screen fade-in">
             <h3>No data available</h3>
             <p>(Maybe check your bounding date range!)</p>
           </div>

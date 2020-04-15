@@ -48,6 +48,8 @@ export function getChartJSOptions(darkmode) {
       ],
       xAxes: [
         {
+          type: 'time',
+          distribution: 'linear',
           ticks: {
             fontColor: darkmode ? "white" : "black"
           }
