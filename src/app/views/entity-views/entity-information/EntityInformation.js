@@ -53,7 +53,7 @@ function EntityInformation(props) {
       <h2 style={{marginBottom: '16px'}}>Current Date</h2>
       <DateTimePicker
         value={props.currentDate}
-        disabled={props.realtime}
+        disabled={!props.realtime}
         onChange={value => {
           props.setCurrentDate(value);
           props.refreshOccupancies();
@@ -70,16 +70,14 @@ function EntityInformation(props) {
       </div>
       <div style={{ height: "16px" }} />
       <DateTimePicker
-        // label="from"
         value={props.fromDate}
-        disabled={!props.realtime}
+        disabled={props.realtime}
         onChange={value => props.setFromDate(value)}
       />
       <div style={{ height: "16px" }} />
       <DateTimePicker
-        // label="to"
         value={props.toDate}
-        disabled={!props.realtime}
+        disabled={props.realtime}
         onChange={value => props.setToDate(value)}
       />
       <div style={{ height: "24px" }} />
@@ -89,7 +87,7 @@ function EntityInformation(props) {
         value={selectedEntity}
         onChange={value => selectEntity(value)}
         placeholder="Select a space"
-        disabled={getEntityType(entity) === "cartesian2d"}
+        disabled={!props.realtime || getEntityType(entity) === "cartesian2d"}
       >
         {props.subEntities
           .sort(function(a, b) {

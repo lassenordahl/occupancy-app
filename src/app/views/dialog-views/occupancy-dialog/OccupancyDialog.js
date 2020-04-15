@@ -7,7 +7,10 @@ import moment from "moment";
 import { Line } from "react-chartjs-2";
 import Slider from "rc-slider";
 import _ from "lodash";
-import { Picklist, PicklistOption } from "react-rainbow-components";
+import { Picklist, PicklistOption, Button } from "react-rainbow-components";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFileCsv, faFileCode } from "@fortawesome/free-solid-svg-icons";
+import { CSVLink } from "react-csv";
 
 import { Card, NumberFocus } from "app/containers";
 import { SkeletonPulse } from "app/components";
@@ -42,12 +45,12 @@ function OccupancyDialog(props) {
 
   // Upon getting an entity load the occupancy information
   useEffect(() => {
-    getOccupancyInformation(props.entity, true);
+    getOccupancyInformation(props.entity, true, false);
   }, [props.entity]);
 
-  // When the dates change load the occupancy data again
+  // When the dates change load the occupancy data again, but we need to remove the first entity occupancy time
   useEffect(() => {
-    getOccupancyInformation(props.entity, true);
+    getOccupancyInformation(props.entity, true, true);
   }, [props.fromDate, props.toDate]);
 
   // Take in if we're going to use the first index,
@@ -109,7 +112,11 @@ function OccupancyDialog(props) {
   }
 
   // Get the occupancy information for every comparable entity
-  function getOccupancyInformation(entity, isFirstIndex) {
+  function getOccupancyInformation(
+    entity,
+    isFirstIndex,
+    isReplacingFirstIndex
+  ) {
     authGet(api.observation, {
       entityId: entity.id,
       orderBy: "timestamp",
@@ -123,10 +130,19 @@ function OccupancyDialog(props) {
         console.log(response);
         if (response.data.length > 0) {
           setEntityDataAvailable(true);
-          setEntityOccupantData([
-            ...entityOccupantData,
-            mapObservationValues(response.data, isFirstIndex),
-          ]);
+
+          // If we're replacing the first index, this means that the date range has been updated and we need to refresh the value for the first one
+          if (isReplacingFirstIndex) {
+            setEntityOccupantData([
+              mapObservationValues(response.data, isFirstIndex),
+              ...entityOccupantData.slice(1),
+            ]);
+          } else {
+            setEntityOccupantData([
+              ...entityOccupantData,
+              mapObservationValues(response.data, isFirstIndex),
+            ]);
+          }
         } else {
           setEntityDataAvailable(false);
         }
@@ -144,7 +160,7 @@ function OccupancyDialog(props) {
       index
     ) {
       // For each entity, pass in the filtered data
-      // Except for the first index, we have another array that is ALREADY filtered because 
+      // Except for the first index, we have another array that is ALREADY filtered because
       // ChartJS will cause issues with slicing that array and we'll permanently sub slice it and lose data
       return getChartJSDataset(
         getGraphColor(index),
@@ -178,7 +194,7 @@ function OccupancyDialog(props) {
   function addToComparedEntities(newEntity) {
     // Add to compared entities, make an occupancy request for the information
     setComparedEntities([...comparedEntities, newEntity]);
-    getOccupancyInformation(newEntity);
+    getOccupancyInformation(newEntity, false, false);
   }
 
   function removeComparedEntity(removedEntity) {
@@ -200,7 +216,20 @@ function OccupancyDialog(props) {
 
   // Used for formatting dates
   function formatDateTime(datetime) {
-    return moment(datetime).format("MMM Do h:mm:ss");;
+    return moment(datetime).format("MMM Do h:mm");
+  }
+
+  function exportCSV() {
+    let csv = [];
+    if (filteredOccupancyData !== null) {
+      filteredOccupancyData.data.map(function (occupancyValue, index) {
+        csv.push({
+          occupancy: parseInt(occupancyValue),
+          timestamp: moment(filteredOccupancyData.timestamps[index]).format("MMM Do YYYY h:mm:ss"),
+        });
+      });
+    }
+    return csv;
   }
 
   return (
@@ -208,7 +237,7 @@ function OccupancyDialog(props) {
       <div className="dialog-graph-params">
         <h2>Compare Spaces</h2>
         <Picklist
-          // value={selectedEntity}
+          disabled={!entityDataAvailable}
           onChange={(option) => addToComparedEntities(option.value)}
           placeholder="Select a comparable entity"
         >
@@ -241,7 +270,6 @@ function OccupancyDialog(props) {
               );
             })}
         </Picklist>
-
         {/* {comparedEntities.slice(1).map(function (entity, index) {
           return (
             <div className="dialog-entity-list-item" key={index}>
@@ -253,6 +281,22 @@ function OccupancyDialog(props) {
             </div>
           );
         })} */}
+        <div style={{ height: "16px" }}></div>
+
+        <div className="dialog-params-export-utilities">
+          <div>
+            <CSVLink data={exportCSV()}
+            filename={"entity-" + props.entity.id + "-exported-data.csv"}>
+              <Button variant="outline-brand" disabled={!entityDataAvailable || entityOccupantData.length === 0}>
+                <FontAwesomeIcon
+                  icon={faFileCsv}
+                  className="rainbow-m-right_medium"
+                ></FontAwesomeIcon>
+                Export to CSV
+              </Button>
+            </CSVLink>
+          </div>
+        </div>
       </div>
       <Card
         className={
@@ -264,7 +308,13 @@ function OccupancyDialog(props) {
           <React.Fragment>
             <div className="div1">
               <div>
-                <h2>Occupancy Data</h2>
+                <div className="div1-title">
+                  <h2>Occupancy Data</h2>
+                  <h3>
+                    {formatDateTime(props.fromDate)} to{" "}
+                    {formatDateTime(props.toDate)}
+                  </h3>
+                </div>
                 <div style={{ height: "16px" }} />
                 {entityOccupantData.length > 0 ? (
                   <Line
@@ -287,27 +337,36 @@ function OccupancyDialog(props) {
                           entityOccupantData[0].data.length - 1,
                         ]}
                         tipFormatter={(value) =>
-                          `${formatDateTime(entityOccupantData[0].timestamps[value])}`
+                          `${formatDateTime(
+                            entityOccupantData[0].timestamps[value]
+                          )}`
                         }
                         trackStyle={[{ backgroundColor: "#2749c4" }]}
                         onChange={setTimelines}
                       />
                     </div>
                     <div className="range-labels">
-                      <p>{formatDateTime(entityOccupantData[0].timestamps[0])}</p>
                       <p>
-                        {
-                          formatDateTime(entityOccupantData[0].timestamps[
+                        {formatDateTime(entityOccupantData[0].timestamps[0])}
+                      </p>
+                      <p>
+                        {formatDateTime(
+                          entityOccupantData[0].timestamps[
                             entityOccupantData[0].timestamps.length - 1
-                          ])
-                        }
+                          ]
+                        )}
                       </p>
                     </div>
                   </React.Fragment>
                 ) : (
-                  <SkeletonPulse style={{ width: "100%", height: "64px" }} />
+                  <SkeletonPulse
+                    style={{
+                      width: "100%",
+                      height: "54px",
+                      transform: "translateY(-16px)",
+                    }}
+                  />
                 )}
-                
               </div>
             </div>
             <div className="div2">
