@@ -1,10 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import "./CoordinateMap.scss";
 
 import { Map, TileLayer, Marker, Popup, Polygon, Tooltip } from "react-leaflet";
 import getBlueRainbow from "globals/utils/rainbowvis-helper.js";
-import axios from "axios";
-import authGet from "../../../globals/authentication/AuthGet";
 
 const state = {
   lat: 33.6405,

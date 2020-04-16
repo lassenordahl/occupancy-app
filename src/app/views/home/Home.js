@@ -4,8 +4,6 @@ import "./Home.scss";
 import "leaflet/dist/leaflet.css";
 import { Redirect, useLocation, withRouter } from "react-router";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCaretDown, faCaretUp } from "@fortawesome/free-solid-svg-icons";
 import { Card, Dialog } from "app/containers";
 import { Legend, CoordinateMap, FloorMap, SkeletonPulse } from "app/components";
 import app_config from "globals/config";
@@ -165,6 +163,8 @@ function Home(props) {
       })
     );
 
+    console.log(occupancyResponses);
+
     setProgress(80);
 
     let occupancies = occupancyResponses.map(function (response, index) {
@@ -238,16 +238,29 @@ function Home(props) {
 
   // Renders the dialog
   function renderDialogView(type) {
-    return <OccupancyDialog type={type} entity={entity} fromDate={fromDate} toDate={toDate}/>;
+    return (
+      <OccupancyDialog
+        type={type}
+        entity={entity}
+        fromDate={fromDate}
+        toDate={toDate}
+      />
+    );
   }
 
   // Renders a title based on the type of app we currently have loading
   function renderTitle(entity) {
     if (entity === null || entity === undefined) {
-      return (<React.Fragment>
-        <SkeletonPulse style={{'width': '100%', height: '3em'}}></SkeletonPulse>
-        <SkeletonPulse style={{'width': '100%', height: '2em', 'marginTop': '8px'}}></SkeletonPulse>
-      </React.Fragment>);
+      return (
+        <React.Fragment>
+          <SkeletonPulse
+            style={{ width: "100%", height: "3em" }}
+          ></SkeletonPulse>
+          <SkeletonPulse
+            style={{ width: "100%", height: "2em", marginTop: "8px" }}
+          ></SkeletonPulse>
+        </React.Fragment>
+      );
     } else {
       return (
         <React.Fragment>
@@ -347,7 +360,7 @@ function Home(props) {
           className="dialog"
           closeDialog={() => {
             setRealtime(true);
-            setShowDialog(false)
+            setShowDialog(false);
           }}
           title={dialogTitle}
           titleSubscript={dialogTitleSubscript}
@@ -357,50 +370,13 @@ function Home(props) {
       ) : null}
 
       {!errorLoading ? (
-        <Card
-          className={
-            "fade-in legend-card " +
-            (transitionLegend ? "legend-card-none" : "")
-          }
-          style={{ width: "240px" }}
-        >
-          <div
-            className={
-              "legend-header " +
-              (transitionLegend ? "legend-header-margin" : "")
-            }
-          >
-            <h2 style={{ marginBottom: "0px", fontSize: "1.8em" }}>Legend</h2>
-            {showLegend ? (
-              <FontAwesomeIcon
-                icon={faCaretDown}
-                onClick={function () {
-                  setShowLegend(false);
-                  setTimeout(() => {
-                    setTransitionLegend(true);
-                  }, 200);
-                }}
-              ></FontAwesomeIcon>
-            ) : (
-              <FontAwesomeIcon
-                icon={faCaretUp}
-                onClick={function () {
-                  setTransitionLegend(false);
-                  setTimeout(() => {
-                    setShowLegend(true);
-                  }, 500);
-                }}
-              ></FontAwesomeIcon>
-            )}
-          </div>
-          <div
-            className={
-              "legend-content " + (showLegend ? "" : "legend-content-none")
-            }
-          >
-            <Legend legendMax={legendMax}></Legend>
-          </div>
-        </Card>
+        <Legend
+          transitionLegend={transitionLegend}
+          showLegend={showLegend}
+          legendMax={legendMax}
+          setTransitionLegend={setTransitionLegend}
+          setShowLegend={setShowLegend}
+        ></Legend>
       ) : null}
 
       {!errorLoading ? (

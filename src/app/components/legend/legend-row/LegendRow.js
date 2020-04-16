@@ -3,7 +3,7 @@ import './LegendRow.scss';
 
 function LegendRow(props) {
   return (
-    <div className="LegendRow">
+    <div className="LegendRow fade-in">
       <div style={{'backgroundColor': props.color}}/>
       <p>
         {props.range} Occupants
