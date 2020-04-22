@@ -2,8 +2,6 @@ import React from "react";
 import './SelectedBuilding.scss';
 import NumberFocus from "../../containers/number-focus/NumberFocus";
 
-import { D3Shape } from 'app/components';
-
 function SelectedBuilding(props) {
 
   function renderSelectedBuilding(building) {

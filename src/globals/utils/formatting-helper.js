@@ -1,5 +1,3 @@
-import { DateTimePicker } from "react-rainbow-components";
-
 export function capitalizeWords(word) {
   if (word === undefined) {
     return '';

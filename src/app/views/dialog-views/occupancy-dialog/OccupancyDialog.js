@@ -4,28 +4,21 @@ import "rc-slider/assets/index.css";
 import "rc-tooltip/assets/bootstrap.css";
 
 import moment from "moment";
-import { Line } from "react-chartjs-2";
-import Slider from "rc-slider";
 import _ from "lodash";
 import { Picklist, PicklistOption, Button } from "react-rainbow-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFileCsv, faFileCode } from "@fortawesome/free-solid-svg-icons";
+import { faFileCsv } from "@fortawesome/free-solid-svg-icons";
 import { CSVLink } from "react-csv";
 
-import { Card, NumberFocus } from "app/containers";
-import { SkeletonPulse } from "app/components";
 import {
   getChartJSData,
   getChartJSDataset,
-  getChartJSOptions,
   getGraphColor,
 } from "globals/utils/chartjs-helper";
 import { capitalizeWords } from "globals/utils/formatting-helper";
 import api from "globals/api";
 import authGet from "globals/authentication/AuthGet";
-
-const createSliderWithTooltip = Slider.createSliderWithTooltip;
-const Range = createSliderWithTooltip(Slider.Range);
+import OccupancyCard from "./occupancy-card/OccupancyCard";
 
 function OccupancyDialog(props) {
   // List of entitity ID's
@@ -214,11 +207,6 @@ function OccupancyDialog(props) {
     );
   }
 
-  // Used for formatting dates
-  function formatDateTime(datetime) {
-    return moment(datetime).format("MMM Do h:mm");
-  }
-
   function exportCSV() {
     let csv = [];
     if (filteredOccupancyData !== null) {
@@ -298,136 +286,15 @@ function OccupancyDialog(props) {
           </div>
         </div>
       </div>
-      <Card
-        className={
-          "dialog-graph-info" +
-          (!entityDataAvailable ? " disable-display-graph" : "")
-        }
-      >
-        {entityDataAvailable ? (
-          <React.Fragment>
-            <div className="div1">
-              <div>
-                <div className="div1-title">
-                  <h2>Occupancy Data</h2>
-                  <h3>
-                    {formatDateTime(props.fromDate)} to{" "}
-                    {formatDateTime(props.toDate)}
-                  </h3>
-                </div>
-                <div style={{ height: "16px" }} />
-                {entityOccupantData.length > 0 ? (
-                  <Line
-                    data={processData()}
-                    options={getChartJSOptions()}
-                  ></Line>
-                ) : (
-                  <SkeletonPulse style={{ width: "100%", height: "320px" }} />
-                )}
-                <h2>Timeline</h2>
-                <div style={{ height: "16px" }} />
-                {entityOccupantData.length > 0 ? (
-                  <React.Fragment>
-                    <div style={{ marginLeft: "48px", marginRight: "48px" }}>
-                      <Range
-                        min={0}
-                        max={entityOccupantData[0].timestamps.length - 1}
-                        defaultValue={[
-                          0,
-                          entityOccupantData[0].data.length - 1,
-                        ]}
-                        tipFormatter={(value) =>
-                          `${formatDateTime(
-                            entityOccupantData[0].timestamps[value]
-                          )}`
-                        }
-                        trackStyle={[{ backgroundColor: "#2749c4" }]}
-                        onChange={setTimelines}
-                      />
-                    </div>
-                    <div className="range-labels">
-                      <p>
-                        {formatDateTime(entityOccupantData[0].timestamps[0])}
-                      </p>
-                      <p>
-                        {formatDateTime(
-                          entityOccupantData[0].timestamps[
-                            entityOccupantData[0].timestamps.length - 1
-                          ]
-                        )}
-                      </p>
-                    </div>
-                  </React.Fragment>
-                ) : (
-                  <SkeletonPulse
-                    style={{
-                      width: "100%",
-                      height: "54px",
-                      transform: "translateY(-16px)",
-                    }}
-                  />
-                )}
-              </div>
-            </div>
-            <div className="div2">
-              <NumberFocus
-                subtitle="Minimum"
-                lastUpdated={min !== null ? min.timestamp : null}
-              >
-                {min !== null ? (
-                  min.value
-                ) : (
-                  <SkeletonPulse
-                    style={{
-                      width: "50px",
-                      height: "50px",
-                      margin: "20px",
-                    }}
-                  />
-                )}
-              </NumberFocus>
-            </div>
-            <div className="div3">
-              <NumberFocus subtitle="Average">
-                {avg !== null ? (
-                  avg
-                ) : (
-                  <SkeletonPulse
-                    style={{
-                      width: "50px",
-                      height: "50px",
-                      margin: "20px",
-                    }}
-                  />
-                )}
-              </NumberFocus>
-            </div>
-            <div className="div4">
-              <NumberFocus
-                subtitle="Maximum"
-                lastUpdated={max !== null ? max.timestamp : null}
-              >
-                {max !== null ? (
-                  max.value
-                ) : (
-                  <SkeletonPulse
-                    style={{
-                      width: "50px",
-                      height: "50px",
-                      margin: "20px",
-                    }}
-                  />
-                )}
-              </NumberFocus>
-            </div>
-          </React.Fragment>
-        ) : (
-          <div className="dialog-no-data-screen fade-in">
-            <h3>No data available</h3>
-            <p>(Maybe check your bounding date range!)</p>
-          </div>
-        )}
-      </Card>
+      <OccupancyCard
+        setTimelines={setTimelines}
+        entityOccupantData={entityOccupantData}
+        entityDataAvailable={entityDataAvailable}
+        processData={processData}
+        min={min}
+        max={max}
+        avg={avg}
+      />
     </div>
   );
 }
