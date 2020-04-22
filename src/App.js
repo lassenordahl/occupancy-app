@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import history from "./history";
 import "./App.scss";
 
@@ -6,7 +6,7 @@ import { Route, Switch, BrowserRouter as Router } from "react-router-dom";
 
 import { Nav } from "app/components";
 
-import { Home, InvalidRoute, PrivateRoute, DefaultView } from "app/views";
+import { Home, InvalidRoute, DefaultView } from "app/views";
 
 import { Application } from "react-rainbow-components";
 

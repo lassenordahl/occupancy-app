@@ -89,14 +89,14 @@ function Home(props) {
   }, [firstLoad]);
 
   useEffect(() => {
-    getOccupancyData(subEntities, currentDate);
+    // getOccupancyData(subEntities, currentDate);
   }, [subEntities, currentDate]);
 
-  useEffect(() => {
-    if (entity !== null) {
-      // getOccupancy(entity.id);
-    }
-  }, [entity]);
+  // useEffect(() => {
+  //   if (entity !== null) {
+  //     getOccupancy(entity.id);
+  //   }
+  // }, [entity]);
 
   useEffect(() => {
     if (occupancies.length > 0) {
@@ -141,6 +141,10 @@ function Home(props) {
         setEntityType(
           newEntity.payload.geo.coordinateSystem.coordinateSystemClassName
         );
+        for (let i = 0; i < newEntity.payload.geo.childSpaces.length; i++) {
+          if (newEntity.payload.geo.childSpaces[i].id === 10059)
+            console.log(newEntity.payload.geo.childSpaces[i]);
+        }
         setSubEntities(newEntity.payload.geo.childSpaces);
         setErrorLoading(false);
       })

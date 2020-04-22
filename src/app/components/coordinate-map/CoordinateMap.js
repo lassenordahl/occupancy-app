@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "./CoordinateMap.scss";
 
 import { Map, TileLayer, Marker, Popup, Polygon, Tooltip } from "react-leaflet";
@@ -88,28 +88,38 @@ function CoordinateMap(props) {
 
   // Maps the coordinates coming in from the TIPPERS Api to the format that leaflet can graph
   function mapCoordinates(coordinateEntity) {
+    if (coordinateEntity.id === 10059) {
+      debugger;
+    }
+
     if (coordinateEntity.payload === undefined) {
       return [];
     }
 
     let extent = coordinateEntity.payload.geo.extent;
 
-    // Coordinate structure is different depending on if it's a polygon or a rectangle, but pretty simple nonetheless
-    if (extent.extentClassName === "polygon") {
-      return extent.verticies.map(function(verticie) {
-        return [verticie.latitude, verticie.longitude];
-      });
-    } else if (extent.extentClassName === "rectangle") {
-      let coordinates = [];
-      if (extent.start.latitude === undefined) {
-        return [];
-      }
-      coordinates.push([extent.start.latitude, extent.start.longitude]);
-      coordinates.push([extent.start.latitude, extent.end.longitude]);
-      coordinates.push([extent.end.latitude, extent.end.longitude]);
-      coordinates.push([extent.end.latitude, extent.start.longitude]);
-      return coordinates;
+    if (coordinateEntity === 10059) {
+      console.log(coordinateEntity);
     }
+
+    // Coordinate structure is different depending on if it's a polygon or a rectangle, but pretty simple nonetheless
+    if (extent !== null) {
+      if (extent.extentClassName === "polygon") {
+        return extent.verticies.map(function(verticie) {
+          return [verticie.latitude, verticie.longitude];
+        });
+      } else if (extent.extentClassName === "rectangle") {
+        let coordinates = [];
+        if (extent.start.latitude === undefined) {
+          return [];
+        }
+        coordinates.push([extent.start.latitude, extent.start.longitude]);
+        coordinates.push([extent.start.latitude, extent.end.longitude]);
+        coordinates.push([extent.end.latitude, extent.end.longitude]);
+        coordinates.push([extent.end.latitude, extent.start.longitude]);
+        return coordinates;
+      }
+    }    
     return [];
   }
 
@@ -126,8 +136,13 @@ function CoordinateMap(props) {
     // If we're in GPS mode, we need to render a list of coordinate entities that has been passed down from the main entity
     // These are all children of a larger "space", say UCI's campus
     // If we're not in GPS mode, say cartesian2hfd, we can zoom in on the single entity that is being loaded by the application
+    
+    
     if (props.entityType === "gps") {
       return props.coordinateEntities.map(function(coordinateEntity, index) {
+        if (coordinateEntity.id === 10059) {
+          debugger;
+        }
         let occupancy = getOccupancy(index)
         return (
           <Polygon

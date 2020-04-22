@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useCallback } from "react";
 import "./Nav.scss";
 
-import { Breadcrumbs, Breadcrumb, Button } from "react-rainbow-components";
+import { Breadcrumbs, Breadcrumb } from "react-rainbow-components";
 import { useLocation, withRouter, Redirect } from "react-router-dom";
 import {
   capitalizeWords,
-  serializeLocation,
-  serializeLocationString
+  serializeLocation
 } from "globals/utils/formatting-helper.js";
 import authGet from "../../../globals/authentication/AuthGet";
 import api from "globals/api";
@@ -17,7 +16,6 @@ import occupancyLogo from "assets/images/occupancy-logo.png";
 
 function Nav(props) {
   let currentRoute = serializeLocation(useLocation());
-  let entityIds = filterEntityIds(currentRoute);
 
   const [entityNames, setEntityNames] = useState([]);
   const [filteredRoute, setFilteredRoute] = useState([]);
@@ -105,7 +103,7 @@ function Nav(props) {
       {willRedirect ? getRedirect() : null}
 
       <div className="flex-start-row">
-        <img className="app-logo" src={occupancyLogo}></img>
+        <img className="app-logo" src={occupancyLogo} alt="logo"></img>
         <h2>Occupancy Tool</h2>
         <Breadcrumbs class="nav-breadcrumbs" style={{ marginLeft: "16px" }}>
           {entityNames.map(function(entityName, index) {
@@ -122,7 +120,7 @@ function Nav(props) {
       <div className="nav-buttons">
         <a href="http://hub-tippers.ics.uci.edu">
           <div className="circular-button box-shadow">
-            <img src={tippersLogo}></img>
+            <img src={tippersLogo} alt="button-logo"></img>
             <p>Hub</p>
           </div>
         </a>
