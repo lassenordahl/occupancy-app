@@ -32,7 +32,7 @@ function Home(props) {
 
   // Redirecting variables
   const [willRedirect, redirect] = useState(false);
-  const [newRoute, pushRoute] = useState(["occupancy", app_config.id]);
+  const [newRoute, pushRoute] = useState([app_config.id]);
 
   // Entity Information
   // const [entity, setEntity] = useState({id: 1, name: 'ucitest'}); // Our selected entity
@@ -89,7 +89,7 @@ function Home(props) {
   }, [firstLoad]);
 
   useEffect(() => {
-    // getOccupancyData(subEntities, currentDate);
+    getOccupancyData(subEntities, currentDate);
   }, [subEntities, currentDate]);
 
   // useEffect(() => {
@@ -136,11 +136,17 @@ function Home(props) {
     authGet(api.entity + "/" + entityId)
       .then(function (response) {
         let newEntity = response.data;
+        // Set progress and entity
         setProgress(50);
         setEntity(newEntity);
-        setEntityType(
-          newEntity.payload.geo.coordinateSystem.coordinateSystemClassName
-        );
+
+        // If our payload isn't null, we can show the object by setting its type
+        if (newEntity.payload.geo.coordinateSystem !== null) {
+          setEntityType(
+            newEntity.payload.geo.coordinateSystem.coordinateSystemClassName
+          );
+        }
+        
         for (let i = 0; i < newEntity.payload.geo.childSpaces.length; i++) {
           if (newEntity.payload.geo.childSpaces[i].id === 10059)
             console.log(newEntity.payload.geo.childSpaces[i]);

@@ -28,8 +28,11 @@ function Nav(props) {
 
   useEffect(() => {
     props.history.listen(function(location, action) {
-      forceUpdate();
-      getEntityNames(filterEntityIds(serializeLocation(location)));
+      // If we don't have an empty URL
+      let entityIds = filterEntityIds(serializeLocation(location));
+      if (entityIds[0] !== "") {
+        getEntityNames(entityIds);
+      }
     });
     // props.history.listen(() => getEntityNames(entityIds));
   }, []);
@@ -68,7 +71,7 @@ function Nav(props) {
 
   function filterEntityIds(routeArray) {
     return routeArray.filter(function(routeElement, index) {
-      return index % 2 === 1;
+      return index % 2 === 0;
     });
   }
 
@@ -76,7 +79,7 @@ function Nav(props) {
   function changeRoute(index) {
     setFilteredRoute(
       currentRoute.filter(function(routeItem, rIndex) {
-        return rIndex < index;
+        return rIndex <= index;
       })
     );
   }
@@ -110,7 +113,7 @@ function Nav(props) {
             return (
               <Breadcrumb
                 key={index}
-                onClick={() => changeRoute((index + 1) * 2)}
+                onClick={() => changeRoute((index) * 2)}
                 label={capitalizeWords(entityName)}
               ></Breadcrumb>
             );

@@ -6,7 +6,7 @@ import { Route, Switch, BrowserRouter as Router } from "react-router-dom";
 
 import { Nav } from "app/components";
 
-import { Home, InvalidRoute, DefaultView } from "app/views";
+import { Home, InvalidRoute, PrivateRoute, DefaultView } from "app/views";
 
 import { Application } from "react-rainbow-components";
 
@@ -43,7 +43,7 @@ function App() {
   return (
     <div className="App">
       <Application theme={applicationTheme}>
-        <Router history={history}>
+        <Router history={history} basename={'occupancy'}>
           <Nav auth={{ authStatus: authStatus }}></Nav>
           <div className="app-content">
             {/* <DefaultView></DefaultView> */}
