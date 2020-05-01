@@ -94,11 +94,7 @@ function CoordinateMap(props) {
 
   // Maps the coordinates coming in from the TIPPERS Api to the format that leaflet can graph
   function mapCoordinates(coordinateEntity) {
-    if (coordinateEntity.id === 10059) {
-      debugger;
-    }
-
-    if (coordinateEntity.payload === undefined) {
+     if (coordinateEntity.payload === undefined) {
       return [];
     }
 
@@ -145,9 +141,6 @@ function CoordinateMap(props) {
 
     if (props.entityType === "gps") {
       return props.coordinateEntities.map(function (coordinateEntity, index) {
-        if (coordinateEntity.id === 10059) {
-          debugger;
-        }
         let occupancy = getOccupancy(index);
         return (
           <Polygon
@@ -158,10 +151,10 @@ function CoordinateMap(props) {
               }
             }}
             positions={mapCoordinateWrapper(coordinateEntity)}
-            color={"#" + blueRainbow.colorAt(occupancy)}
+            color={"#" + blueRainbow.colorAt(occupancy || 0)}
           >
             <Tooltip sticky className="polygon-tooltip box-shadow">
-              {coordinateEntity.name} - {occupancy}
+              {coordinateEntity.name} - {occupancy === - 1 ? "No Data Available" : occupancy}
             </Tooltip>
           </Polygon>
         );
@@ -183,13 +176,9 @@ function CoordinateMap(props) {
 
   // Gets the occupancy for the given value
   function getOccupancy(index) {
-    if (props.occupancies[index] !== undefined) {
-      return props.occupancies[index].payload === undefined
-        ? 0
-        : props.occupancies[index].payload.value;
-    } else {
-      return 0;
-    }
+    return props.occupancies[index] === undefined
+      ? 0
+      : props.occupancies[index].occupancy;
   }
 
   // Need to use the entity type from the props variable, because props.entityType isn't loaded yet

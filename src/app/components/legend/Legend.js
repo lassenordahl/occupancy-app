@@ -93,7 +93,7 @@ function Legend(props) {
                       key={index}
                       style={{
                         height: "20px",
-                        width: "80%",
+                        width: "78%",
                         marginBottom: (index < ranges.length - 1 ? "20px" : "0px"),
                         borderRadius: "5px",
                       }}

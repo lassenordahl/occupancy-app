@@ -43,7 +43,7 @@ class FloorMap extends React.Component {
   // Get the occupancy at the given index
   getOccupancy(index) {
     if (this.props.occupancies[index] !== undefined) {
-      return this.props.occupancies[index];
+      return this.props.occupancies[index].occupancy;
     } else {
       return 0;
     }
@@ -73,7 +73,7 @@ class FloorMap extends React.Component {
           "fill",
           "#" +
             rainbow.colourAt(
-              occupancy.payload !== undefined ? occupancy.payload.value : 1
+              occupancy
             )
         );
     } else if (shapeType === "polygon") {
@@ -91,7 +91,7 @@ class FloorMap extends React.Component {
           "fill",
           "#" +
             rainbow.colourAt(
-              occupancy.payload !== undefined ? occupancy.payload.value : 1
+              occupancy
             )
         );
     }

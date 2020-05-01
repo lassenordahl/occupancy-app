@@ -53,7 +53,7 @@ function Home(props) {
 
   // Helper Variables
   const [legendMax, setLegendMax] = useState(0);
-  const [progress, setProgress] = useState(100);
+  const [progress, setProgress] = useState(0);
   const [showLegend, setShowLegend] = useState(true);
   const [transitionLegend, setTransitionLegend] = useState(false);
 
@@ -90,6 +90,9 @@ function Home(props) {
 
   useEffect(() => {
     getOccupancyData(subEntities, currentDate);
+    if (entity !== null) {
+      getOccupancy(entity.id, currentDate);
+    }
   }, [subEntities, currentDate]);
 
   // useEffect(() => {
@@ -102,9 +105,9 @@ function Home(props) {
     if (occupancies.length > 0) {
       let max = 0;
       for (let i = 0; i < occupancies.length; i++) {
-        if (occupancies[i].payload !== undefined) {
-          if (occupancies[i].payload.value > max) {
-            max = occupancies[i].payload.value;
+        if (occupancies[i] !== undefined) {
+          if (occupancies[i].occupancy > max) {
+            max = occupancies[i].occupancy;
           }
         }
       }
@@ -132,13 +135,13 @@ function Home(props) {
     if (entityId === null || entityId === "") {
       return;
     }
-    setProgress(30);
     authGet(api.entity + "/" + entityId)
       .then(function (response) {
         let newEntity = response.data;
-        // Set progress and entity
-        setProgress(50);
+        // Set progress, entity, and get the occupancy data for the enttiy
         setEntity(newEntity);
+        console.log("NEW ENTITY", newEntity);
+        // getOccupancy(entityId, currentDate);
 
         // If our payload isn't null, we can show the object by setting its type
         if (newEntity.payload.geo.coordinateSystem !== null) {
@@ -146,11 +149,7 @@ function Home(props) {
             newEntity.payload.geo.coordinateSystem.coordinateSystemClassName
           );
         }
-        
-        for (let i = 0; i < newEntity.payload.geo.childSpaces.length; i++) {
-          if (newEntity.payload.geo.childSpaces[i].id === 10059)
-            console.log(newEntity.payload.geo.childSpaces[i]);
-        }
+
         setSubEntities(newEntity.payload.geo.childSpaces);
         setErrorLoading(false);
       })
@@ -161,6 +160,12 @@ function Home(props) {
   }
 
   async function getOccupancyData(subEntities, time) {
+    
+    let timeDayEarlier = new Date();
+    timeDayEarlier.setDate(time.getDate() - 1);
+
+    setProgress(30);
+    
     let occupancyResponses = await Promise.all(
       subEntities.map(function (subEntity) {
         return authGet(api.observation, {
@@ -169,39 +174,65 @@ function Home(props) {
           direction: "desc",
           limit: "1",
           before: moment(time).format("YYYY-MM-DD hh:mm:ss"),
+          after: moment(timeDayEarlier).format("YYYY-MM-DD hh:mm:ss")
         });
       })
     );
-
-    console.log(occupancyResponses);
-
-    setProgress(80);
+    console.log('increased progress')
 
     let occupancies = occupancyResponses.map(function (response, index) {
-      if (response.data !== undefined) {
-        let occupancyData = response.data[0];
+      if (index === occupancyResponses.length - 1) {
+        setProgress(100);
+
+      }
+      if (response.data !== undefined && response.data.length > 0) {
+        let occupancyData = response.data[0].payload;
+
+        // If the data is undefined, let's make an invalid option
         if (occupancyData === undefined) {
-          occupancyData = { payload: { value: 0 } };
+          return {
+            entityId: subEntities[index].id,
+            occupancy: -1,
+            validity: 300,
+          };
         }
+        occupancyData.timestamp = response.data.timestamp;
         return occupancyData;
       } else {
-        return 0;
+        return {
+          entityId: subEntities[index].id,
+          occupancy: -1,
+          validity: 300,
+        };
       }
     });
 
-    setProgress(100);
     setOccupancies(occupancies);
   }
 
-  async function getOccupancy(id) {
+  async function getOccupancy(id, time) {
+
+    let timeDayEarlier = new Date();
+    timeDayEarlier.setDate(time.getDate() - 1);
+
     let occupancyResponse = await authGet(api.observation, {
       entityId: id,
       orderBy: "timestamp",
       direction: "desc",
       limit: "1",
+      before: moment(time).format("YYYY-MM-DD hh:mm:ss"),
+      after: moment(timeDayEarlier).format("YYYY-MM-DD hh:mm:ss")
     });
     if (occupancyResponse.data.length > 0) {
-      setOccupancy(occupancyResponse.data[0].payload.value);
+      setOccupancy({
+        timestamp: occupancyResponse.data[0].timestamp,
+        occupancy: occupancyResponse.data[0].payload.occupancy
+      });
+    } else {
+      setOccupancy({
+        timestamp: 0,
+        occupancy: -1
+      });
     }
   }
 
@@ -294,9 +325,9 @@ function Home(props) {
           selectEntity={selectEntity}
           subEntities={subEntities}
           openDialog={openDialog}
-          occupancy={sumOccupancies()}
           occupancies={occupancies}
-          // occupancy = {occupancy}
+          // occupancy={sumOccupancies()}
+          occupancy={occupancy}
           refreshOccupancies={refreshOccupancies}
           currentDate={currentDate}
           setCurrentDate={setCurrentDate}
@@ -315,8 +346,7 @@ function Home(props) {
   function sumOccupancies() {
     let sum = 0;
     for (let i = 0; i < occupancies.length; i++) {
-      sum +=
-        occupancies[i].payload === undefined ? 0 : occupancies[i].payload.value;
+      sum += occupancies[i].occupancy;
     }
     return sum;
   }

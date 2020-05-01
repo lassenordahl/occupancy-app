@@ -15,7 +15,7 @@ import { NumberFocus } from "app/containers";
 import {
   capitalizeWords,
   getMostRecentOccupancyTimestamp,
-  getEntityType
+  getEntityType,
 } from "globals/utils/formatting-helper";
 import { OccupancyButton } from "../../../components";
 
@@ -50,11 +50,11 @@ function EntityInformation(props) {
 
   return (
     <div className="EntityInformation">
-      <h2 style={{marginBottom: '16px'}}>Current Date</h2>
+      <h2 style={{ marginBottom: "16px" }}>Current Date</h2>
       <DateTimePicker
         value={props.currentDate}
         disabled={!props.realtime}
-        onChange={value => {
+        onChange={(value) => {
           props.setCurrentDate(value);
           props.refreshOccupancies();
         }}
@@ -72,30 +72,30 @@ function EntityInformation(props) {
       <DateTimePicker
         value={props.fromDate}
         disabled={props.realtime}
-        onChange={value => props.setFromDate(value)}
+        onChange={(value) => props.setFromDate(value)}
       />
       <div style={{ height: "16px" }} />
       <DateTimePicker
         value={props.toDate}
         disabled={props.realtime}
-        onChange={value => props.setToDate(value)}
+        onChange={(value) => props.setToDate(value)}
       />
       <div style={{ height: "24px" }} />
 
       <h2>Contained Spaces</h2>
       <Picklist
         value={selectedEntity}
-        onChange={value => selectEntity(value)}
+        onChange={(value) => selectEntity(value)}
         placeholder="Select a space"
         disabled={!props.realtime || getEntityType(entity) === "cartesian2d"}
       >
         {props.subEntities
-          .sort(function(a, b) {
+          .sort(function (a, b) {
             if (a.name < b.name) return -1;
             if (a.name > b.name) return 1;
             return 0;
           })
-          .map(function(entity, index) {
+          .map(function (entity, index) {
             return (
               <PicklistOption
                 key={index}
@@ -124,16 +124,13 @@ function EntityInformation(props) {
           onClick={() => props.refreshOccupancies()}
           // className="entity-refresh-icon"
           className={
-            "entity-refresh-icon " + (spinSync ? " entity-refresh-spinner" : "")
+            "entity-refresh-icon " + (props.progress !== 0 && props.progress !== 100 ? " entity-refresh-spinner" : "")
           }
         ></FontAwesomeIcon>
       </div>
       <div style={{ height: "16px" }} />
-      <NumberFocus
-        subtitle="Occupants"
-        lastUpdated={getMostRecentOccupancyTimestamp(props.occupancies)}
-      >
-        {props.occupancy}
+      <NumberFocus subtitle={props.occupancy.occupancy !== -1 ? "Occupants" : "No data available"} lastUpdated={props.occupancy.timestamp}>
+        {props.occupancy.occupancy !== -1 ? props.occupancy.occupancy : "-"}
       </NumberFocus>
 
       <OccupancyButton

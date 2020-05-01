@@ -55,17 +55,19 @@ function OccupancyDialog(props) {
     let minTimestamp = null;
     let total = 0;
 
+    console.log(observationValues);
+
     let data = observationValues.map(function (observation) {
-      total += observation.payload.value;
-      if (observation.payload.value > maxVal) {
-        maxVal = observation.payload.value;
+      total += observation.payload.occupancy;
+      if (observation.payload.occupancy > maxVal) {
+        maxVal = observation.payload.occupancy;
         maxTimestamp = observation.timestamp;
       }
-      if (observation.payload.value < minVal) {
-        minVal = observation.payload.value;
+      if (observation.payload.occupancy < minVal) {
+        minVal = observation.payload.occupancy;
         minTimestamp = observation.timestamp;
       }
-      return observation.payload.value;
+      return observation.payload.occupancy;
     });
 
     // Format timestamps to correct output
