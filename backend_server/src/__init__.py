@@ -26,6 +26,6 @@ def create_app():
 	oauth.init_app(app)
 
 	from src.routes.views import main as main_blueprint
-	app.register_blueprint(main_blueprint)
+	app.register_blueprint(main_blueprint, url_prefix='/'+config.SUBDIR_APP_NAME)
 
 	return app
