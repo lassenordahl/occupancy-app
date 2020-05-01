@@ -161,7 +161,7 @@ function Home(props) {
 
   async function getOccupancyData(subEntities, time) {
 
-    let timeDayEarlier = new Date();
+    let timeDayEarlier = new Date(time.getTime());
     timeDayEarlier.setDate(time.getDate() - 1);
 
     setProgress(30);
@@ -211,7 +211,7 @@ function Home(props) {
 
   async function getOccupancy(id, time) {
 
-    let timeDayEarlier = new Date();
+    let timeDayEarlier = new Date(time.getTime());
     timeDayEarlier.setDate(time.getDate() - 1);
 
     let occupancyResponse = await authGet(api.observation, {
