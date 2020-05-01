@@ -10,6 +10,8 @@ import { Home, InvalidRoute, PrivateRoute, DefaultView } from "app/views";
 
 import { Application } from "react-rainbow-components";
 
+// require('dotenv').config({path: "./../.env"});
+
 /*
   3 TYPES OF ROOTS
   
@@ -37,6 +39,8 @@ var applicationTheme = {
   }
 };
 
+console.log(process.env);
+
 function App() {
   const [authStatus, setAuthStatus] = useState(false);
 
@@ -45,15 +49,31 @@ function App() {
       <Application theme={applicationTheme}>
         <Router history={history} basename={'occupancy'}>
           <Nav auth={{ authStatus: authStatus }}></Nav>
+          <div className="app-content-mobile">
+            <h2>This site is not supported on mobile :(</h2>
+            <p>It's okay, go steal the nearest laptop and take a look!</p>
+          </div>
           <div className="app-content">
             {/* <DefaultView></DefaultView> */}
             <Switch>
               <Route path={"/home"} component={DefaultView} />
-              <Route
-                path={"/"}
-                auth={{ authStatus: authStatus, setAuthStatus: setAuthStatus }}
-                component={props => <Home {...props} appRoute={[]}></Home>}
-              />
+              { process.env.REACT_APP_ENV === "prod" 
+                ? (
+                    <PrivateRoute
+                      path={"/"}
+                      auth={{ authStatus: authStatus, setAuthStatus: setAuthStatus }}
+                      component={props => <Home {...props} appRoute={[]}></Home>}
+                    />
+                  )
+                : (
+                    <Route
+                      path={"/"}
+                      auth={{ authStatus: authStatus, setAuthStatus: setAuthStatus }}
+                      component={props => <Home {...props} appRoute={[]}></Home>}
+                    />
+                  )
+              }
+              
               <Route component={InvalidRoute}></Route>
             </Switch>
           </div>

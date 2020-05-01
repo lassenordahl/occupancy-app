@@ -13,7 +13,7 @@
   body {
     transform-origin: 0 0;
     // add prefixed versions too.
- }
+  }
 
   h1              { font-size: 1.8em; margin: .67em 0 }
   h2              { font-size: 1.3em; margin: .75em 0 }
@@ -27,8 +27,28 @@
   h1, h2        { font-weight: bolder }
   h3, h4, h5, h6 {font-weight: 400}
 
+  .app-content-mobile {
+    display: none;
+    height: calc(100vh - 64px);
+  }
+
+  @media only screen and (max-width: 600px) {
+    .app-content-mobile {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+  }
+
   .app-content {
     flex: 1;
+  }
+
+  @media only screen and (max-width: 600px) {
+    .app-content {
+      display: none;
+    }
   }
 }
 

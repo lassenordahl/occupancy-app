@@ -132,7 +132,7 @@ function Home(props) {
   }
 
   function getEntity(entityId) {
-    if (entityId === null || entityId === "") {
+    if (entityId === null || entityId === "" || entityId === "home") {
       return;
     }
     authGet(api.entity + "/" + entityId)
@@ -160,7 +160,7 @@ function Home(props) {
   }
 
   async function getOccupancyData(subEntities, time) {
-    
+
     let timeDayEarlier = new Date();
     timeDayEarlier.setDate(time.getDate() - 1);
 
@@ -178,7 +178,6 @@ function Home(props) {
         });
       })
     );
-    console.log('increased progress')
 
     let occupancies = occupancyResponses.map(function (response, index) {
       if (index === occupancyResponses.length - 1) {

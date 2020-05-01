@@ -129,7 +129,7 @@ function EntityInformation(props) {
         ></FontAwesomeIcon>
       </div>
       <div style={{ height: "16px" }} />
-      <NumberFocus subtitle={props.occupancy.occupancy !== -1 ? "Occupants" : "No data available"} lastUpdated={props.occupancy.timestamp}>
+      <NumberFocus subtitle={props.occupancy.occupancy !== -1 ? "Occupants" : "No data available for selected time period"} lastUpdated={props.occupancy.timestamp}>
         {props.occupancy.occupancy !== -1 ? props.occupancy.occupancy : "-"}
       </NumberFocus>
 

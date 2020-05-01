@@ -1,7 +1,5 @@
 let app_config = {
-  id: 10000
-  // id: 10
-  // id: 9
+  id: process.env.REACT_APP_BASE_ENTITY_ID
 };
 
 export default app_config;
