@@ -222,7 +222,7 @@ function Home(props) {
       before: moment(time).format("YYYY-MM-DD hh:mm:ss"),
       after: moment(timeDayEarlier).format("YYYY-MM-DD hh:mm:ss")
     });
-    if (occupancyResponse.data.length > 0) {
+    if (occupancyResponse.data !== undefined && occupancyResponse.data.length > 0) {
       setOccupancy({
         timestamp: occupancyResponse.data[0].timestamp,
         occupancy: occupancyResponse.data[0].payload.occupancy
