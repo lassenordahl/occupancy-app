@@ -46,3 +46,7 @@ export function getEntityType(entity) {
     return "invalid";
   }
 }
+
+export function getQueryString(params) {
+  return Object.keys(params).map(key => key + '=' + params[key]).join('&');
+}

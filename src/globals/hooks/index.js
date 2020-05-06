@@ -1,0 +1,1 @@
+export { default as useQueryParams } from "./QueryParams";

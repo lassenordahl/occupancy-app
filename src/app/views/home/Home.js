@@ -13,15 +13,18 @@ import api from "globals/api";
 import LoadingBar from "react-top-loading-bar";
 import { isValidUrl } from "globals/utils/tippers-helper";
 import { EntityInformation, OccupancyDialog } from "app/views";
+import { useQueryParams } from "globals/hooks";
 import {
   serializeLocation,
   capitalizeWords,
+  getQueryString,
 } from "globals/utils/formatting-helper";
 
 function Home(props) {
-
-  // Route of our application on load
+  // Hooks
   let windowRoute = serializeLocation(useLocation());
+  let queryParams = useQueryParams();
+  console.log(queryParams);
 
   // Variable to keep track of if we're loading the app for the first time
   const [errorLoading, setErrorLoading] = useState(false);
@@ -34,7 +37,9 @@ function Home(props) {
 
   // Redirecting variables
   const [willRedirect, redirect] = useState(false);
-  const [newRoute, pushRoute] = useState(isValidUrl(windowRoute) ? [] : [app_config.id]);
+  const [newRoute, pushRoute] = useState(
+    isValidUrl(windowRoute) ? [] : [app_config.id]
+  );
 
   // Entity Information
   // const [entity, setEntity] = useState({id: 1, name: 'ucitest'}); // Our selected entity
@@ -111,14 +116,12 @@ function Home(props) {
 
   function getRedirect() {
     let route;
-    console.log(windowRoute);
     if (windowRoute.length === 1 && windowRoute[0] === "") {
       route = "/" + newRoute.join("/");
     } else {
       route = "/" + windowRoute.concat(newRoute).join("/");
     }
-    console.log(route, newRoute);
-    return <Redirect to={route}></Redirect>;
+    return <Redirect to={route + "?" + getQueryString(queryParams)}></Redirect>;
   }
 
   function getEntity(entityId) {
@@ -130,8 +133,6 @@ function Home(props) {
         let newEntity = response.data;
         // Set progress, entity, and get the occupancy data for the enttiy
         setEntity(newEntity);
-        console.log("NEW ENTITY", newEntity);
-        // getOccupancy(entityId, currentDate);
 
         // If our payload isn't null, we can show the object by setting its type
         if (newEntity.payload.geo.coordinateSystem !== null) {
@@ -150,12 +151,11 @@ function Home(props) {
   }
 
   async function getOccupancyData(subEntities, time) {
-
     let timeDayEarlier = new Date(time.getTime());
     timeDayEarlier.setDate(time.getDate() - 1);
 
     setProgress(30);
-    
+
     let occupancyResponses = await Promise.all(
       subEntities.map(function (subEntity) {
         return authGet(api.observation, {
@@ -164,7 +164,7 @@ function Home(props) {
           direction: "desc",
           limit: "1",
           before: moment(time).format("YYYY-MM-DD hh:mm:ss"),
-          after: moment(timeDayEarlier).format("YYYY-MM-DD hh:mm:ss")
+          after: moment(timeDayEarlier).format("YYYY-MM-DD hh:mm:ss"),
         });
       })
     );
@@ -172,7 +172,6 @@ function Home(props) {
     let occupancies = occupancyResponses.map(function (response, index) {
       if (index === occupancyResponses.length - 1) {
         setProgress(100);
-
       }
       if (response.data !== undefined && response.data.length > 0) {
         let occupancyData = response.data[0].payload;
@@ -200,7 +199,6 @@ function Home(props) {
   }
 
   async function getOccupancy(id, time) {
-
     let timeDayEarlier = new Date(time.getTime());
     timeDayEarlier.setDate(time.getDate() - 1);
 
@@ -210,17 +208,20 @@ function Home(props) {
       direction: "desc",
       limit: "1",
       before: moment(time).format("YYYY-MM-DD hh:mm:ss"),
-      after: moment(timeDayEarlier).format("YYYY-MM-DD hh:mm:ss")
+      after: moment(timeDayEarlier).format("YYYY-MM-DD hh:mm:ss"),
     });
-    if (occupancyResponse.data !== undefined && occupancyResponse.data.length > 0) {
+    if (
+      occupancyResponse.data !== undefined &&
+      occupancyResponse.data.length > 0
+    ) {
       setOccupancy({
         timestamp: occupancyResponse.data[0].timestamp,
-        occupancy: occupancyResponse.data[0].payload.occupancy
+        occupancy: occupancyResponse.data[0].payload.occupancy,
       });
     } else {
       setOccupancy({
         timestamp: 0,
-        occupancy: -1
+        occupancy: -1,
       });
     }
   }
