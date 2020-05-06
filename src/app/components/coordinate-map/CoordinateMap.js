@@ -151,7 +151,7 @@ function CoordinateMap(props) {
               }
             }}
             positions={mapCoordinateWrapper(coordinateEntity)}
-            color={"#" + blueRainbow.colorAt(occupancy || 0)}
+            color={occupancy === -1 ? "#808080" : "#" + blueRainbow.colorAt(occupancy || 0)}
           >
             <Tooltip sticky className="polygon-tooltip box-shadow">
               {coordinateEntity.name} - {occupancy === - 1 ? "No Data Available" : occupancy}
