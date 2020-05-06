@@ -3,6 +3,7 @@ import "./Home.scss";
 
 import "leaflet/dist/leaflet.css";
 import { Redirect, useLocation, withRouter } from "react-router";
+import moment from "moment";
 
 import { Card, Dialog } from "app/containers";
 import { Legend, CoordinateMap, FloorMap, SkeletonPulse } from "app/components";
@@ -10,18 +11,19 @@ import app_config from "globals/config";
 import authGet from "../../../globals/authentication/AuthGet";
 import api from "globals/api";
 import LoadingBar from "react-top-loading-bar";
-
+import { isValidUrl } from "globals/utils/tippers-helper";
 import { EntityInformation, OccupancyDialog } from "app/views";
-
 import {
   serializeLocation,
   capitalizeWords,
 } from "globals/utils/formatting-helper";
-import moment from "moment";
 
 function Home(props) {
+
+  // Route of our application on load
+  let windowRoute = serializeLocation(useLocation());
+
   // Variable to keep track of if we're loading the app for the first time
-  const [firstLoad, setFirstLoad] = useState(true);
   const [errorLoading, setErrorLoading] = useState(false);
 
   // Dialog Information
@@ -32,7 +34,7 @@ function Home(props) {
 
   // Redirecting variables
   const [willRedirect, redirect] = useState(false);
-  const [newRoute, pushRoute] = useState([app_config.id]);
+  const [newRoute, pushRoute] = useState(isValidUrl(windowRoute) ? [] : [app_config.id]);
 
   // Entity Information
   // const [entity, setEntity] = useState({id: 1, name: 'ucitest'}); // Our selected entity
@@ -56,8 +58,6 @@ function Home(props) {
   const [progress, setProgress] = useState(0);
   const [showLegend, setShowLegend] = useState(true);
   const [transitionLegend, setTransitionLegend] = useState(false);
-
-  let windowRoute = serializeLocation(useLocation());
 
   useEffect(() => {
     props.history.listen(function (location, action) {
@@ -83,23 +83,11 @@ function Home(props) {
   }, [newRoute]);
 
   useEffect(() => {
-    if (firstLoad) {
-      setFirstLoad(false);
-    }
-  }, [firstLoad]);
-
-  useEffect(() => {
-    getOccupancyData(subEntities, currentDate);
-    if (entity !== null) {
-      getOccupancy(entity.id, currentDate);
-    }
+    // getOccupancyData(subEntities, currentDate);
+    // if (entity !== null) {
+    //   getOccupancy(entity.id, currentDate);
+    // }
   }, [subEntities, currentDate]);
-
-  // useEffect(() => {
-  //   if (entity !== null) {
-  //     getOccupancy(entity.id);
-  //   }
-  // }, [entity]);
 
   useEffect(() => {
     if (occupancies.length > 0) {
@@ -123,11 +111,13 @@ function Home(props) {
 
   function getRedirect() {
     let route;
+    console.log(windowRoute);
     if (windowRoute.length === 1 && windowRoute[0] === "") {
       route = "/" + newRoute.join("/");
     } else {
       route = "/" + windowRoute.concat(newRoute).join("/");
     }
+    console.log(route, newRoute);
     return <Redirect to={route}></Redirect>;
   }
 
@@ -389,7 +379,6 @@ function Home(props) {
         className="home-loading-bar"
       ></LoadingBar>
 
-      {firstLoad ? <Redirect to="/"></Redirect> : null}
       {willRedirect ? getRedirect() : null}
 
       {renderMap()}
