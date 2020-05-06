@@ -29,11 +29,9 @@ case $2 in
                 eval "$action"
                 ;;
 	uci)
-                export REACT_APP_INSTANCE_BASE_URL=https://uci-tippers.ics.uci.edu
                 eval "$action"
                 ;;
 	home)	
-                export REACT_APP_INSTANCE_BASE_URL=https://home-tippers.ics.uci.edu
                 eval "$action"
                 ;;
 	*) 
