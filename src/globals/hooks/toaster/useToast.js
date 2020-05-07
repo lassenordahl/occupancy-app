@@ -38,6 +38,7 @@ function useToast() {
   }
 
   function renderToast() {
+    console.log(text)
     return show 
     ?  (
         <div className="toaster fade-in" style={{ animationDuration: "0.5s"}}>

@@ -1,34 +1,39 @@
 import React, { useState, useEffect, useCallback } from "react";
 import "./Nav.scss";
 
-import { Breadcrumbs, Breadcrumb } from "react-rainbow-components";
+import { Breadcrumbs, Breadcrumb, Modal } from "react-rainbow-components";
 import { useLocation, withRouter, Redirect, Link } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCopy } from "@fortawesome/free-solid-svg-icons";
+import { CopyToClipboard } from "react-copy-to-clipboard";
 
 import config from "globals/config";
 import {
   capitalizeWords,
   serializeLocation,
-  getQueryString
+  getQueryString,
 } from "globals/utils/formatting-helper.js";
 import authGet from "../../../globals/authentication/AuthGet";
 import api from "globals/api";
 import { OccupancyButton } from "app/components";
-import { useQueryParams } from "globals/hooks";
+import { useQueryParams, useToast } from "globals/hooks";
 import tippersLogo from "assets/images/tippers-logo.png";
 import occupancyLogo from "assets/images/occupancy-logo.png";
 
 function Nav(props) {
   let currentRoute = serializeLocation(useLocation());
   let queryParams = useQueryParams();
+  const [showSuccess, showError, renderToast] = useToast();
 
   const [entityNames, setEntityNames] = useState([]);
   const [filteredRoute, setFilteredRoute] = useState([]);
+  const [isShareOpen, setIsShareOpen] = useState(false);
 
   // Redirecting variables
   const [willRedirect, redirect] = useState(false);
 
   useEffect(() => {
-    props.history.listen(function(location, action) {
+    props.history.listen(function (location, action) {
       // If we don't have an empty URL
       let entityIds = filterEntityIds(serializeLocation(location));
       if (entityIds[0] !== "") {
@@ -50,17 +55,22 @@ function Nav(props) {
 
   function getRedirect() {
     let route = "/" + filteredRoute.join("/");
-    return <Redirect from="/" to={route + "?" + getQueryString(queryParams)}></Redirect>;
+    return (
+      <Redirect
+        from="/"
+        to={route + "?" + getQueryString(queryParams)}
+      ></Redirect>
+    );
   }
 
   async function getEntityNames(entityIds) {
     let entityResults = await Promise.all(
-      entityIds.map(function(entityId) {
+      entityIds.map(function (entityId) {
         return authGet(api.entity + "/" + entityId);
       })
     );
     setEntityNames(
-      entityResults.map(function(result) {
+      entityResults.map(function (result) {
         if (result.data !== undefined) {
           return result.data.name;
         } else {
@@ -71,7 +81,7 @@ function Nav(props) {
   }
 
   function filterEntityIds(routeArray) {
-    return routeArray.filter(function(routeElement, index) {
+    return routeArray.filter(function (routeElement, index) {
       return index % 2 === 0;
     });
   }
@@ -79,7 +89,7 @@ function Nav(props) {
   // Removes everything after this index, lets you click back with the breadcrumbs
   function changeRoute(index) {
     setFilteredRoute(
-      currentRoute.filter(function(routeItem, rIndex) {
+      currentRoute.filter(function (routeItem, rIndex) {
         return rIndex <= index;
       })
     );
@@ -96,8 +106,7 @@ function Nav(props) {
           label="Logout"
           style={{ marginLeft: "1rem" }}
           onClick={() => redirectLogout()}
-        >
-        </OccupancyButton>
+        ></OccupancyButton>
       );
     }
   }
@@ -105,6 +114,7 @@ function Nav(props) {
   return (
     <div className="Nav flex-split box-shadow">
       {willRedirect ? getRedirect() : null}
+      {renderToast()}
 
       <div className="flex-start-row">
         <img className="app-logo" src={occupancyLogo} alt="logo"></img>
@@ -112,11 +122,11 @@ function Nav(props) {
           <h2>Occupancy Tool</h2>
         </Link>
         <Breadcrumbs className="nav-breadcrumbs" style={{ marginLeft: "16px" }}>
-          {entityNames.map(function(entityName, index) {
+          {entityNames.map(function (entityName, index) {
             return (
               <Breadcrumb
                 key={index}
-                onClick={() => changeRoute((index) * 2)}
+                onClick={() => changeRoute(index * 2)}
                 label={capitalizeWords(entityName)}
               ></Breadcrumb>
             );
@@ -124,6 +134,20 @@ function Nav(props) {
         </Breadcrumbs>
       </div>
       <div className="nav-buttons">
+        <CopyToClipboard text={window.location.href}>
+          <div
+            className="circular-button box-shadow"
+            onClick={() => {
+              showSuccess("URL copied to clipboard!");
+            }}
+          >
+            <FontAwesomeIcon
+              icon={faCopy}
+              style={{ color: "blue", marginLeft: "16px" }}
+            ></FontAwesomeIcon>
+            <p style={{ marginLeft: "10px" }}>Copy URL</p>
+          </div>
+        </CopyToClipboard>
         <a href="http://hub-tippers.ics.uci.edu">
           <div className="circular-button box-shadow">
             <img src={tippersLogo} alt="button-logo"></img>
