@@ -50,8 +50,8 @@ function App() {
         <Router history={history} basename={'occupancy'}>
           <Nav auth={{ authStatus: authStatus }}></Nav>
           <div className="app-content-mobile">
-            <h2>This site is not supported on mobile :(</h2>
-            <p>It's okay, go steal the nearest laptop and take a look!</p>
+            <h2>This site is not supported on mobile yet :(</h2>
+            <p>It's okay, go steal the nearest laptop and take a look! We'll be implementing for your phone soon.</p>
           </div>
           <div className="app-content">
             {/* <DefaultView></DefaultView> */}

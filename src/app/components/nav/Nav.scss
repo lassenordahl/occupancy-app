@@ -6,6 +6,12 @@
   background-color: $blueMain;
   color: white;
 
+  @media only screen and (max-width: 600px) {
+    .nav-breadcrumbs {
+      display: none;
+    }
+  }
+
   .nav-buttons {
     display: flex;
     flex-direction: row;

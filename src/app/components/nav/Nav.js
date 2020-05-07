@@ -111,7 +111,7 @@ function Nav(props) {
         <Link to={"/" + config.id + "?" + getQueryString(queryParams)}>
           <h2>Occupancy Tool</h2>
         </Link>
-        <Breadcrumbs class="nav-breadcrumbs" style={{ marginLeft: "16px" }}>
+        <Breadcrumbs className="nav-breadcrumbs" style={{ marginLeft: "16px" }}>
           {entityNames.map(function(entityName, index) {
             return (
               <Breadcrumb
