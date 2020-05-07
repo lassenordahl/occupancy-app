@@ -105,10 +105,10 @@ function Home(props) {
   }, [newRoute]);
 
   useEffect(() => {
-    // getOccupancyData(subEntities, currentDate);
-    // if (entity !== null) {
-    //   getOccupancy(entity.id, currentDate);
-    // }
+    getOccupancyData(subEntities, currentDate);
+    if (entity !== null) {
+      getOccupancy(entity.id, currentDate);
+    }
   }, [subEntities, currentDate]);
 
   useEffect(() => {
