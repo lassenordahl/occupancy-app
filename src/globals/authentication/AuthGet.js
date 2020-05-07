@@ -13,7 +13,7 @@ function getConfig(args) {
         return config
     }
     else {
-        window.location.href = '/home'; 
+        window.location.href = `${process.env.PUBLIC_URL}/home`; 
     }
 }
 
@@ -23,7 +23,7 @@ async function verifyOrRedirect() {
         await axios.get(window.location.origin + '/verify');
     }
     catch(error) {
-        window.location.href = '/home'; 
+        window.location.href = `${process.env.PUBLIC_URL}/home`; 
     }
 }
 
@@ -47,7 +47,7 @@ async function authGet(url, args) {
             }
             catch(error) {
                 console.error(error)
-                window.location.href = '/home'; 
+                window.location.href = `${process.env.PUBLIC_URL}/home`; 
             }
         }
         else {

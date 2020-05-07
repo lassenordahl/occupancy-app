@@ -86,7 +86,7 @@ function Nav(props) {
   }
 
   function redirectLogout() {
-    window.location.href = "/logout";
+    window.location.href = `${process.env.PUBLIC_URL}/logout`;
   }
 
   function showLoginButton() {
