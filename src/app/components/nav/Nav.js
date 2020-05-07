@@ -2,29 +2,30 @@ import React, { useState, useEffect, useCallback } from "react";
 import "./Nav.scss";
 
 import { Breadcrumbs, Breadcrumb } from "react-rainbow-components";
-import { useLocation, withRouter, Redirect } from "react-router-dom";
+import { useLocation, withRouter, Redirect, Link } from "react-router-dom";
+
+import config from "globals/config";
 import {
   capitalizeWords,
-  serializeLocation
+  serializeLocation,
+  getQueryString
 } from "globals/utils/formatting-helper.js";
 import authGet from "../../../globals/authentication/AuthGet";
 import api from "globals/api";
 import { OccupancyButton } from "app/components";
-
+import { useQueryParams } from "globals/hooks";
 import tippersLogo from "assets/images/tippers-logo.png";
 import occupancyLogo from "assets/images/occupancy-logo.png";
 
 function Nav(props) {
   let currentRoute = serializeLocation(useLocation());
+  let queryParams = useQueryParams();
 
   const [entityNames, setEntityNames] = useState([]);
   const [filteredRoute, setFilteredRoute] = useState([]);
 
   // Redirecting variables
   const [willRedirect, redirect] = useState(false);
-
-  const [, updateState] = React.useState();
-  const forceUpdate = useCallback(() => updateState({}), []);
 
   useEffect(() => {
     props.history.listen(function(location, action) {
@@ -49,7 +50,7 @@ function Nav(props) {
 
   function getRedirect() {
     let route = "/" + filteredRoute.join("/");
-    return <Redirect from="/" to={route}></Redirect>;
+    return <Redirect from="/" to={route + "?" + getQueryString(queryParams)}></Redirect>;
   }
 
   async function getEntityNames(entityIds) {
@@ -107,7 +108,9 @@ function Nav(props) {
 
       <div className="flex-start-row">
         <img className="app-logo" src={occupancyLogo} alt="logo"></img>
-        <h2>Occupancy Tool</h2>
+        <Link to={"/" + config.id + "?" + getQueryString(queryParams)}>
+          <h2>Occupancy Tool</h2>
+        </Link>
         <Breadcrumbs class="nav-breadcrumbs" style={{ marginLeft: "16px" }}>
           {entityNames.map(function(entityName, index) {
             return (
