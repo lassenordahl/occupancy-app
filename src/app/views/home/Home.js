@@ -2,18 +2,18 @@ import React, { useState, useEffect } from "react";
 import "./Home.scss";
 
 import "leaflet/dist/leaflet.css";
-import { Redirect, useLocation, withRouter } from "react-router";
+import { Redirect, useLocation, useHistory, withRouter } from "react-router";
 import moment from "moment";
 
 import { Card, Dialog } from "app/containers";
 import { Legend, CoordinateMap, FloorMap, SkeletonPulse } from "app/components";
-import app_config from "globals/config";
+import config from "globals/config";
 import authGet from "../../../globals/authentication/AuthGet";
 import api from "globals/api";
 import LoadingBar from "react-top-loading-bar";
 import { isValidUrl } from "globals/utils/tippers-helper";
 import { EntityInformation, OccupancyDialog } from "app/views";
-import { useQueryParams } from "globals/hooks";
+import { useQueryParams, useToast } from "globals/hooks";
 import {
   serializeLocation,
   capitalizeWords,
@@ -24,7 +24,8 @@ function Home(props) {
   // Hooks
   let windowRoute = serializeLocation(useLocation());
   let queryParams = useQueryParams();
-  console.log(queryParams);
+  let history = useHistory();
+  const [showSuccess, showError, renderToast] = useToast();
 
   // Variable to keep track of if we're loading the app for the first time
   const [errorLoading, setErrorLoading] = useState(false);
@@ -38,7 +39,7 @@ function Home(props) {
   // Redirecting variables
   const [willRedirect, redirect] = useState(false);
   const [newRoute, pushRoute] = useState(
-    isValidUrl(windowRoute) ? [] : [app_config.id]
+    isValidUrl(windowRoute) ? [] : [config.id]
   );
 
   // Entity Information
@@ -49,14 +50,30 @@ function Home(props) {
   const [occupancies, setOccupancies] = useState([]);
   const [occupancy, setOccupancy] = useState(0);
 
-  let oneWeekAgo = new Date();
-  oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+  let oneWeekAgo =
+    queryParams.toDate !== undefined
+      ? new Date(Date.parse(queryParams.toDate))
+      : new Date();
+  if (queryParams.toDate === undefined) {
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+  }
 
   // Date Selections
   const [fromDate, setFromDate] = useState(oneWeekAgo);
-  const [toDate, setToDate] = useState(new Date());
-  const [currentDate, setCurrentDate] = useState(new Date());
-  const [realtime, setRealtime] = useState(true);
+  const [toDate, setToDate] = useState(
+    queryParams.toDate !== undefined
+      ? new Date(Date.parse(queryParams.toDate))
+      : new Date()
+  );
+  const [currentDate, setCurrentDate] = useState(
+    queryParams.currentDate !== undefined
+      ? new Date(Date.parse(queryParams.currentDate))
+      : new Date()
+  );
+  const [realtime, setRealtime] = useState(
+    // queryParams.realtime !== undefined ? queryParams.realtime === "true" : true
+    true
+  );
 
   // Helper Variables
   const [legendMax, setLegendMax] = useState(0);
@@ -65,7 +82,7 @@ function Home(props) {
   const [transitionLegend, setTransitionLegend] = useState(false);
 
   useEffect(() => {
-    props.history.listen(function (location, action) {
+    props.history.listen(function (location, _) {
       // New route comes from the URL
       let newRoute = serializeLocation(location);
       // If we have an entity at the end, we can load it as our home screen
@@ -93,6 +110,17 @@ function Home(props) {
     //   getOccupancy(entity.id, currentDate);
     // }
   }, [subEntities, currentDate]);
+
+  useEffect(() => {
+    // If one of these changes, we need to update the URL parameters
+    let newQueryParams = {
+      currentDate: moment(currentDate).toISOString(),
+      fromDate: moment(fromDate).toISOString(),
+      toDate: moment(toDate).toISOString(),
+      realtime: realtime,
+    };
+    history.push("?" + getQueryString(newQueryParams));
+  }, [currentDate, fromDate, toDate, realtime]);
 
   useEffect(() => {
     if (occupancies.length > 0) {
@@ -146,6 +174,7 @@ function Home(props) {
       })
       .catch(function (error) {
         console.log("APP ENTITY GET", error);
+        showError("Error loading entity");
         setErrorLoading(true);
       });
   }
@@ -381,7 +410,7 @@ function Home(props) {
       ></LoadingBar>
 
       {willRedirect ? getRedirect() : null}
-
+      {renderToast()}
       {renderMap()}
 
       {showDialog ? (

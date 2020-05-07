@@ -12,6 +12,8 @@ function QueryParams() {
     queryParams.fromDate = query.get("fromDate");
   if (query.get("toDate"))
     queryParams.toDate = query.get("toDate");
+  if (query.get("realtime"))
+    queryParams.realtime = query.get("realtime");
 
   return queryParams;
 }
