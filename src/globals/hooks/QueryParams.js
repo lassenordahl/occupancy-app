@@ -13,7 +13,7 @@ function QueryParams() {
   if (query.get("toDate"))
     queryParams.toDate = query.get("toDate");
   if (query.get("realtime"))
-    queryParams.realtime = query.get("realtime");
+    queryParams.realtime = query.get("realtime") === "true";
 
   return queryParams;
 }

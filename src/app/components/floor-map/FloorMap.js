@@ -111,12 +111,18 @@ class FloorMap extends React.Component {
       entity,
       index
     ) {
+      console.log(entity);
       let clientWidth = self.svg._groups[0][0].clientWidth;
       let clientHeight = self.svg._groups[0][0].clientHeight;
 
       // Neat little trick to deep copy an object, used because we want to keep the shape of an object but scale the values without changing the originals at their references
       let coordInfo = JSON.parse(JSON.stringify(entity.payload.geo.extent));
       let coordSystem = entity.payload.geo.coordinateSystem;
+
+      if (coordSystem === null) {
+        return null;
+      }
+
       let range = coordSystem.range;
 
       let margin = 40;

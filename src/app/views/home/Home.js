@@ -4,6 +4,7 @@ import "./Home.scss";
 import "leaflet/dist/leaflet.css";
 import { Redirect, useLocation, useHistory, withRouter } from "react-router";
 import moment from "moment";
+import _ from "lodash";
 
 import { Card, Dialog } from "app/containers";
 import { Legend, CoordinateMap, FloorMap, SkeletonPulse } from "app/components";
@@ -82,7 +83,7 @@ function Home(props) {
   const [transitionLegend, setTransitionLegend] = useState(false);
 
   useEffect(() => {
-    props.history.listen(function (location, _) {
+    props.history.listen(function (location, action) {
       // New route comes from the URL
       let newRoute = serializeLocation(location);
       // If we have an entity at the end, we can load it as our home screen
@@ -119,7 +120,11 @@ function Home(props) {
       toDate: moment(toDate).toISOString(),
       realtime: realtime,
     };
-    history.push("?" + getQueryString(newQueryParams));
+
+    // Only repull if the query params are different
+    if (!_.isEqual(newQueryParams, queryParams)) {
+      history.push("?" + getQueryString(newQueryParams));
+    }
   }, [currentDate, fromDate, toDate, realtime]);
 
   useEffect(() => {
