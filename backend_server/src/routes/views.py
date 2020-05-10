@@ -2,7 +2,7 @@ import os
 import base64
 from src import oauth, config
 from flask import url_for, redirect, Blueprint, render_template, session, request, jsonify, send_from_directory, make_response
-from itsdangerous.url_safe import URLSafeSerializer
+from itsdangerous.url_safe import URLSafeTimedSerializer
 
 main = Blueprint('main', __name__, static_folder=config.FRONTEND_STATIC_FILES)
 
@@ -22,7 +22,7 @@ def verify():
 @main.route('/login')
 def login():
     redirect_uri = url_for('main.authorize', _external=True)
-    serializer = URLSafeSerializer(config.SECRET_KEY, salt=config.SUFFIX)
+    serializer = URLSafeTimedSerializer(config.SECRET_KEY, salt=config.SUFFIX)
     callback_state = request.args.get('callback')
     if callback_state:
         callback_state = serializer.dumps(base64.b64decode(callback_state).decode('utf-8'))
@@ -31,7 +31,7 @@ def login():
 @main.route('/signup')
 def signup():
     redirect_uri = url_for('main.authorize', _external=True)
-    serializer = URLSafeSerializer(config.SECRET_KEY, salt=config.SUFFIX)
+    serializer = URLSafeTimedSerializer(config.SECRET_KEY, salt=config.SUFFIX)
     callback_state = request.args.get('callback')
     if callback_state:
         callback_state = serializer.dumps(base64.b64decode(callback_state).decode('utf-8'))
@@ -48,7 +48,7 @@ def logout():
 def authorize():
     token = oauth.tippers_app.authorize_access_token()
     session['token'] = token
-    serializer = URLSafeSerializer(config.SECRET_KEY, salt=config.SUFFIX)
+    serializer = URLSafeTimedSerializer(config.SECRET_KEY, salt=config.SUFFIX)
     state = request.args.get('state')
     sig_okay, path = serializer.loads_unsafe(state)
     if sig_okay:
