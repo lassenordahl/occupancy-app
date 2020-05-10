@@ -13,7 +13,8 @@ class DevConfig:
 	OAUTH_AUTHORIZE_URL = TIPPERS_OAUTH_BASE_URL+'/oauth2/authorize'
 	OAUTH_API_BASE_URL = TIPPERS_OAUTH_BASE_URL+'/api/2/'
 	SUBDIR_APP_NAME = 'occupancy'
-	FRONTEND_REDIRECT_URL = 'https://dev-tippers.ics.uci.edu/'+SUBDIR_APP_NAME
+	FRONTEND_BASE_URL = 'https://dev-tippers.ics.uci.edu'
+	FRONTEND_REDIRECT_URL = '{}/{}'.format(FRONTEND_BASE_URL, SUBDIR_APP_NAME)
 	FRONTEND_STATIC_FILES = '../../../build/static'
 	SUFFIX = 'dev_occupancy'
 	SESSION_COOKIE_NAME = 'session{}'.format(SUFFIX)
