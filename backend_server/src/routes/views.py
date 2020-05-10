@@ -65,7 +65,7 @@ def serve(path):
     static_folder = main.static_folder + '/'
     build_folder = main.static_folder + '/../'
     if len(request.args) != 0 and not session.get('token'):
-        callback_state = base64.b64encode(request.full_path).decode('utf-8')
+        callback_state = base64.b64encode(request.full_path.encode('utf-8')).decode('utf-8')
         return redirect(url_for('main.login', callback=callback_state))
     if path and os.path.exists(static_folder + path):
         return send_from_directory(static_folder, path)
