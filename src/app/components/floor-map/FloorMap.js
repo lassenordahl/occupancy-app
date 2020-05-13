@@ -69,7 +69,10 @@ class FloorMap extends React.Component {
           "height",
           Math.abs(entityCoordInfo.end.y - entityCoordInfo.start.y - 4)
         )
-        .style("fill", "#" + rainbow.colourAt(occupancy));
+        .style(
+          "fill",
+          occupancy === -1 ? "#808080" : "#" + rainbow.colourAt(occupancy)
+        );
     } else if (shapeType === "polygon") {
       return self.svg
         .append("polygon")
@@ -91,7 +94,7 @@ class FloorMap extends React.Component {
   // Returns the size of half of a word scaled to the given buffer size
   // uhh after writing that it sounds super weird I'm sorry I don't remember exactly what it's used for :P
   getHalfWidth(word) {
-    return (word.length / 2) * 11;
+    return (word.length / 2) * 13;
   }
 
   drawContent() {
