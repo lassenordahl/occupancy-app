@@ -164,7 +164,7 @@ function CoordinateMap(props) {
       return (
         <Polygon
           positions={mapCoordinateWrapper(props.entity)}
-          color={"#2749c4"}
+          color={props.occupancy.occupancy === -1 ? "#808080" : "#2749c4"}
         >
           <Tooltip sticky className="polygon-tooltip box-shadow">
             {props.entity.name}

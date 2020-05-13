@@ -49,7 +49,7 @@ function Home(props) {
   const [entityType, setEntityType] = useState(null);
   const [subEntities, setSubEntities] = useState([]); // Sub entities of our current selected entity
   const [occupancies, setOccupancies] = useState([]);
-  const [occupancy, setOccupancy] = useState(0);
+  const [occupancy, setOccupancy] = useState({timestamp: 0, occupancy: -1});
 
   let oneWeekAgo =
     queryParams.toDate !== undefined
@@ -285,6 +285,7 @@ function Home(props) {
         entityType={entityType}
         selectEntity={selectEntity}
         occupancies={occupancies}
+        occupancy={occupancy}
         legendMax={legendMax}
       ></CoordinateMap>
     );
