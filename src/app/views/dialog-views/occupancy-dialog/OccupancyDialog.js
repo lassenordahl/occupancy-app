@@ -225,7 +225,11 @@ function OccupancyDialog(props) {
   return (
     <div className="OccupancyDialog">
       <div className="dialog-graph-params">
-        <h2>Compare Spaces</h2>
+        <h2>TIPPERS Occupancy Information</h2>
+        <p>To the right is an array of statistics based on the entity that you chose under the selected time period. Use the timeline to filter down on data. At the bottom of this section, you can export the data for the date range selected to a CSV.</p>
+        <h2>Data</h2>
+        <p>Data is provided by UCI OIT.</p>
+        {/* <h2>Compare Spaces</h2>
         <Picklist
           disabled={!entityDataAvailable}
           onChange={(option) => addToComparedEntities(option.value)}
@@ -259,7 +263,7 @@ function OccupancyDialog(props) {
                 />
               );
             })}
-        </Picklist>
+        </Picklist> */}
         {/* {comparedEntities.slice(1).map(function (entity, index) {
           return (
             <div className="dialog-entity-list-item" key={index}>
