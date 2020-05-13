@@ -142,6 +142,7 @@ function CoordinateMap(props) {
     if (props.entityType === "gps") {
       return props.coordinateEntities.map(function (coordinateEntity, index) {
         let occupancy = getOccupancy(index);
+        console.log(occupancy);
         return (
           <Polygon
             key={index}
@@ -177,7 +178,7 @@ function CoordinateMap(props) {
   // Gets the occupancy for the given value
   function getOccupancy(index) {
     return props.occupancies[index] === undefined
-      ? 0
+      ? -1
       : props.occupancies[index].occupancy;
   }
 

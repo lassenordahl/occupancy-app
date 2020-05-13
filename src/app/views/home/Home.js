@@ -432,7 +432,7 @@ function Home(props) {
         </Dialog>
       ) : null}
 
-      {!errorLoading ? (
+      {!errorLoading && entityType !== "cartesian2hfd" ? (
         <Legend
           transitionLegend={transitionLegend}
           showLegend={showLegend}
