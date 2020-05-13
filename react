@@ -29,6 +29,10 @@ case $2 in
                 eval "$action"
                 ;;
 	uci)
+                export REACT_APP_ENV=dev
+                export REACT_APP_BASE_URL=https://uci-tippers.ics.uci.edu/api
+                export REACT_APP_OBSERVATION_ID=1
+                export REACT_APP_BASE_ENTITY_ID=2
                 eval "$action"
                 ;;
 	home)	
