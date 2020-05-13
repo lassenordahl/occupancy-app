@@ -45,7 +45,7 @@ class FloorMap extends React.Component {
     if (this.props.occupancies[index] !== undefined) {
       return this.props.occupancies[index].occupancy;
     } else {
-      return 0;
+      return -1;
     }
   }
 
@@ -114,7 +114,6 @@ class FloorMap extends React.Component {
       entity,
       index
     ) {
-      console.log(entity);
       let clientWidth = self.svg._groups[0][0].clientWidth;
       let clientHeight = self.svg._groups[0][0].clientHeight;
 
@@ -220,6 +219,36 @@ class FloorMap extends React.Component {
           newVerticies,
           self.getOccupancy(index)
         );
+
+        // Add mouseover tooltips
+        currEntity.on("mouseover", function () {
+          d3.select(this);
+          self.svg
+            .append("text")
+            .attr(
+              "x",
+              newVerticies
+                .map((verticie) => verticie.x)
+                .reduce((a, b) => a + b) / newVerticies.length
+            )
+            .attr(
+              "y",
+              newVerticies
+                .map((verticie) => verticie.y)
+                .reduce((a, b) => a + b) / newVerticies.length
+            )
+            .attr("font-family", "Montserrat")
+            .attr("font-size", "20px")
+            .attr("fill", "black")
+            .text(function (d) {
+              return entity.name;
+            });
+        });
+
+        currEntity.on("mouseout", function () {
+          d3.select(this);
+          self.drawContent();
+        });
 
         return currEntity;
       } else {
