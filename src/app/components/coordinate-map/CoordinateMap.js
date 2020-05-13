@@ -161,10 +161,11 @@ function CoordinateMap(props) {
         );
       });
     } else if (props.entityType === "cartesian2hfd") {
+      getOccupancy(0);
       return (
         <Polygon
           positions={mapCoordinateWrapper(props.entity)}
-          color={"#" + blueRainbow.colorAt(10)}
+          color={"#2749c4"}
         >
           <Tooltip sticky className="polygon-tooltip box-shadow">
             {props.entity.name}
