@@ -6,3 +6,4 @@ export { default as FloorMap } from "./floor-map/FloorMap";
 export { default as D3Shape } from "./d3-shape/D3Shape";
 export { default as OccupancyButton } from "./buttons/OccupancyButton";
 export { default as SkeletonPulse } from "./skeleton-pulse/SkeletonPulse";
+export { default as Tooltip } from "./tooltip/Tooltip";
