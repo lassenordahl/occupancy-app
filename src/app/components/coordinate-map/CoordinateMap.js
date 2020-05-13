@@ -161,7 +161,6 @@ function CoordinateMap(props) {
         );
       });
     } else if (props.entityType === "cartesian2hfd") {
-      getOccupancy(0);
       return (
         <Polygon
           positions={mapCoordinateWrapper(props.entity)}
