@@ -5,6 +5,8 @@ import "leaflet/dist/leaflet.css";
 import { Redirect, useLocation, useHistory, withRouter } from "react-router";
 import moment from "moment";
 import _ from "lodash";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCaretDown, faCaretUp } from "@fortawesome/free-solid-svg-icons";
 
 import { Card, Dialog } from "app/containers";
 import { Legend, CoordinateMap, FloorMap, SkeletonPulse } from "app/components";
@@ -81,6 +83,7 @@ function Home(props) {
   const [progress, setProgress] = useState(0);
   const [showLegend, setShowLegend] = useState(true);
   const [transitionLegend, setTransitionLegend] = useState(false);
+  const [hideEntityCard, setHideEntityCard] = useState(false);
 
   useEffect(() => {
     props.history.listen(function (location, action) {
@@ -443,10 +446,19 @@ function Home(props) {
         ></Legend>
       ) : null}
 
-      {!errorLoading ? (
-        <Card className="fade-in information-card" style={{ width: "360px" }}>
+      <div className="visible-entity-button maximize-entity-button" onClick={() => setHideEntityCard(false)}>
+        <FontAwesomeIcon icon={faCaretUp}></FontAwesomeIcon>
+      </div>
+
+      {!errorLoading && !hideEntityCard ? (
+        <Card className="slide-up-fade-in information-card">
           <div className="information-header-wrapper">
-            <div className="information-header">{renderTitle(entity)}</div>
+            <div className="visible-entity-button minimize-entity-button" onClick={() => setHideEntityCard(true)}>
+              <FontAwesomeIcon icon={faCaretDown}></FontAwesomeIcon>
+            </div>
+            <div className="information-header">
+              {renderTitle(entity)}
+            </div>
           </div>
           <div className="information-tab-content">{renderView(entity)}</div>
         </Card>
