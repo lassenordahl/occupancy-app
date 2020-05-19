@@ -50,7 +50,14 @@ function EntityInformation(props) {
 
   return (
     <div className="EntityInformation">
-      <h2 style={{ marginBottom: "16px" }}>Current Date <Tooltip text={"Current date for pulling occupancy values. Pulls in the 24 hour range before this time."}/></h2>
+      <h2 style={{ marginBottom: "16px" }}>
+        Current Date{" "}
+        <Tooltip
+          text={
+            "Current date for pulling occupancy values. Pulls in the 24 hour range before this time."
+          }
+        />
+      </h2>
       <DateTimePicker
         value={props.currentDate}
         disabled={!props.realtime}
@@ -62,7 +69,10 @@ function EntityInformation(props) {
       <div style={{ height: "16px" }} />
 
       <div className="header-toggle">
-        <h2>Date Range <Tooltip text={"Date range for pulling occupancy values"}/></h2>
+        <h2>
+          Date Range{" "}
+          <Tooltip text={"Date range for pulling occupancy values"} />
+        </h2>
         {/* <CheckboxToggle
           value={props.realtime}
           onChange={event => props.setRealtime(!props.realtime)}
@@ -82,7 +92,14 @@ function EntityInformation(props) {
       />
       <div style={{ height: "24px" }} />
 
-      <h2>Contained Spaces <Tooltip text={"Contained spaces are child spaces of the entity that is selected"}/></h2>
+      <h2>
+        Contained Spaces{" "}
+        <Tooltip
+          text={
+            "Contained spaces are child spaces of the entity that is selected"
+          }
+        />
+      </h2>
       <Picklist
         value={selectedEntity}
         onChange={(value) => selectEntity(value)}
@@ -118,7 +135,14 @@ function EntityInformation(props) {
       ) : null}
 
       <div className="header-toggle">
-        <h2>Occupancy <Tooltip text={"Occupancy data is pulled for the entity selected within 24 hours of the given timestamp or within the given time range"}/></h2>
+        <h2>
+          Occupancy{" "}
+          <Tooltip
+            text={
+              "Occupancy data is pulled for the entity selected within 24 hours of the given timestamp or within the given time range"
+            }
+          />
+        </h2>
         <FontAwesomeIcon
           icon={faSync}
           onClick={() => props.refreshOccupancies()}
@@ -143,10 +167,12 @@ function EntityInformation(props) {
         {props.occupancy.occupancy !== -1 ? props.occupancy.occupancy : "-"}
       </NumberFocus>
 
+      <div style={{ height: "36px" }}></div>
+
       <OccupancyButton
         isColored={true}
         className="box-shadow"
-        style={{ marginTop: "auto", alignSelf: "center" }}
+        style={{ alignSelf: "center" }}
         onClick={() => props.openDialog(entity, "Analytics")}
         label="Analytics"
       ></OccupancyButton>

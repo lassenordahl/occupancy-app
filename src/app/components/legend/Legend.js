@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import "./Legend.scss";
 
 import Fade from "react-reveal/Fade";
@@ -9,8 +9,12 @@ import LegendRow from "./legend-row/LegendRow";
 import getBlueRainbow from "globals/utils/rainbowvis-helper.js";
 import { Card } from "app/containers";
 import { SkeletonPulse } from "app/components";
+import { useWindowDimensions } from "globals/hooks";
 
 function Legend(props) {
+  const { width, height } = useWindowDimensions();
+  console.log(width);
+
   let blueRainbow = getBlueRainbow(props.legendMax);
 
   // Utilize different segmented colors for ranges in our app
@@ -36,10 +40,9 @@ function Legend(props) {
   return (
     <Card
       className={
-        "fade-in legend-card " +
+        "slide-up-fade-in legend-card " +
         (props.transitionLegend ? "legend-card-none" : "")
       }
-      style={{ width: "240px" }}
     >
       <div
         className={
@@ -48,7 +51,7 @@ function Legend(props) {
         }
       >
         <h2 style={{ marginBottom: "0px", fontSize: "1.8em" }}>Legend</h2>
-        {props.showLegend ? (
+        {(width >= 600 ? props.showLegend : props.showLegend) ? (
           <FontAwesomeIcon
             icon={faCaretDown}
             onClick={function () {
@@ -93,8 +96,9 @@ function Legend(props) {
                       key={index}
                       style={{
                         height: "20px",
-                        width: "78%",
-                        marginBottom: (index < ranges.length - 1 ? "20px" : "0px"),
+                        width: "86%",
+                        marginBottom:
+                          index < ranges.length - 1 ? "20px" : "0px",
                         borderRadius: "5px",
                       }}
                     />
