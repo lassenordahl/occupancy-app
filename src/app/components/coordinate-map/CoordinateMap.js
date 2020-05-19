@@ -141,7 +141,7 @@ function CoordinateMap(props) {
 
     if (props.entityType === "gps") {
       return props.coordinateEntities.map(function (coordinateEntity, index) {
-        let occupancy = getOccupancy(index);
+        let occupancy = getOccupancy(coordinateEntity.id);
         console.log(occupancy);
         return (
           <Polygon
@@ -176,10 +176,11 @@ function CoordinateMap(props) {
   }
 
   // Gets the occupancy for the given value
-  function getOccupancy(index) {
-    return props.occupancies[index] === undefined
+  function getOccupancy(id) {
+    console.log(props.occupancies, id);
+    return props.occupancies[id] === undefined
       ? -1
-      : props.occupancies[index].occupancy;
+      : props.occupancies[id].occupancy;
   }
 
   // Need to use the entity type from the props variable, because props.entityType isn't loaded yet
