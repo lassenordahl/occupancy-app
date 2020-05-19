@@ -41,9 +41,9 @@ class FloorMap extends React.Component {
   }
 
   // Get the occupancy at the given index
-  getOccupancy(index) {
-    if (this.props.occupancies[index] !== undefined) {
-      return this.props.occupancies[index].occupancy;
+  getOccupancy(id) {
+    if (this.props.occupancies[id] !== undefined) {
+      return this.props.occupancies[id].occupancy;
     } else {
       return -1;
     }
@@ -163,7 +163,7 @@ class FloorMap extends React.Component {
         let currEntity = self.getGraphedEntity(
           coordInfo.extentClassName,
           coordInfo,
-          self.getOccupancy(index)
+          self.getOccupancy(entity.id)
         );
 
         // Add mouseover tooltips
@@ -217,7 +217,7 @@ class FloorMap extends React.Component {
         let currEntity = self.getGraphedEntity(
           "polygon",
           newVerticies,
-          self.getOccupancy(index)
+          self.getOccupancy(entity.id)
         );
 
         // Add mouseover tooltips
