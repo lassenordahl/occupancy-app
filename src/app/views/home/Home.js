@@ -7,6 +7,7 @@ import moment from "moment";
 import _ from "lodash";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCaretDown, faCaretUp } from "@fortawesome/free-solid-svg-icons";
+import axios from "axios";
 
 import { Card, Dialog } from "app/containers";
 import { Legend, CoordinateMap, FloorMap, SkeletonPulse } from "app/components";
@@ -50,7 +51,7 @@ function Home(props) {
   const [entity, setEntity] = useState(null); // Our selected entity
   const [entityType, setEntityType] = useState(null);
   const [subEntities, setSubEntities] = useState([]); // Sub entities of our current selected entity
-  const [occupancies, setOccupancies] = useState([]);
+  const [occupancies, setOccupancies] = useState({});
   const [occupancy, setOccupancy] = useState({timestamp: 0, occupancy: -1});
 
   let oneWeekAgo =
@@ -131,17 +132,24 @@ function Home(props) {
   }, [currentDate, fromDate, toDate, realtime]);
 
   useEffect(() => {
-    if (occupancies.length > 0) {
-      let max = 0;
-      for (let i = 0; i < occupancies.length; i++) {
-        if (occupancies[i] !== undefined) {
-          if (occupancies[i].occupancy > max) {
-            max = occupancies[i].occupancy;
-          }
-        }
+    // if (occupancies.length > 0) {
+    //   let max = 0;
+    //   for (let i = 0; i < occupancies.length; i++) {
+    //     if (occupancies[i] !== undefined) {
+    //       if (occupancies[i].occupancy > max) {
+    //         max = occupancies[i].occupancy;
+    //       }
+    //     }
+    //   }
+    //   setLegendMax(max);
+    // }
+    let max = 0;
+    for (let [entityId, occupancyObject] of Object.entries(occupancies)) {
+      if (occupancyObject.occupancy > max) {
+        max = occupancyObject.occupancy;
       }
-      setLegendMax(max);
     }
+    setLegendMax(max);
   }, [occupancies]);
 
   function refreshOccupancies() {
@@ -193,46 +201,24 @@ function Home(props) {
 
     setProgress(30);
 
-    let occupancyResponses = await Promise.all(
-      subEntities.map(function (subEntity) {
-        return authGet(api.observation, {
-          entityId: subEntity.id,
-          orderBy: "timestamp",
-          direction: "desc",
-          limit: "1",
-          before: moment(time).format("YYYY-MM-DD hh:mm:ss"),
-          after: moment(timeDayEarlier).format("YYYY-MM-DD hh:mm:ss"),
-        });
-      })
-    );
+    let query = {
+      "query": "select `id`, MAX(`timestamp`) as timestamp, `deviceId`, `entityId`, `occupancy`, `validity` from `occupancy_vs_observation` where `entityId` in (" + subEntities.map((subEntity) => subEntity.id).join(",") + ") group by `entityId`;"
+    }
 
-    let occupancies = occupancyResponses.map(function (response, index) {
-      if (index === occupancyResponses.length - 1) {
-        setProgress(100);
-      }
-      if (response.data !== undefined && response.data.length > 0) {
-        let occupancyData = response.data[0].payload;
-
-        // If the data is undefined, let's make an invalid option
-        if (occupancyData === undefined) {
-          return {
-            entityId: subEntities[index].id,
-            occupancy: -1,
-            validity: 300,
-          };
+    axios.post(api.query, query)
+    .then(function(response) {
+      console.log(response)
+      // let occupancies = 
+      if (response.status === 200) {
+        let occupancies = {};
+        for (let i = 0; i < response.data.length; i++) {
+          occupancies[response.data[i].entityId] = response.data[i];
         }
-        occupancyData.timestamp = response.data.timestamp;
-        return occupancyData;
-      } else {
-        return {
-          entityId: subEntities[index].id,
-          occupancy: -1,
-          validity: 300,
-        };
+        setProgress(100);
+        console.log(occupancies);
+        setOccupancies(occupancies);
       }
     });
-
-    setOccupancies(occupancies);
   }
 
   async function getOccupancy(id, time) {
@@ -369,14 +355,6 @@ function Home(props) {
         ></EntityInformation>
       );
     }
-  }
-
-  function sumOccupancies() {
-    let sum = 0;
-    for (let i = 0; i < occupancies.length; i++) {
-      sum += occupancies[i].occupancy;
-    }
-    return sum;
   }
 
   function renderMap() {
