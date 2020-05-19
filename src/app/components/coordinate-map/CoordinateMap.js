@@ -100,10 +100,6 @@ function CoordinateMap(props) {
 
     let extent = coordinateEntity.payload.geo.extent;
 
-    if (coordinateEntity === 10059) {
-      console.log(coordinateEntity);
-    }
-
     // Coordinate structure is different depending on if it's a polygon or a rectangle, but pretty simple nonetheless
     if (extent !== null) {
       if (extent.extentClassName === "polygon") {
@@ -142,7 +138,6 @@ function CoordinateMap(props) {
     if (props.entityType === "gps") {
       return props.coordinateEntities.map(function (coordinateEntity, index) {
         let occupancy = getOccupancy(coordinateEntity.id);
-        console.log(occupancy);
         return (
           <Polygon
             key={index}
@@ -177,7 +172,6 @@ function CoordinateMap(props) {
 
   // Gets the occupancy for the given value
   function getOccupancy(id) {
-    console.log(props.occupancies, id);
     return props.occupancies[id] === undefined
       ? -1
       : props.occupancies[id].occupancy;
