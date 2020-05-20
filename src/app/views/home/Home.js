@@ -110,10 +110,10 @@ function Home(props) {
   }, [newRoute]);
 
   useEffect(() => {
-    getOccupancyData(subEntities, currentDate);
-    if (entity !== null) {
-      getOccupancy(entity.id, currentDate);
-    }
+    getOccupancyData(entity, subEntities, currentDate);
+    // if (entity !== null) {
+    //   getOccupancy(entity.id, currentDate);
+    // }
   }, [subEntities, currentDate]);
 
   useEffect(() => {
@@ -195,20 +195,19 @@ function Home(props) {
       });
   }
 
-  async function getOccupancyData(subEntities, time) {
+  async function getOccupancyData(entity, subEntities, time) {
     let timeDayEarlier = new Date(time.getTime());
     timeDayEarlier.setDate(time.getDate() - 1);
 
     setProgress(30);
 
     let query = {
-      "query": "select `id`, MAX(`timestamp`) as timestamp, `deviceId`, `entityId`, `occupancy`, `validity` from `occupancy_vs_observation` where `entityId` in (" + subEntities.map((subEntity) => subEntity.id).join(",") + ") group by `entityId`;"
+      "query": "select `id`, MAX(`timestamp`) as timestamp, `deviceId`, `entityId`, `occupancy`, `validity` from `occupancy_vs_observation` where `entityId` in (" + subEntities.map((subEntity) => subEntity.id).join(",") + (entity !== null ? ("," + entity.id) : "") + ") group by `entityId`;"
     }
 
     axios.post(api.query, query)
     .then(function(response) {
-      console.log(response)
-      // let occupancies = 
+      console.log(response);
       if (response.status === 200) {
         let occupancies = {};
         for (let i = 0; i < response.data.length; i++) {
@@ -221,32 +220,8 @@ function Home(props) {
     });
   }
 
-  async function getOccupancy(id, time) {
-    let timeDayEarlier = new Date(time.getTime());
-    timeDayEarlier.setDate(time.getDate() - 1);
-
-    let occupancyResponse = await authGet(api.observation, {
-      entityId: id,
-      orderBy: "timestamp",
-      direction: "desc",
-      limit: "1",
-      before: moment(time).format("YYYY-MM-DD hh:mm:ss"),
-      after: moment(timeDayEarlier).format("YYYY-MM-DD hh:mm:ss"),
-    });
-    if (
-      occupancyResponse.data !== undefined &&
-      occupancyResponse.data.length > 0
-    ) {
-      setOccupancy({
-        timestamp: occupancyResponse.data[0].timestamp,
-        occupancy: occupancyResponse.data[0].payload.occupancy,
-      });
-    } else {
-      setOccupancy({
-        timestamp: 0,
-        occupancy: -1,
-      });
-    }
+  function getOccupancy(id) {
+    return id !== undefined && occupancies[id] !== undefined ? occupancies[id] : -1;
   }
 
   function selectEntity(entity) {
@@ -274,7 +249,7 @@ function Home(props) {
         entityType={entityType}
         selectEntity={selectEntity}
         occupancies={occupancies}
-        occupancy={occupancy}
+        occupancy={getOccupancy(entity.id)}
         legendMax={legendMax}
       ></CoordinateMap>
     );
@@ -340,8 +315,8 @@ function Home(props) {
           subEntities={subEntities}
           openDialog={openDialog}
           occupancies={occupancies}
-          // occupancy={sumOccupancies()}
-          occupancy={occupancy}
+          occupancy={getOccupancy(entity.id)}
+          // occupancy={occupancy}
           refreshOccupancies={refreshOccupancies}
           currentDate={currentDate}
           setCurrentDate={setCurrentDate}

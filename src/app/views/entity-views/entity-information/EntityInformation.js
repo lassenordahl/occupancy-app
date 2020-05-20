@@ -164,7 +164,7 @@ function EntityInformation(props) {
         }
         lastUpdated={props.occupancy.timestamp}
       >
-        {props.occupancy.occupancy !== -1 ? props.occupancy.occupancy : "-"}
+        {props.occupancy !== -1 && props.occupancy.occupancy !== -1 ? props.occupancy.occupancy : "-"}
       </NumberFocus>
 
       <div style={{ height: "36px" }}></div>
