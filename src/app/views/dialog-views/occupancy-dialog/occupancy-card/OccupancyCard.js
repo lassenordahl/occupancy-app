@@ -23,7 +23,7 @@ function OccupancyCard(props) {
   
   // Used for formatting dates
   function formatDateTime(datetime) {
-    return moment(datetime).format("MMM Do h:mm");
+    return moment(datetime).format("MMM Do h:mm A");
   }
 
   return (

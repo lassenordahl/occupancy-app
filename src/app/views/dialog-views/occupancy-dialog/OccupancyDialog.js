@@ -228,53 +228,8 @@ function OccupancyDialog(props) {
         <h2>TIPPERS Occupancy Information</h2>
         <p>To the right is an array of statistics based on the entity that you chose under the selected time period. Use the timeline to filter down on data. At the bottom of this section, you can export the data for the date range selected to a CSV.</p>
         <h2>Data</h2>
-        <p>Data is provided by UCI OIT.</p>
-        {/* <h2>Compare Spaces</h2>
-        <Picklist
-          disabled={!entityDataAvailable}
-          onChange={(option) => addToComparedEntities(option.value)}
-          placeholder="Select a comparable entity"
-        >
-          {[
-            { name: "test1", id: 1 },
-            { name: "test2", id: 2 },
-            { name: "test3", id: 3 },
-            { name: "test4", id: 4 },
-            { name: "test5", id: 5 },
-            { name: "test6", id: 6 },
-          ]
-            .sort(function (a, b) {
-              if (a.name < b.name) return -1;
-              if (a.name > b.name) return 1;
-              return 0;
-            })
-            .filter(function (entity) {
-              return !comparedEntities
-                .map((entity) => entity.id)
-                .includes(entity.id);
-            })
-            .map(function (entity, index) {
-              return (
-                <PicklistOption
-                  key={index}
-                  name={entity.name}
-                  label={capitalizeWords(entity.name)}
-                  value={entity}
-                />
-              );
-            })}
-        </Picklist> */}
-        {/* {comparedEntities.slice(1).map(function (entity, index) {
-          return (
-            <div className="dialog-entity-list-item" key={index}>
-              <p>{entity.name}</p>
-              <FontAwesomeIcon
-                icon={faTimes}
-                onClick={() => removeComparedEntity(entity)}
-              ></FontAwesomeIcon>
-            </div>
-          );
-        })} */}
+        <p>Data is provided by UCI OIT. View here:</p>
+        <a href="https://www.oit.uci.edu/ics-and-oit-collaborate-on-tippers-research-project/">https://www.oit.uci.edu/ics-and-oit-collaborate-on-tippers-research-project/</a>
         <div style={{ height: "16px" }}></div>
 
         <div className="dialog-params-export-utilities">
