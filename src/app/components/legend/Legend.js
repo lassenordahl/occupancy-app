@@ -29,13 +29,17 @@ function Legend(props) {
     },
     {
       color: "#" + blueRainbow.colorAt(Math.floor(props.legendMax * 0.5)),
-      range: Math.floor(props.legendMax * 0.5),
+      range: roundFive(Math.floor(props.legendMax * 0.5)),
     },
     {
       color: "#" + blueRainbow.colorAt(props.legendMax),
-      range: props.legendMax,
+      range: roundFive(props.legendMax),
     },
   ];
+
+  function roundFive(x) {
+    return Math.ceil(x / 5) * 5;
+  }
 
   return (
     <Card
