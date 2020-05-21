@@ -153,9 +153,11 @@
     position: absolute;
     z-index: 1;
     display: flex;
+    align-items: center;
+    justify-content: center;
     flex-direction: column;
-    width: 216px;
-    height: 247px;
+    width: 140px;
+    height: 170px;
     transition: height ease-in-out .5s;
 
     // Non Mobile View
