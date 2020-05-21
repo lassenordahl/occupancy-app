@@ -226,7 +226,7 @@ function OccupancyDialog(props) {
     <div className="OccupancyDialog">
       <div className="dialog-graph-params">
         <h2>TIPPERS Occupancy Information</h2>
-        <p>To the right is an array of statistics based on the entity that you chose under the selected time period. Use the timeline to filter down on data. At the bottom of this section, you can export the data for the date range selected to a CSV.</p>
+        <p>To the right is an array of statistics based on the space that you chose under the selected time period. Use the timeline to filter down on data. At the bottom of this section, you can export the data for the date range selected to a CSV.</p>
         <h2>Data</h2>
         <p>Data is provided by UCI OIT. View here:</p>
         <a href="https://www.oit.uci.edu/ics-and-oit-collaborate-on-tippers-research-project/">https://www.oit.uci.edu/ics-and-oit-collaborate-on-tippers-research-project/</a>
