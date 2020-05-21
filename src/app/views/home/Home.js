@@ -189,7 +189,6 @@ function Home(props) {
         setErrorLoading(false);
       })
       .catch(function (error) {
-        console.log("APP ENTITY GET", error);
         showError("Error loading entity");
         setErrorLoading(true);
       });
@@ -207,14 +206,12 @@ function Home(props) {
 
     axios.post(api.query, query)
     .then(function(response) {
-      console.log(response);
       if (response.status === 200) {
         let occupancies = {};
         for (let i = 0; i < response.data.length; i++) {
           occupancies[response.data[i].entityId] = response.data[i];
         }
         setProgress(100);
-        console.log(occupancies);
         setOccupancies(occupancies);
       }
     });

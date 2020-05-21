@@ -13,7 +13,6 @@ import { useWindowDimensions } from "globals/hooks";
 
 function Legend(props) {
   const { width, height } = useWindowDimensions();
-  console.log(width);
 
   let blueRainbow = getBlueRainbow(props.legendMax);
 

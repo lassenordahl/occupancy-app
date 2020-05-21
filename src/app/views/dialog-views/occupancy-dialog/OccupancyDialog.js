@@ -36,15 +36,15 @@ function OccupancyDialog(props) {
   const [max, setMax] = useState(null);
   const [avg, setAvg] = useState(null);
 
-  // Upon getting an entity load the occupancy information
-  useEffect(() => {
-    getOccupancyInformation(props.entity, true, false);
-  }, [props.entity]);
+  // // Upon getting an entity load the occupancy information
+  // useEffect(() => {
+  //   getOccupancyInformation(props.entity, true, false);
+  // }, [props.entity]);
 
   // When the dates change load the occupancy data again, but we need to remove the first entity occupancy time
   useEffect(() => {
     getOccupancyInformation(props.entity, true, true);
-  }, [props.fromDate, props.toDate]);
+  }, [props.entity, props.fromDate, props.toDate]);
 
   // Take in if we're going to use the first index,
   // If we're the first index (primary entity for this dialog), then we should load the max/min/avg values
@@ -76,7 +76,7 @@ function OccupancyDialog(props) {
       // return moment(observation.timestamp).format("MMM Do h:mm:ss");
     });
 
-    console.log(timestamps);
+    // console.log(timestamps);
 
     setMin({
       value: minVal,
@@ -112,35 +112,37 @@ function OccupancyDialog(props) {
     isFirstIndex,
     isReplacingFirstIndex
   ) {
-    console.log(props.toDate, props.fromDate);
+    debugger;
     authGet(api.observation, {
       entityId: entity.id,
       orderBy: "timestamp",
       direction: "asc",
       // limit: "30",
+      limit:"1000",
       before: moment(props.toDate).format("YYYY-MM-DD hh:mm:ss"),
       after: moment(props.fromDate).format("YYYY-MM-DD hh:mm:ss"),
     })
       .then(function (response) {
         // Add the occupancy data to the observation values
-        console.log(response);
-        if (response.data.length > 0) {
-          setEntityDataAvailable(true);
-
-          // If we're replacing the first index, this means that the date range has been updated and we need to refresh the value for the first one
-          if (isReplacingFirstIndex) {
-            setEntityOccupantData([
-              mapObservationValues(response.data, isFirstIndex),
-              ...entityOccupantData.slice(1),
-            ]);
+        if (response !== undefined) {
+          if (response.data.length > 0) {
+            setEntityDataAvailable(true);
+  
+            // If we're replacing the first index, this means that the date range has been updated and we need to refresh the value for the first one
+            if (isReplacingFirstIndex) {
+              setEntityOccupantData([
+                mapObservationValues(response.data, isFirstIndex),
+                ...entityOccupantData.slice(1),
+              ]);
+            } else {
+              setEntityOccupantData([
+                ...entityOccupantData,
+                mapObservationValues(response.data, isFirstIndex),
+              ]);
+            }
           } else {
-            setEntityOccupantData([
-              ...entityOccupantData,
-              mapObservationValues(response.data, isFirstIndex),
-            ]);
+            setEntityDataAvailable(false);
           }
-        } else {
-          setEntityDataAvailable(false);
         }
       })
       .catch(function (error) {
@@ -228,11 +230,12 @@ function OccupancyDialog(props) {
       <div className="dialog-graph-params">
         <h2>TIPPERS Occupancy Information</h2>
         <p>To the right is an array of statistics based on the space that you chose under the selected time period. Use the timeline to filter down on data. At the bottom of this section, you can export the data for the date range selected to a CSV.</p>
+        <h2>Date Range</h2>
+        <p>Occupancy values are pulled through the given time range, but limited to 1000 values maximum. If the defined date range does not match the one you queried, there is likely too much data.</p>
         <h2>Data</h2>
         <p>Data is provided by UCI OIT. View here:</p>
         <a href="https://www.oit.uci.edu/ics-and-oit-collaborate-on-tippers-research-project/">https://www.oit.uci.edu/ics-and-oit-collaborate-on-tippers-research-project/</a>
         <div style={{ height: "16px" }}></div>
-
         <div className="dialog-params-export-utilities">
           <div>
             <CSVLink data={exportCSV()}

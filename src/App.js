@@ -39,8 +39,6 @@ var applicationTheme = {
   }
 };
 
-console.log(process.env);
-
 function App() {
   const [authStatus, setAuthStatus] = useState(false);
 
