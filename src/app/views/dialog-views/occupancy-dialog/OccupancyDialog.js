@@ -112,7 +112,6 @@ function OccupancyDialog(props) {
     isFirstIndex,
     isReplacingFirstIndex
   ) {
-    debugger;
     authGet(api.observation, {
       entityId: entity.id,
       orderBy: "timestamp",

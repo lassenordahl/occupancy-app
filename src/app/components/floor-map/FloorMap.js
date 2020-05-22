@@ -88,6 +88,18 @@ class FloorMap extends React.Component {
           "fill",
           occupancy === -1 ? "#808080" : "#" + rainbow.colourAt(occupancy)
         );
+    } else if (shapeType === "circle") {
+      return self.svg
+        .append("circle")
+        .attr("cx", entityCoordInfo.center.x + 2)
+        .attr("cy", entityCoordInfo.center.y + 2)
+        .attr("r", entityCoordInfo.radius + 2)
+        .attr("opacity", "0.5")
+        .attr("z-index", 1000)
+        .attr(
+          "fill",
+          occupancy === -1 ? "#808080" : "#" + rainbow.colourAt(occupancy)
+        );
     }
   }
 
@@ -108,6 +120,29 @@ class FloorMap extends React.Component {
     if (self.svg._groups[0][0] === null) {
       return;
     }
+
+    self.props.twoDimensionalEntities.sort(function (entityA, entityB) {
+      if (
+        entityA.payload.geo.extent === null ||
+        entityB.payload.geo.extent === null
+      ) {
+        return -1;
+      }
+
+      if (
+        entityA.payload.geo.extent.extentClassName ===
+        entityB.payload.geo.extent.extentClassName
+      ) {
+        return 0;
+      } else if (
+        entityA.payload.geo.extent.extentClassName <
+        entityB.payload.geo.extent.extentClassName
+      ) {
+        return 1;
+      } else {
+        return -1;
+      }
+    });
 
     // For every entity given to us, we want to grpah it
     this.entities = self.props.twoDimensionalEntities.map(function (
@@ -237,6 +272,61 @@ class FloorMap extends React.Component {
                 .map((verticie) => verticie.y)
                 .reduce((a, b) => a + b) / newVerticies.length
             )
+            .attr("font-family", "Montserrat")
+            .attr("font-size", "20px")
+            .attr("fill", "black")
+            .text(function (d) {
+              return entity.name;
+            });
+        });
+
+        currEntity.on("mouseout", function () {
+          d3.select(this);
+          self.drawContent();
+        });
+
+        return currEntity;
+      } else if (entity.payload.geo.extent.extentClassName === "circle") {
+        coordInfo.center.x = self.scale(
+          coordInfo.center.x,
+          range.xMin,
+          range.xMax,
+          margin,
+          clientWidth - margin
+        );
+
+        coordInfo.center.y = self.scale(
+          coordInfo.center.y,
+          range.yMin,
+          range.yMax,
+          margin,
+          clientHeight - margin
+        );
+
+        coordInfo.radius = self.scale(
+          coordInfo.radius,
+          Math.floor((range.xMin + range.yMin) / 2),
+          Math.floor((range.xMax + range.yMax) / 2),
+          margin,
+          clientWidth - margin
+        );
+
+        let currEntity = self.getGraphedEntity(
+          "circle",
+          coordInfo,
+          self.getOccupancy(entity.id)
+        );
+
+        // Add mouseover tooltips
+        currEntity.on("mouseover", function () {
+          d3.select(this);
+          self.svg
+            .append("text")
+            .attr(
+              "x",
+              coordInfo.center.x - self.getHalfWidth(entity.name)
+            )
+            .attr("y", coordInfo.center.y - coordInfo.radius - 20)
             .attr("font-family", "Montserrat")
             .attr("font-size", "20px")
             .attr("fill", "black")
