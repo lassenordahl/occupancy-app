@@ -72,4 +72,7 @@ def serve(path):
     if path and os.path.exists(build_folder + path):
         return send_from_directory(build_folder, path)
     else:
-        return send_from_directory(build_folder, 'index.html')
+        response = make_response(send_from_directory(build_folder, 'index.html'))
+        response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+        response.headers['Pragma'] = 'no-cache'
+        return response
