@@ -53,21 +53,6 @@ function Home(props) {
   const [subEntities, setSubEntities] = useState([]); // Sub entities of our current selected entity
   const [occupancies, setOccupancies] = useState({});
 
-  let oneWeekAgo =
-    queryParams.toDate !== undefined
-      ? new Date(Date.parse(queryParams.toDate))
-      : new Date();
-  if (queryParams.toDate === undefined) {
-    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-  }
-
-  // Date Selections
-  const [fromDate, setFromDate] = useState(oneWeekAgo);
-  const [toDate, setToDate] = useState(
-    queryParams.toDate !== undefined
-      ? new Date(Date.parse(queryParams.toDate))
-      : new Date()
-  );
   const [currentDate, setCurrentDate] = useState(
     queryParams.currentDate !== undefined
       ? new Date(Date.parse(queryParams.currentDate))
@@ -119,8 +104,6 @@ function Home(props) {
     // If one of these changes, we need to update the URL parameters
     let newQueryParams = {
       currentDate: moment(currentDate).toISOString(),
-      fromDate: moment(fromDate).toISOString(),
-      toDate: moment(toDate).toISOString(),
       realtime: realtime,
     };
 
@@ -128,7 +111,7 @@ function Home(props) {
     if (!_.isEqual(newQueryParams, queryParams)) {
       history.push("?" + getQueryString(newQueryParams));
     }
-  }, [currentDate, fromDate, toDate, realtime]);
+  }, [currentDate, realtime]);
 
   useEffect(() => {
     // if (occupancies.length > 0) {
@@ -268,8 +251,6 @@ function Home(props) {
       <OccupancyDialog
         type={type}
         entity={entity}
-        fromDate={fromDate}
-        toDate={toDate}
       />
     );
   }
@@ -316,10 +297,6 @@ function Home(props) {
           refreshOccupancies={refreshOccupancies}
           currentDate={currentDate}
           setCurrentDate={setCurrentDate}
-          fromDate={fromDate}
-          setFromDate={setFromDate}
-          toDate={toDate}
-          setToDate={setToDate}
           progress={progress}
           realtime={realtime}
           setRealtime={setRealtime}
