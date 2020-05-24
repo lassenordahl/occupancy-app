@@ -11,10 +11,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSync } from "@fortawesome/free-solid-svg-icons";
 
 import { NumberFocus } from "app/containers";
-
 import {
   capitalizeWords,
-  getMostRecentOccupancyTimestamp,
   getEntityType,
 } from "globals/utils/formatting-helper";
 import { OccupancyButton, Tooltip } from "../../../components";
@@ -67,30 +65,6 @@ function EntityInformation(props) {
         }}
       />
       <div style={{ height: "16px" }} />
-
-      <div className="header-toggle">
-        <h2>
-          Date Range{" "}
-          <Tooltip text={"Date range for pulling occupancy values"} />
-        </h2>
-        {/* <CheckboxToggle
-          value={props.realtime}
-          onChange={event => props.setRealtime(!props.realtime)}
-        /> */}
-      </div>
-      <div style={{ height: "16px" }} />
-      <DateTimePicker
-        value={props.fromDate}
-        disabled={props.realtime}
-        onChange={(value) => props.setFromDate(value)}
-      />
-      <div style={{ height: "16px" }} />
-      <DateTimePicker
-        value={props.toDate}
-        disabled={props.realtime}
-        onChange={(value) => props.setToDate(value)}
-      />
-      <div style={{ height: "24px" }} />
 
       <h2>
         Contained Spaces{" "}
@@ -172,7 +146,7 @@ function EntityInformation(props) {
       <OccupancyButton
         isColored={true}
         className="box-shadow"
-        style={{ alignSelf: "center" }}
+        style={{ alignSelf: "center", marginTop: "auto" }}
         onClick={() => props.openDialog(entity, "Analytics")}
         label="Analytics"
       ></OccupancyButton>

@@ -52,7 +52,6 @@ function Home(props) {
   const [entityType, setEntityType] = useState(null);
   const [subEntities, setSubEntities] = useState([]); // Sub entities of our current selected entity
   const [occupancies, setOccupancies] = useState({});
-  const [occupancy, setOccupancy] = useState({timestamp: 0, occupancy: -1});
 
   let oneWeekAgo =
     queryParams.toDate !== undefined
