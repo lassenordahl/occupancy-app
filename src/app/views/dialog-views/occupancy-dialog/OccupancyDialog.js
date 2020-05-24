@@ -7,7 +7,7 @@ import moment from "moment";
 import _ from "lodash";
 import { DateTimePicker, Button } from "react-rainbow-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFileCsv } from "@fortawesome/free-solid-svg-icons";
+import { faFileCsv, faChartLine } from "@fortawesome/free-solid-svg-icons";
 import { CSVLink } from "react-csv";
 import LoadingBar from "react-top-loading-bar";
 
@@ -58,8 +58,6 @@ function OccupancyDialog(props) {
     let minVal = Number.MAX_SAFE_INTEGER;
     let minTimestamp = null;
     let total = 0;
-
-    console.log(observationValues);
 
     let data = observationValues.map(function (observation) {
       total += observation.payload.occupancy;
@@ -129,6 +127,8 @@ function OccupancyDialog(props) {
       .then(function (response) {
         // Add the occupancy data to the observation values
         setProgress(100);
+        console.log(response);
+
         if (response !== undefined) {
           if (response.data.length > 0) {
             setEntityDataAvailable(true);
@@ -157,6 +157,7 @@ function OccupancyDialog(props) {
 
   // Process the data for the ChartJS chart
   function processData() {
+    console.log(entityOccupantData, comparedEntities);
     // Get all the datasets
     let datasets = entityOccupantData.map(function (
       occupancyDataObject,
@@ -175,6 +176,7 @@ function OccupancyDialog(props) {
           : occupancyDataObject.data.slice(filterMin, filterMax)
       );
     });
+
 
     // Get the ChartJS Data configuration
     return getChartJSData(filteredOccupancyData.timestamps, datasets);
@@ -200,23 +202,6 @@ function OccupancyDialog(props) {
     getOccupancyInformation(newEntity, false, false);
   }
 
-  function removeComparedEntity(removedEntity) {
-    let removedIndex = -1;
-    setComparedEntities(
-      _.reject(comparedEntities, function (entity, index) {
-        if (entity.id === removedEntity.id) {
-          removedIndex = index;
-        }
-        return entity.id === removedEntity.id;
-      })
-    );
-    setEntityOccupantData(
-      _.reject(entityOccupantData, function (occupantData, index) {
-        return removedIndex === index;
-      })
-    );
-  }
-
   function exportCSV() {
     let csv = [];
     if (filteredOccupancyData !== null) {
@@ -230,6 +215,45 @@ function OccupancyDialog(props) {
       });
     }
     return csv;
+  }
+
+  async function compareEntities() {
+    // for (let i = 0; i < props.subEntities.length; i++) {
+    //   addToComparedEntities(props.subEntities[i]);
+    // }
+    setComparedEntities([...comparedEntities, ...props.subEntities]);
+    setProgress(30)
+   
+    let subEntityResponses = await Promise.all(props.subEntities.map(function(entity) {
+      return authGet(api.observation, {
+        entityId: entity.id,
+        orderBy: "timestamp",
+        direction: "asc",
+        // limit: "30",
+        limit: "1000",
+        before: moment(toDate).format("YYYY-MM-DD hh:mm:ss"),
+        after: moment(fromDate).format("YYYY-MM-DD hh:mm:ss"),
+      })
+    }));
+
+    let newOccupantData = subEntityResponses.map(function (response) {
+      // Add the occupancy data to the observation values
+      if (response !== undefined) {
+        if (response.data.length > 0) {
+          return mapObservationValues(response.data, false);
+        }
+      }
+      return null;
+    });
+
+    setProgress(100);
+
+    newOccupantData = newOccupantData.filter(function(response) {
+      return response !== null;
+    });
+  
+
+    setEntityOccupantData([...entityOccupantData, ...newOccupantData]);
   }
 
   return (
@@ -286,6 +310,20 @@ function OccupancyDialog(props) {
                 Export to CSV
               </Button>
             </CSVLink>
+            <div style={{width: "24px"}}></div>
+              <Button
+                variant="brand"
+                disabled={
+                  !entityDataAvailable || entityOccupantData.length === 0 || entityOccupantData.length > 1
+                }
+                onClick={() => compareEntities()}
+              >
+                <FontAwesomeIcon
+                  icon={faChartLine}
+                  className="rainbow-m-right_medium"
+                ></FontAwesomeIcon>
+                Compare
+              </Button>
           </div>
         </div>
       </div>

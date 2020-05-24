@@ -251,6 +251,7 @@ function Home(props) {
       <OccupancyDialog
         type={type}
         entity={entity}
+        subEntities={subEntities}
       />
     );
   }

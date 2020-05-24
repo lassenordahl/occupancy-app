@@ -49,7 +49,7 @@ function EntityInformation(props) {
   return (
     <div className="EntityInformation">
       <h2 style={{ marginBottom: "16px" }}>
-        Current Date{" "}
+        Selected Date{" "}
         <Tooltip
           text={
             "Current date for pulling occupancy values. Pulls in the 24 hour range before this time."
