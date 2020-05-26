@@ -1,3 +1,4 @@
+/* eslint-disable no-multi-str */
 import React, { useState, useEffect } from "react";
 import "./Home.scss";
 
@@ -177,14 +178,27 @@ function Home(props) {
   }
 
   async function getOccupancyData(entity, subEntities, time) {
+    console.log(time);
     let timeDayEarlier = new Date(time.getTime());
     timeDayEarlier.setDate(time.getDate() - 1);
 
     setProgress(30);
 
+    // let query = {
+    //   "query": "select `id`, MAX(`timestamp`) as timestamp, `deviceId`, `entityId`, `occupancy`, `validity` from `occupancy_vs_observation` where `timestamp` <= \"" + moment(currentDate).format("YYYY-MM-DD hh:mm:ss") + "\" and `entityId` in (" + subEntities.map((subEntity) => subEntity.id).join(",") + (entity !== null ? ("," + entity.id) : "") + ") group by `entityId`;"
+    // }
+
+    // AND `timestamp` between '2020-05-26 01:40:00" and "2020-05-26 02:40:00" 
+
+
     let query = {
-      "query": "select `id`, MAX(`timestamp`) as timestamp, `deviceId`, `entityId`, `occupancy`, `validity` from `occupancy_vs_observation` where `entityId` in (" + subEntities.map((subEntity) => subEntity.id).join(",") + (entity !== null ? ("," + entity.id) : "") + ") group by `entityId`;"
+      "query" : "SELECT O1.`entityId`, O1.`timestamp`, O1.`occupancy` FROM `occupancy_vs_observation` AS O1 JOIN (SELECT `entityId`, MAX(`timestamp`) AS maxDate FROM `occupancy_vs_observation` " +
+                  "WHERE `entityId` in (" + subEntities.map((subEntity) => subEntity.id).join(",") + (entity !== null ? ("," + entity.id) : "") + ") " +
+                  "AND `timestamp` between \"" + moment(timeDayEarlier).format("YYYY-MM-DD hh:mm:ss") + "\" and \"" + moment(currentDate).format("YYYY-MM-DD hh:mm:ss") + "\" " +
+                  "GROUP BY `entityId`) AS O2 ON O2.`entityId`=O1.`entityId` AND O2.`maxDate` = O1.`timestamp`;"
     }
+
+    console.log(query);
 
     axios.post(api.query, query)
     .then(function(response) {

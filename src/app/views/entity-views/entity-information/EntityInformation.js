@@ -61,7 +61,6 @@ function EntityInformation(props) {
         disabled={!props.realtime}
         onChange={(value) => {
           props.setCurrentDate(value);
-          props.refreshOccupancies();
         }}
       />
       <div style={{ height: "16px" }} />
