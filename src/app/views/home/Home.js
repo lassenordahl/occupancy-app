@@ -115,17 +115,6 @@ function Home(props) {
   }, [currentDate, realtime]);
 
   useEffect(() => {
-    // if (occupancies.length > 0) {
-    //   let max = 0;
-    //   for (let i = 0; i < occupancies.length; i++) {
-    //     if (occupancies[i] !== undefined) {
-    //       if (occupancies[i].occupancy > max) {
-    //         max = occupancies[i].occupancy;
-    //       }
-    //     }
-    //   }
-    //   setLegendMax(max);
-    // }
     let max = 0;
     for (let [entityId, occupancyObject] of Object.entries(occupancies)) {
       if (occupancyObject.occupancy > max) {
@@ -134,6 +123,12 @@ function Home(props) {
     }
     setLegendMax(max);
   }, [occupancies]);
+
+  useEffect(() => {
+    setInterval(() => {
+      selectEntity();
+    })
+  }, []);
 
   function refreshOccupancies() {
     if (subEntities.length > 0) {
