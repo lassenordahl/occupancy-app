@@ -29,7 +29,8 @@
     @media only screen and (max-width: 600px) {
       width: 100%;
       height: 100%;
-      
+      left: 0;
+      bottom: 0;
     }
 
     .dialog-home-content {
@@ -77,7 +78,12 @@
       right: 0;
     }
 
-    h1, h2, h3, h4, h5, h6 {
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
       margin-top: 0;
       margin-bottom: $tinySpacing;
     }
@@ -102,17 +108,17 @@
         width: calc(100% - 72px);
         display: flex;
         flex-direction: column;
-      
+
         h1 {
           margin-bottom: 0;
         }
-  
+
         p {
           margin-top: 4px;
           margin-bottom: 0px;
           font-size: 1.2em;
         }
-  
+
         .information-header-text {
           flex: 1 1;
         }
@@ -136,8 +142,10 @@
         margin-bottom: $smallSpacing;
         flex: 1 1;
         height: calc(100% - 60px);
+
         @media only screen and (max-width: 600px) {
           height: fit-content;
+          height: calc(100% - 64px);
         }
       }
 
@@ -164,7 +172,7 @@
     flex-direction: column;
     width: 140px;
     height: 170px;
-    transition: height ease-in-out .5s;
+    transition: height ease-in-out 0.5s;
 
     // Non Mobile View
     @media only screen and (min-width: 600px) {
@@ -175,10 +183,15 @@
     // Mobile View
     @media only screen and (max-width: 600px) {
       top: calc(64px + 24px);
-      right: 24px;
+      left: 24px;
     }
 
-    h1, h2, h3, h4, h5, h6 {
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
       margin-top: 0;
       margin-bottom: $tinySpacing;
     }
@@ -196,8 +209,8 @@
       flex-direction: row;
       align-items: center;
       justify-content: space-between;
-      transition: all ease-in-out .5s;
-    
+      transition: all ease-in-out 0.5s;
+
       h1 {
         margin-bottom: 0;
       }
@@ -256,7 +269,7 @@
       margin-top: 40%;
     }
   }
-  
+
   .visible-entity-button {
     background-color: white;
     box-shadow: 3px 10px 18px rgba(0, 0, 0, 0.1) !important;
@@ -266,7 +279,7 @@
     width: 32px;
     height: 32px;
     margin-top: $mediumSpacing;
-    border-radius: 50%;    
+    border-radius: 50%;
   }
 
   .maximize-entity-button {

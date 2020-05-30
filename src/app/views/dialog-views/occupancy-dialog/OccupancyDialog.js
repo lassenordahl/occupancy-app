@@ -21,7 +21,6 @@ import authGet from "globals/authentication/AuthGet";
 import OccupancyCard from "./occupancy-card/OccupancyCard";
 
 function OccupancyDialog(props) {
-
   // List of entitity ID's
   const [comparedEntities, setComparedEntities] = useState([props.entity]);
   const [entityOccupantData, setEntityOccupantData] = useState([]);
@@ -114,7 +113,7 @@ function OccupancyDialog(props) {
     isFirstIndex,
     isReplacingFirstIndex
   ) {
-    setProgress(30)
+    setProgress(30);
     authGet(api.observation, {
       entityId: entity.id,
       orderBy: "timestamp",
@@ -127,7 +126,6 @@ function OccupancyDialog(props) {
       .then(function (response) {
         // Add the occupancy data to the observation values
         setProgress(100);
-        console.log(response);
 
         if (response !== undefined) {
           if (response.data.length > 0) {
@@ -157,7 +155,6 @@ function OccupancyDialog(props) {
 
   // Process the data for the ChartJS chart
   function processData() {
-    console.log(entityOccupantData, comparedEntities);
     // Get all the datasets
     let datasets = entityOccupantData.map(function (
       occupancyDataObject,
@@ -176,7 +173,6 @@ function OccupancyDialog(props) {
           : occupancyDataObject.data.slice(filterMin, filterMax)
       );
     });
-
 
     // Get the ChartJS Data configuration
     return getChartJSData(filteredOccupancyData.timestamps, datasets);
@@ -222,19 +218,21 @@ function OccupancyDialog(props) {
     //   addToComparedEntities(props.subEntities[i]);
     // }
     setComparedEntities([...comparedEntities, ...props.subEntities]);
-    setProgress(30)
-   
-    let subEntityResponses = await Promise.all(props.subEntities.map(function(entity) {
-      return authGet(api.observation, {
-        entityId: entity.id,
-        orderBy: "timestamp",
-        direction: "asc",
-        // limit: "30",
-        limit: "1000",
-        before: moment(toDate).format("YYYY-MM-DD hh:mm:ss"),
-        after: moment(fromDate).format("YYYY-MM-DD hh:mm:ss"),
+    setProgress(30);
+
+    let subEntityResponses = await Promise.all(
+      props.subEntities.map(function (entity) {
+        return authGet(api.observation, {
+          entityId: entity.id,
+          orderBy: "timestamp",
+          direction: "asc",
+          // limit: "30",
+          limit: "1000",
+          before: moment(toDate).format("YYYY-MM-DD hh:mm:ss"),
+          after: moment(fromDate).format("YYYY-MM-DD hh:mm:ss"),
+        });
       })
-    }));
+    );
 
     let newOccupantData = subEntityResponses.map(function (response) {
       // Add the occupancy data to the observation values
@@ -248,10 +246,9 @@ function OccupancyDialog(props) {
 
     setProgress(100);
 
-    newOccupantData = newOccupantData.filter(function(response) {
+    newOccupantData = newOccupantData.filter(function (response) {
       return response !== null;
     });
-  
 
     setEntityOccupantData([...entityOccupantData, ...newOccupantData]);
   }
@@ -259,13 +256,6 @@ function OccupancyDialog(props) {
   return (
     <div className="OccupancyDialog">
       <div className="dialog-graph-params">
-      <LoadingBar
-        progress={progress}
-        height={4}
-        color="blue"
-        className="home-loading-bar"
-      ></LoadingBar>
-
         <h2>Date Range </h2>
         <DateTimePicker
           value={fromDate}
@@ -286,15 +276,19 @@ function OccupancyDialog(props) {
           one you queried, there is likely too much data.
         </p>
         <h2>Data</h2>
-        <p>Data is provided by UCI OIT. View more information using the link below.</p>
+        <p>
+          Data is provided by UCI OIT. View more information using the link
+          below.
+        </p>
         <a href="https://www.oit.uci.edu/ics-and-oit-collaborate-on-tippers-research-project/">
           https://www.oit.uci.edu/ics-and-oit-collaborate-on-tippers-research-project/
         </a>
         <div style={{ height: "16px" }}></div>
         <div className="dialog-params-export-utilities">
-          <div>
+          <div className="dialog-param-buttons">
             <CSVLink
               data={exportCSV()}
+              className="dialog-param-buttons-csv"
               filename={"entity-" + props.entity.id + "-exported-data.csv"}
             >
               <Button
@@ -310,20 +304,22 @@ function OccupancyDialog(props) {
                 Export to CSV
               </Button>
             </CSVLink>
-            <div style={{width: "24px"}}></div>
-              <Button
-                variant="brand"
-                disabled={
-                  !entityDataAvailable || entityOccupantData.length === 0 || entityOccupantData.length > 1
-                }
-                onClick={() => compareEntities()}
-              >
-                <FontAwesomeIcon
-                  icon={faChartLine}
-                  className="rainbow-m-right_medium"
-                ></FontAwesomeIcon>
-                Compare
-              </Button>
+            <div style={{ width: "24px" }}></div>
+            <Button
+              variant="brand"
+              disabled={
+                !entityDataAvailable ||
+                entityOccupantData.length === 0 ||
+                entityOccupantData.length > 1
+              }
+              onClick={() => compareEntities()}
+            >
+              <FontAwesomeIcon
+                icon={faChartLine}
+                className="rainbow-m-right_medium"
+              ></FontAwesomeIcon>
+              Compare
+            </Button>
           </div>
         </div>
       </div>
