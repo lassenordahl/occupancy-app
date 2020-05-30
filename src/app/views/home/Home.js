@@ -61,7 +61,7 @@ function Home(props) {
   // Dialog Information
   const [showDialog, setShowDialog] = useState(false);
   const [dialogTitle, setDialogTitle] = useState(
-    entity !== null ? entity.name : "default"
+    entity !== null && entity !== undefined ? entity.name : "default"
   );
   const [dialogTitleSubscript, setDialogTitleSubscript] = useState("analytics");
 
@@ -155,7 +155,7 @@ function Home(props) {
     }
     authGet(api.entity + "/" + entityId)
       .then(function (response) {
-        if (response !== undefined) {
+        if (response !== undefined && response.data !== undefined) {
           let newEntity = response.data;
           // Set progress, entity, and get the occupancy data for the enttiy
           setEntity(newEntity);
