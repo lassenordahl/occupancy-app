@@ -5,6 +5,14 @@
   flex: 1 1;
   flex-direction: row;
 
+  @media only screen and (max-width: 600px) {
+    width: 100%;
+    height: calc(100vh - 64px);
+    bottom: 0;
+    right: 0;
+    flex-direction: column;
+  }
+
   .rc-slider-tooltip-inner {
     width: 96px;
   }
@@ -38,6 +46,11 @@
     width: calc(40% - 144px);
     margin: $mediumSpacing;
 
+    @media only screen and (max-width: 600px) {
+      width: calc(100% - 72px);
+      margin-bottom: 0;
+    }
+
     h2 {
       margin-bottom: 16px;
       margin-top: 0px;
@@ -67,6 +80,19 @@
 
     .dialog-entity-list-item:not(:last-child) {
       margin-bottom: 0;
+    }
+
+    .dialog-param-buttons {
+      @media only screen and (max-width: 600px) {
+        display: flex;
+        flex-direction: column !important;
+        align-items: center;
+        margin-top: 24px;
+
+        .dialog-param-buttons-csv {
+          display: none;
+        }
+      }
     }
 
     .dialog-params-export-utilities {
@@ -104,18 +130,25 @@
   }
 
   .dialog-graph-info {
-    width: 60%;
-    height: 90%;
-    justify-self: flex-end;
-    align-self: flex-end;
-    position: absolute;
-    bottom: 5%;
-    right: 72px;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(4, 1fr);
-    grid-column-gap: 36px;
-    grid-row-gap: 36px;
+    @media only screen and (min-width: 600px) {
+      width: 60%;
+      height: 90%;
+      justify-self: flex-end;
+      align-self: flex-end;
+      position: absolute;
+      bottom: 5%;
+      right: 72px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(4, 1fr);
+      grid-column-gap: 36px;
+      grid-row-gap: 36px;
+    }
+
+    @media only screen and (max-width: 600px) {
+      box-shadow: none !important;
+      width: 100%;
+    }
 
     .range-labels {
       display: flex;
