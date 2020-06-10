@@ -148,13 +148,19 @@ function Home(props) {
 
   function getEntity(entityId) {
 
-    let willOpenDialog = !realtime;
-
     if (entityId === null || entityId === "" || entityId === "home") {
       return;
     }
+
+    let errorTimeout = setTimeout(function() {
+      showError("Error retrieving entity");
+    }, 15000);
+
     authGet(api.entity + "/" + entityId)
       .then(function (response) {
+
+        clearTimeout(errorTimeout);
+
         if (response !== undefined && response.data !== undefined) {
           let newEntity = response.data;
           // Set progress, entity, and get the occupancy data for the enttiy
@@ -170,8 +176,7 @@ function Home(props) {
           setSubEntities(newEntity.payload.geo.childSpaces);
           setErrorLoading(false);
 
-          console.log("WILLOPENDIALOG", willOpenDialog);
-          if (willOpenDialog) {
+          if (realtime === false) {
             console.log(newEntity, "analytics");
             openDialog(newEntity, "analytics");
           }
@@ -350,7 +355,7 @@ function Home(props) {
         </React.Fragment>
       )
     }
-    
+
     if (entityType === null) {
       return null;
     }
