@@ -3,6 +3,7 @@ import "./FloorMap.scss";
 
 import * as d3 from "d3";
 import getBlueRainbow from "globals/utils/rainbowvis-helper.js";
+import ReactTooltip from "react-tooltip";
 
 class FloorMap extends React.Component {
   constructor(props) {
@@ -20,6 +21,7 @@ class FloorMap extends React.Component {
   }
   componentDidUpdate() {
     this.drawContent();
+    ReactTooltip.rebuild();
   }
 
   // Helper function to scale an input from one scale to another
@@ -200,31 +202,10 @@ class FloorMap extends React.Component {
           coordInfo,
           self.getOccupancy(entity.id)
         );
-
-        // Add mouseover tooltips
-        currEntity.on("mouseover", function () {
-          d3.select(this);
-          self.svg
-            .append("text")
-            .attr(
-              "x",
-              coordInfo.start.x +
-                Math.abs(coordInfo.end.x - coordInfo.start.x) / 2 -
-                self.getHalfWidth(entity.name)
-            )
-            .attr("y", coordInfo.start.y - 20)
-            .attr("font-family", "Montserrat")
-            .attr("font-size", "20px")
-            .attr("fill", "black")
-            .text(function (d) {
-              return entity.name;
-            });
-        });
-
-        currEntity.on("mouseout", function () {
-          d3.select(this);
-          self.drawContent();
-        });
+        
+        currEntity
+          .attr("data-for", "entityTooltip")
+          .attr("data-tip", entity.name);
 
         return currEntity;
       } else if (entity.payload.geo.extent.extentClassName === "polygon") {
@@ -255,35 +236,9 @@ class FloorMap extends React.Component {
           self.getOccupancy(entity.id)
         );
 
-        // Add mouseover tooltips
-        currEntity.on("mouseover", function () {
-          d3.select(this);
-          self.svg
-            .append("text")
-            .attr(
-              "x",
-              newVerticies
-                .map((verticie) => verticie.x)
-                .reduce((a, b) => a + b) / newVerticies.length
-            )
-            .attr(
-              "y",
-              newVerticies
-                .map((verticie) => verticie.y)
-                .reduce((a, b) => a + b) / newVerticies.length
-            )
-            .attr("font-family", "Montserrat")
-            .attr("font-size", "20px")
-            .attr("fill", "black")
-            .text(function (d) {
-              return entity.name;
-            });
-        });
-
-        currEntity.on("mouseout", function () {
-          d3.select(this);
-          self.drawContent();
-        });
+        currEntity
+          .attr("data-for", "entityTooltip")
+          .attr("data-tip", entity.name);
 
         return currEntity;
       } else if (entity.payload.geo.extent.extentClassName === "circle") {
@@ -317,28 +272,9 @@ class FloorMap extends React.Component {
           self.getOccupancy(entity.id)
         );
 
-        // Add mouseover tooltips
-        currEntity.on("mouseover", function () {
-          d3.select(this);
-          self.svg
-            .append("text")
-            .attr(
-              "x",
-              coordInfo.center.x - self.getHalfWidth(entity.name)
-            )
-            .attr("y", coordInfo.center.y - coordInfo.radius - 20)
-            .attr("font-family", "Montserrat")
-            .attr("font-size", "20px")
-            .attr("fill", "black")
-            .text(function (d) {
-              return entity.name;
-            });
-        });
-
-        currEntity.on("mouseout", function () {
-          d3.select(this);
-          self.drawContent();
-        });
+        currEntity
+          .attr("data-for", "entityTooltip")
+          .attr("data-tip", entity.name);
 
         return currEntity;
       } else {
@@ -355,6 +291,7 @@ class FloorMap extends React.Component {
             className="floormap-canvas"
             ref={(handle) => (this.svg = d3.select(handle))}
           ></svg>
+          <ReactTooltip id="entityTooltip" />
         </div>
         <div className="floormap-margin"></div>
       </div>
