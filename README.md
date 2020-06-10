@@ -25,6 +25,10 @@ Configure the application to utilize the correct endpoints through:
 
 Run the application using `./react start [configuration case (dev, uci, etc)]`
 
+### Step 5 (Deployment)
+
+Build the application using `./react build [configuration case (dev, uci, etc)]`
+
 ## Functionality 
 
 The TIPPERS Occupancy App is built to utilize the TIPPERS Semiotic API for realtime and historical occupancy tracking of different IoT spaces. Data for different entities can be exported using the data analytics panel to a CSV. Take a look below to see different functionalities of the app.
