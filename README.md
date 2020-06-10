@@ -17,16 +17,21 @@ Run `npm install` inside the repository
 ### Step 3
 
 Configure the application to utilize the correct endpoints through:
-1. Changing the `baseUrl` in api.js to point to your TIPPERS Api.
-2. Changing the `app_config.id` in config.js to be the ID of the root entity for the occupancy app.
+1. Changing the `REACT_APP_BASE_URL` in .react to point to your TIPPERS Api.
+2. Changing the `REACT_APP_OBSERVATION_ID` in .react to be the observation type for `occupancy` values on the TIPPERS Api.
+3. Changing the `REACT_APP_BASE_ENTITY` in .react to be the id of the entity that will serve as the root of your application.
 
-### Step 3 
+### Step 4
 
-Run the application using `npm start`
+Run the application using `./react start [configuration case (dev, uci, etc)]`
+
+### Step 5 (Deployment)
+
+Build the application using `./react build [configuration case (dev, uci, etc)]`
 
 ## Functionality 
 
-The TIPPERS Occupancy App is built to utilize the TIPPERS Semiotic API for realtime and historical occupancy tracking of different IoT spaces. Look below to see different functionalities of the app.
+The TIPPERS Occupancy App is built to utilize the TIPPERS Semiotic API for realtime and historical occupancy tracking of different IoT spaces. Data for different entities can be exported using the data analytics panel to a CSV. Take a look below to see different functionalities of the app.
 
 ### View heatmaps of various spaces
 ![Campus View](https://user-images.githubusercontent.com/13127625/79298585-6309c400-7e96-11ea-842f-762aceccac8d.png)

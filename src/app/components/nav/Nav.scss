@@ -6,10 +6,20 @@
   background-color: $blueMain;
   color: white;
 
+  @media only screen and (max-width: 600px) {
+    .nav-breadcrumbs {
+      display: none;
+    }
+  }
+
   .nav-buttons {
     display: flex;
     flex-direction: row;
     margin-right: $tinySpacing;
+
+    @media only screen and (max-width: 600px) { 
+      display: none;
+    }
   }
 
   .app-logo {

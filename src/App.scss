@@ -15,57 +15,173 @@
     // add prefixed versions too.
   }
 
-  h1              { font-size: 1.8em; margin: .67em 0 }
-  h2              { font-size: 1.3em; margin: .75em 0 }
-  h3              { font-size: 1.17em; margin: .83em 0 }
-  h4              { font-size: 1em; margin: 1em }
-  h5              { font-size: .83em; margin: 1.5em 0 }
-  h6              { font-size: .75em; margin: 1.67em 0 }
+  h1 {
+    font-size: 1.8em;
+    margin: 0.67em 0;
+  }
+  h2 {
+    font-size: 1.3em;
+    margin: 0.75em 0;
+  }
+  h3 {
+    font-size: 1.17em;
+    margin: 0.83em 0;
+  }
+  h4 {
+    font-size: 1em;
+    margin: 1em;
+  }
+  h5 {
+    font-size: 0.83em;
+    margin: 1.5em 0;
+  }
+  h6 {
+    font-size: 0.75em;
+    margin: 1.67em 0;
+  }
 
-  p               { font-size: .9em; margin: 0}
+  p {
+    font-size: 0.9em;
+    margin: 0;
+  }
 
-  h1, h2        { font-weight: bolder }
-  h3, h4, h5, h6 {font-weight: 400}
+  h1,
+  h2 {
+    font-weight: bolder;
+  }
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-weight: 400;
+  }
 
   .app-content-mobile {
     display: none;
     height: calc(100vh - 64px);
+    width: 80vw;
+    margin-left: 10vw;
   }
 
-  @media only screen and (max-width: 600px) {
-    .app-content-mobile {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-    }
-  }
+  // .app-content-mobile p {
+  //   text-align: center;
+  // }
+
+  // @media only screen and (max-width: 600px) {
+  //   .app-content-mobile {
+  //     display: flex;
+  //     justify-content: center;
+  //     align-items: center;
+  //     flex-direction: column;
+  //   }
+  // }
 
   .app-content {
     flex: 1;
   }
 
-  @media only screen and (max-width: 600px) {
-    .app-content {
-      display: none;
-    }
-  }
+  // @media only screen and (max-width: 600px) {
+  //   .app-content {
+  //     display: none;
+  //   }
+  // }
 }
 
 // Animation Helper CSS classes!
 .fade-in {
-	opacity:0;  /* make things invisible upon start */
-	-webkit-animation:fadeIn ease-in 1;  /* call our keyframe named fadeIn, use animattion ease-in and repeat it only 1 time */
-	-moz-animation:fadeIn ease-in 1;
-	animation:fadeIn ease-in 1;
+  opacity: 0; /* make things invisible upon start */
+  -webkit-animation: fadeIn ease-in 1; /* call our keyframe named fadeIn, use animattion ease-in and repeat it only 1 time */
+  -moz-animation: fadeIn ease-in 1;
+  animation: fadeIn ease-in 1;
 
-	-webkit-animation-fill-mode:forwards;  /* this makes sure that after animation is done we remain at the last keyframe value (opacity: 1)*/
-	-moz-animation-fill-mode:forwards;
-	animation-fill-mode:forwards;
+  -webkit-animation-fill-mode: forwards; /* this makes sure that after animation is done we remain at the last keyframe value (opacity: 1)*/
+  -moz-animation-fill-mode: forwards;
+  animation-fill-mode: forwards;
 
-	-webkit-animation-duration:1s;
-	-moz-animation-duration:1s;
-	animation-duration:1s;
+  -webkit-animation-duration: 1s;
+  -moz-animation-duration: 1s;
+  animation-duration: 1s;
+}
+
+.slide-up-fade-in {
+  animation: slide-up-fade-in ease 1s;
+  animation-iteration-count: 1;
+  transform-origin: 50% 50%;
+  animation-fill-mode: forwards; /*when the spec is finished*/
+  -webkit-animation: slide-up-fade-in ease 1s;
+  -webkit-animation-iteration-count: 1;
+  -webkit-transform-origin: 50% 50%;
+  -webkit-animation-fill-mode: forwards; /*Chrome 16+, Safari 4+*/
+  -moz-animation: slide-up-fade-in ease 1s;
+  -moz-animation-iteration-count: 1;
+  -moz-transform-origin: 50% 50%;
+  -moz-animation-fill-mode: forwards; /*FF 5+*/
+  -o-animation: slide-up-fade-in ease 1s;
+  -o-animation-iteration-count: 1;
+  -o-transform-origin: 50% 50%;
+  -o-animation-fill-mode: forwards; /*Not implemented yet*/
+  -ms-animation: slide-up-fade-in ease 1s;
+  -ms-animation-iteration-count: 1;
+  -ms-transform-origin: 50% 50%;
+  -ms-animation-fill-mode: forwards; /*IE 10+*/
+
+  opacity: 0;
+  opacity: 1\9;
+}
+
+@keyframes slide-up-fade-in {
+  0% {
+    opacity: 0;
+    transform: translate(0px, 40px);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(0px, 0px);
+  }
+}
+
+@-moz-keyframes slide-up-fade-in {
+  0% {
+    opacity: 0;
+    -moz-transform: translate(0px, 40px);
+  }
+  100% {
+    opacity: 1;
+    -moz-transform: translate(0px, 0px);
+  }
+}
+
+@-webkit-keyframes slide-up-fade-in {
+  0% {
+    opacity: 0;
+    -webkit-transform: translate(0px, 40px);
+  }
+  100% {
+    opacity: 1;
+    -webkit-transform: translate(0px, 0px);
+  }
+}
+
+@-o-keyframes slide-up-fade-in {
+  0% {
+    opacity: 0;
+    -o-transform: translate(0px, 40px);
+  }
+  100% {
+    opacity: 1;
+    -o-transform: translate(0px, 0px);
+  }
+}
+
+@-ms-keyframes slide-up-fade-in {
+  0% {
+    opacity: 0;
+    -ms-transform: translate(0px, 40px);
+  }
+  100% {
+    opacity: 1;
+    -ms-transform: translate(0px, 0px);
+  }
 }
 
 @keyframes pulse {

@@ -8,9 +8,9 @@ import tutorialMap from "assets/images/tutorial-map.png";
 
 function redirectLoginOrSignup(login) {
   if (login) {
-    window.location.href = "/login";
+    window.location.href = `${process.env.PUBLIC_URL}/login`;
   } else {
-    window.location.href = "/signup";
+    window.location.href = `${process.env.PUBLIC_URL}/signup`;
   }
 }
 

@@ -7,5 +7,6 @@ let baseUrl = process.env.REACT_APP_BASE_URL;
 
 export default {
   entity: baseUrl + "/entity",
-  observation: baseUrl + "/observation/" + process.env.REACT_APP_OBSERVATION_ID
+  observation: baseUrl + "/observation/" + process.env.REACT_APP_OBSERVATION_ID,
+  query: baseUrl + "/test/query",
 }

@@ -3,6 +3,7 @@ import "./FloorMap.scss";
 
 import * as d3 from "d3";
 import getBlueRainbow from "globals/utils/rainbowvis-helper.js";
+import ReactTooltip from "react-tooltip";
 
 class FloorMap extends React.Component {
   constructor(props) {
@@ -20,6 +21,7 @@ class FloorMap extends React.Component {
   }
   componentDidUpdate() {
     this.drawContent();
+    ReactTooltip.rebuild();
   }
 
   // Helper function to scale an input from one scale to another
@@ -41,11 +43,11 @@ class FloorMap extends React.Component {
   }
 
   // Get the occupancy at the given index
-  getOccupancy(index) {
-    if (this.props.occupancies[index] !== undefined) {
-      return this.props.occupancies[index].occupancy;
+  getOccupancy(id) {
+    if (this.props.occupancies[id] !== undefined) {
+      return this.props.occupancies[id].occupancy;
     } else {
-      return 0;
+      return -1;
     }
   }
 
@@ -71,10 +73,7 @@ class FloorMap extends React.Component {
         )
         .style(
           "fill",
-          "#" +
-            rainbow.colourAt(
-              occupancy
-            )
+          occupancy === -1 ? "#808080" : "#" + rainbow.colourAt(occupancy)
         );
     } else if (shapeType === "polygon") {
       return self.svg
@@ -89,18 +88,27 @@ class FloorMap extends React.Component {
         )
         .style(
           "fill",
-          "#" +
-            rainbow.colourAt(
-              occupancy
-            )
+          occupancy === -1 ? "#808080" : "#" + rainbow.colourAt(occupancy)
+        );
+    } else if (shapeType === "circle") {
+      return self.svg
+        .append("circle")
+        .attr("cx", entityCoordInfo.center.x + 2)
+        .attr("cy", entityCoordInfo.center.y + 2)
+        .attr("r", entityCoordInfo.radius + 2)
+        .attr("opacity", "0.5")
+        .attr("z-index", 1000)
+        .attr(
+          "fill",
+          occupancy === -1 ? "#808080" : "#" + rainbow.colourAt(occupancy)
         );
     }
   }
 
-  // Returns the size of half of a word scaled to the given buffer size 
+  // Returns the size of half of a word scaled to the given buffer size
   // uhh after writing that it sounds super weird I'm sorry I don't remember exactly what it's used for :P
   getHalfWidth(word) {
-    return (word.length / 2) * 11;
+    return (word.length / 2) * 13;
   }
 
   drawContent() {
@@ -115,6 +123,29 @@ class FloorMap extends React.Component {
       return;
     }
 
+    self.props.twoDimensionalEntities.sort(function (entityA, entityB) {
+      if (
+        entityA.payload.geo.extent === null ||
+        entityB.payload.geo.extent === null
+      ) {
+        return -1;
+      }
+
+      if (
+        entityA.payload.geo.extent.extentClassName ===
+        entityB.payload.geo.extent.extentClassName
+      ) {
+        return 0;
+      } else if (
+        entityA.payload.geo.extent.extentClassName <
+        entityB.payload.geo.extent.extentClassName
+      ) {
+        return 1;
+      } else {
+        return -1;
+      }
+    });
+
     // For every entity given to us, we want to grpah it
     this.entities = self.props.twoDimensionalEntities.map(function (
       entity,
@@ -126,6 +157,11 @@ class FloorMap extends React.Component {
       // Neat little trick to deep copy an object, used because we want to keep the shape of an object but scale the values without changing the originals at their references
       let coordInfo = JSON.parse(JSON.stringify(entity.payload.geo.extent));
       let coordSystem = entity.payload.geo.coordinateSystem;
+
+      if (coordSystem === null) {
+        return null;
+      }
+
       let range = coordSystem.range;
 
       let margin = 40;
@@ -164,33 +200,12 @@ class FloorMap extends React.Component {
         let currEntity = self.getGraphedEntity(
           coordInfo.extentClassName,
           coordInfo,
-          self.getOccupancy(index)
+          self.getOccupancy(entity.id)
         );
-
-        // Add mouseover tooltips
-        currEntity.on("mouseover", function () {
-          d3.select(this);
-          self.svg
-            .append("text")
-            .attr(
-              "x",
-              coordInfo.start.x +
-                Math.abs(coordInfo.end.x - coordInfo.start.x) / 2 -
-                self.getHalfWidth(entity.name)
-            )
-            .attr("y", coordInfo.start.y - 20)
-            .attr("font-family", "Montserrat")
-            .attr("font-size", "20px")
-            .attr("fill", "black")
-            .text(function (d) {
-              return entity.name;
-            });
-        });
-
-        currEntity.on("mouseout", function () {
-          d3.select(this);
-          self.drawContent();
-        });
+        
+        currEntity
+          .attr("data-for", "entityTooltip")
+          .attr("data-tip", entity.name);
 
         return currEntity;
       } else if (entity.payload.geo.extent.extentClassName === "polygon") {
@@ -218,8 +233,48 @@ class FloorMap extends React.Component {
         let currEntity = self.getGraphedEntity(
           "polygon",
           newVerticies,
-          self.getOccupancy(index)
+          self.getOccupancy(entity.id)
         );
+
+        currEntity
+          .attr("data-for", "entityTooltip")
+          .attr("data-tip", entity.name);
+
+        return currEntity;
+      } else if (entity.payload.geo.extent.extentClassName === "circle") {
+        coordInfo.center.x = self.scale(
+          coordInfo.center.x,
+          range.xMin,
+          range.xMax,
+          margin,
+          clientWidth - margin
+        );
+
+        coordInfo.center.y = self.scale(
+          coordInfo.center.y,
+          range.yMin,
+          range.yMax,
+          margin,
+          clientHeight - margin
+        );
+
+        coordInfo.radius = self.scale(
+          coordInfo.radius,
+          Math.floor((range.xMin + range.yMin) / 2),
+          Math.floor((range.xMax + range.yMax) / 2),
+          margin,
+          clientWidth - margin
+        );
+
+        let currEntity = self.getGraphedEntity(
+          "circle",
+          coordInfo,
+          self.getOccupancy(entity.id)
+        );
+
+        currEntity
+          .attr("data-for", "entityTooltip")
+          .attr("data-tip", entity.name);
 
         return currEntity;
       } else {
@@ -231,11 +286,13 @@ class FloorMap extends React.Component {
   render() {
     return (
       <div className="FloorMap">
+        hell  o
         <div className="floormap-map-wrapper">
           <svg
             className="floormap-canvas"
             ref={(handle) => (this.svg = d3.select(handle))}
           ></svg>
+          <ReactTooltip id="entityTooltip" />
         </div>
         <div className="floormap-margin"></div>
       </div>

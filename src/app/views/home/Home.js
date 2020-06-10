@@ -1,63 +1,76 @@
+/* eslint-disable no-multi-str */
 import React, { useState, useEffect } from "react";
 import "./Home.scss";
 
 import "leaflet/dist/leaflet.css";
-import { Redirect, useLocation, withRouter } from "react-router";
+import { Redirect, useLocation, useHistory, withRouter } from "react-router";
+import moment from "moment";
+import _ from "lodash";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCaretDown, faCaretUp } from "@fortawesome/free-solid-svg-icons";
+import axios from "axios";
 
 import { Card, Dialog } from "app/containers";
 import { Legend, CoordinateMap, FloorMap, SkeletonPulse } from "app/components";
-import app_config from "globals/config";
+import config from "globals/config";
 import authGet from "../../../globals/authentication/AuthGet";
 import api from "globals/api";
 import LoadingBar from "react-top-loading-bar";
-
+import { isValidUrl } from "globals/utils/tippers-helper";
 import { EntityInformation, OccupancyDialog } from "app/views";
-
+import { useQueryParams, useToast } from "globals/hooks";
 import {
   serializeLocation,
   capitalizeWords,
+  getQueryString,
 } from "globals/utils/formatting-helper";
-import moment from "moment";
 
 function Home(props) {
-  // Variable to keep track of if we're loading the app for the first time
-  const [firstLoad, setFirstLoad] = useState(true);
-  const [errorLoading, setErrorLoading] = useState(false);
+  // Hooks
+  let windowRoute = serializeLocation(useLocation());
+  let queryParams = useQueryParams();
+  let history = useHistory();
+  const [showSuccess, showError, renderToast] = useToast();
 
-  // Dialog Information
-  const [showDialog, setShowDialog] = useState(false);
-  const [dialogType, setDialogType] = useState("building");
-  const [dialogTitle, setDialogTitle] = useState("default");
-  const [dialogTitleSubscript, setDialogTitleSubscript] = useState("default");
+  // Variable to keep track of if we're loading the app for the first time
+  const [errorLoading, setErrorLoading] = useState(false);
 
   // Redirecting variables
   const [willRedirect, redirect] = useState(false);
-  const [newRoute, pushRoute] = useState([app_config.id]);
+  const [newRoute, pushRoute] = useState(
+    isValidUrl(windowRoute) ? [] : [config.id]
+  );
 
   // Entity Information
   // const [entity, setEntity] = useState({id: 1, name: 'ucitest'}); // Our selected entity
   const [entity, setEntity] = useState(null); // Our selected entity
   const [entityType, setEntityType] = useState(null);
   const [subEntities, setSubEntities] = useState([]); // Sub entities of our current selected entity
-  const [occupancies, setOccupancies] = useState([]);
-  const [occupancy, setOccupancy] = useState(0);
+  const [occupancies, setOccupancies] = useState({});
 
-  let oneWeekAgo = new Date();
-  oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+  const [currentDate, setCurrentDate] = useState(
+    queryParams.currentDate !== undefined
+      ? new Date(Date.parse(queryParams.currentDate))
+      : new Date()
+  );
+  const [realtime, setRealtime] = useState(
+    true
+    // queryParams.realtime !== undefined ? queryParams.realtime : true
+  );
 
-  // Date Selections
-  const [fromDate, setFromDate] = useState(oneWeekAgo);
-  const [toDate, setToDate] = useState(new Date());
-  const [currentDate, setCurrentDate] = useState(new Date());
-  const [realtime, setRealtime] = useState(true);
+  // Dialog Information
+  const [showDialog, setShowDialog] = useState(false);
+  const [dialogTitle, setDialogTitle] = useState(
+    entity !== null && entity !== undefined ? entity.name : "default"
+  );
+  const [dialogTitleSubscript, setDialogTitleSubscript] = useState("analytics");
 
   // Helper Variables
   const [legendMax, setLegendMax] = useState(0);
   const [progress, setProgress] = useState(0);
   const [showLegend, setShowLegend] = useState(true);
   const [transitionLegend, setTransitionLegend] = useState(false);
-
-  let windowRoute = serializeLocation(useLocation());
+  const [hideEntityCard, setHideEntityCard] = useState(false);
 
   useEffect(() => {
     props.history.listen(function (location, action) {
@@ -83,37 +96,39 @@ function Home(props) {
   }, [newRoute]);
 
   useEffect(() => {
-    if (firstLoad) {
-      setFirstLoad(false);
-    }
-  }, [firstLoad]);
-
-  useEffect(() => {
-    getOccupancyData(subEntities, currentDate);
-    if (entity !== null) {
-      getOccupancy(entity.id, currentDate);
-    }
+    getOccupancyData(entity, subEntities, currentDate);
   }, [subEntities, currentDate]);
 
-  // useEffect(() => {
-  //   if (entity !== null) {
-  //     getOccupancy(entity.id);
-  //   }
-  // }, [entity]);
+  useEffect(() => {
+    console.log(realtime);
+    // If one of these changes, we need to update the URL parameters
+    let newQueryParams = {
+      currentDate: moment(currentDate).toISOString(),
+      realtime: realtime,
+    };
+
+    // Only repull if the query params are different
+    if (!_.isEqual(newQueryParams, queryParams)) {
+      console.log(realtime);
+      history.push("?" + getQueryString(newQueryParams));
+    }
+  }, [currentDate, realtime]);
 
   useEffect(() => {
-    if (occupancies.length > 0) {
-      let max = 0;
-      for (let i = 0; i < occupancies.length; i++) {
-        if (occupancies[i] !== undefined) {
-          if (occupancies[i].occupancy > max) {
-            max = occupancies[i].occupancy;
-          }
-        }
+    let max = 0;
+    for (let [entityId, occupancyObject] of Object.entries(occupancies)) {
+      if (occupancyObject.occupancy > max) {
+        max = occupancyObject.occupancy;
       }
-      setLegendMax(max);
     }
+    setLegendMax(max);
   }, [occupancies]);
+
+  // useEffect(() => {
+  //   setInterval(() => {
+  //     selectEntity();
+  //   })
+  // }, []);
 
   function refreshOccupancies() {
     if (subEntities.length > 0) {
@@ -128,123 +143,112 @@ function Home(props) {
     } else {
       route = "/" + windowRoute.concat(newRoute).join("/");
     }
-    return <Redirect to={route}></Redirect>;
+    return <Redirect to={route + "?" + getQueryString(queryParams)}></Redirect>;
   }
 
   function getEntity(entityId) {
+
     if (entityId === null || entityId === "" || entityId === "home") {
       return;
     }
+
+    let errorTimeout = setTimeout(function() {
+      showError("Error retrieving entity");
+    }, 15000);
+
     authGet(api.entity + "/" + entityId)
       .then(function (response) {
-        let newEntity = response.data;
-        // Set progress, entity, and get the occupancy data for the enttiy
-        setEntity(newEntity);
-        console.log("NEW ENTITY", newEntity);
-        // getOccupancy(entityId, currentDate);
 
-        // If our payload isn't null, we can show the object by setting its type
-        if (newEntity.payload.geo.coordinateSystem !== null) {
-          setEntityType(
-            newEntity.payload.geo.coordinateSystem.coordinateSystemClassName
-          );
+        clearTimeout(errorTimeout);
+
+        if (response !== undefined && response.data !== undefined) {
+          let newEntity = response.data;
+          // Set progress, entity, and get the occupancy data for the enttiy
+          setEntity(newEntity);
+
+          // If our payload isn't null, we can show the object by setting its type
+          if (newEntity.payload.geo.coordinateSystem !== null) {
+            setEntityType(
+              newEntity.payload.geo.coordinateSystem.coordinateSystemClassName
+            );
+          }
+
+          setSubEntities(newEntity.payload.geo.childSpaces);
+          setErrorLoading(false);
+
+          if (realtime === false) {
+            console.log(newEntity, "analytics");
+            openDialog(newEntity, "analytics");
+          }
         }
-
-        setSubEntities(newEntity.payload.geo.childSpaces);
-        setErrorLoading(false);
       })
       .catch(function (error) {
-        console.log("APP ENTITY GET", error);
+        showError("Error loading entity");
         setErrorLoading(true);
       });
   }
 
-  async function getOccupancyData(subEntities, time) {
-
+  async function getOccupancyData(entity, subEntities, time) {
     let timeDayEarlier = new Date(time.getTime());
     timeDayEarlier.setDate(time.getDate() - 1);
 
     setProgress(30);
-    
-    let occupancyResponses = await Promise.all(
-      subEntities.map(function (subEntity) {
-        return authGet(api.observation, {
-          entityId: subEntity.id,
-          orderBy: "timestamp",
-          direction: "desc",
-          limit: "1",
-          before: moment(time).format("YYYY-MM-DD hh:mm:ss"),
-          after: moment(timeDayEarlier).format("YYYY-MM-DD hh:mm:ss")
-        });
-      })
-    );
 
-    let occupancies = occupancyResponses.map(function (response, index) {
-      if (index === occupancyResponses.length - 1) {
-        setProgress(100);
+    // let query = {
+    //   "query": "select `id`, MAX(`timestamp`) as timestamp, `deviceId`, `entityId`, `occupancy`, `validity` from `occupancy_vs_observation` where `timestamp` <= \"" + moment(currentDate).format("YYYY-MM-DD hh:mm:ss") + "\" and `entityId` in (" + subEntities.map((subEntity) => subEntity.id).join(",") + (entity !== null ? ("," + entity.id) : "") + ") group by `entityId`;"
+    // }
 
-      }
-      if (response.data !== undefined && response.data.length > 0) {
-        let occupancyData = response.data[0].payload;
+    // AND `timestamp` between '2020-05-26 01:40:00" and "2020-05-26 02:40:00"
 
-        // If the data is undefined, let's make an invalid option
-        if (occupancyData === undefined) {
-          return {
-            entityId: subEntities[index].id,
-            occupancy: -1,
-            validity: 300,
-          };
+    let query = {
+      query:
+        "SELECT O1.`entityId`, O1.`timestamp`, O1.`occupancy` FROM `occupancy_vs_observation` AS O1 JOIN (SELECT `entityId`, MAX(`timestamp`) AS maxDate FROM `occupancy_vs_observation` " +
+        "WHERE `entityId` in (" +
+        subEntities.map((subEntity) => subEntity.id).join(",") +
+        (entity !== null ? "," + entity.id : "") +
+        ") " +
+        'AND `timestamp` between "' +
+        moment(timeDayEarlier).format("YYYY-MM-DD hh:mm:ss") +
+        '" and "' +
+        moment(currentDate).format("YYYY-MM-DD hh:mm:ss") +
+        '" ' +
+        "GROUP BY `entityId`) AS O2 ON O2.`entityId`=O1.`entityId` AND O2.`maxDate` = O1.`timestamp`;",
+    };
+
+    axios.post(api.query, query).then(function (response) {
+      if (response.status === 200) {
+        let occupancies = {};
+        for (let i = 0; i < response.data.length; i++) {
+          occupancies[response.data[i].entityId] = response.data[i];
         }
-        occupancyData.timestamp = response.data.timestamp;
-        return occupancyData;
-      } else {
-        return {
-          entityId: subEntities[index].id,
-          occupancy: -1,
-          validity: 300,
-        };
+        setProgress(100);
+        setOccupancies(occupancies);
       }
     });
-
-    setOccupancies(occupancies);
   }
 
-  async function getOccupancy(id, time) {
-
-    let timeDayEarlier = new Date(time.getTime());
-    timeDayEarlier.setDate(time.getDate() - 1);
-
-    let occupancyResponse = await authGet(api.observation, {
-      entityId: id,
-      orderBy: "timestamp",
-      direction: "desc",
-      limit: "1",
-      before: moment(time).format("YYYY-MM-DD hh:mm:ss"),
-      after: moment(timeDayEarlier).format("YYYY-MM-DD hh:mm:ss")
-    });
-    if (occupancyResponse.data !== undefined && occupancyResponse.data.length > 0) {
-      setOccupancy({
-        timestamp: occupancyResponse.data[0].timestamp,
-        occupancy: occupancyResponse.data[0].payload.occupancy
-      });
-    } else {
-      setOccupancy({
-        timestamp: 0,
-        occupancy: -1
-      });
-    }
+  function getOccupancy(id) {
+    return id !== undefined && occupancies[id] !== undefined
+      ? occupancies[id]
+      : -1;
   }
 
   function selectEntity(entity) {
-    pushRoute([getEntityTypeName(entity), entity.id]);
+    if (entity !== undefined) {
+      pushRoute([getEntityTypeName(entity), entity.id]);
+    }
   }
 
   function getEntityTypeName(entity) {
+    if (entity === undefined) {
+      return "";
+    }
     return entity.entityTypeName;
   }
 
   // Opens a dialog using the information given
   function openDialog(entity, titleSubscript) {
+    console.log("OPEN DIALOG CALLED");
     setRealtime(false);
     setDialogTitle(entity.name);
     setDialogTitleSubscript(titleSubscript);
@@ -260,6 +264,7 @@ function Home(props) {
         entityType={entityType}
         selectEntity={selectEntity}
         occupancies={occupancies}
+        occupancy={getOccupancy(entity.id)}
         legendMax={legendMax}
       ></CoordinateMap>
     );
@@ -267,6 +272,7 @@ function Home(props) {
 
   // Renders the floor map if we need to select a non-geo object (GeoSubNonGeo, NonGeoSubNonGeo)
   function render2DMap() {
+    console.log('in render 2d map")');
     return (
       <FloorMap
         twoDimensionalEntities={subEntities}
@@ -277,15 +283,8 @@ function Home(props) {
   }
 
   // Renders the dialog
-  function renderDialogView(type) {
-    return (
-      <OccupancyDialog
-        type={type}
-        entity={entity}
-        fromDate={fromDate}
-        toDate={toDate}
-      />
-    );
+  function renderDialogView() {
+    return <OccupancyDialog entity={entity} subEntities={subEntities} />;
   }
 
   // Renders a title based on the type of app we currently have loading
@@ -325,29 +324,17 @@ function Home(props) {
           subEntities={subEntities}
           openDialog={openDialog}
           occupancies={occupancies}
-          // occupancy={sumOccupancies()}
-          occupancy={occupancy}
+          occupancy={getOccupancy(entity.id)}
+          // occupancy={occupancy}
           refreshOccupancies={refreshOccupancies}
           currentDate={currentDate}
           setCurrentDate={setCurrentDate}
-          fromDate={fromDate}
-          setFromDate={setFromDate}
-          toDate={toDate}
-          setToDate={setToDate}
           progress={progress}
           realtime={realtime}
           setRealtime={setRealtime}
         ></EntityInformation>
       );
     }
-  }
-
-  function sumOccupancies() {
-    let sum = 0;
-    for (let i = 0; i < occupancies.length; i++) {
-      sum += occupancies[i].occupancy;
-    }
-    return sum;
   }
 
   function renderMap() {
@@ -358,6 +345,15 @@ function Home(props) {
           <p className="home-error">It's okay, we'll fix it soon!</p>
         </React.Fragment>
       );
+    }
+
+    if (entityType === null && entity !== null) {
+      return (
+         <React.Fragment>
+          <h2 className="home-error">No child spaces for selected space</h2>
+          <p className="home-error">Try another space!</p>
+        </React.Fragment>
+      )
     }
 
     if (entityType === null) {
@@ -389,9 +385,8 @@ function Home(props) {
         className="home-loading-bar"
       ></LoadingBar>
 
-      {firstLoad ? <Redirect to="/"></Redirect> : null}
       {willRedirect ? getRedirect() : null}
-
+      {renderToast()}
       {renderMap()}
 
       {showDialog ? (
@@ -404,11 +399,11 @@ function Home(props) {
           title={dialogTitle}
           titleSubscript={dialogTitleSubscript}
         >
-          {renderDialogView(dialogType)}
+          {renderDialogView()}
         </Dialog>
       ) : null}
 
-      {!errorLoading ? (
+      {!errorLoading && entityType !== "cartesian2hfd" ? (
         <Legend
           transitionLegend={transitionLegend}
           showLegend={showLegend}
@@ -418,9 +413,22 @@ function Home(props) {
         ></Legend>
       ) : null}
 
-      {!errorLoading ? (
-        <Card className="fade-in information-card" style={{ width: "360px" }}>
+      <div
+        className="visible-entity-button maximize-entity-button"
+        onClick={() => setHideEntityCard(false)}
+      >
+        <FontAwesomeIcon icon={faCaretUp}></FontAwesomeIcon>
+      </div>
+
+      {!errorLoading && !hideEntityCard ? (
+        <Card className="slide-up-fade-in information-card">
           <div className="information-header-wrapper">
+            <div
+              className="visible-entity-button minimize-entity-button"
+              onClick={() => setHideEntityCard(true)}
+            >
+              <FontAwesomeIcon icon={faCaretDown}></FontAwesomeIcon>
+            </div>
             <div className="information-header">{renderTitle(entity)}</div>
           </div>
           <div className="information-tab-content">{renderView(entity)}</div>

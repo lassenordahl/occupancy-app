@@ -9,6 +9,7 @@ import _ from "lodash";
 
 import { Card, NumberFocus } from "app/containers";
 import { SkeletonPulse } from "app/components";
+import { useQueryParams } from "globals/hooks";
 import {
   getChartJSOptions,
 } from "globals/utils/chartjs-helper";
@@ -17,10 +18,12 @@ const createSliderWithTooltip = Slider.createSliderWithTooltip;
 const Range = createSliderWithTooltip(Slider.Range);
 
 function OccupancyCard(props) {
+
+  let queryParams = useQueryParams();
   
   // Used for formatting dates
   function formatDateTime(datetime) {
-    return moment(datetime).format("MMM Do h:mm");
+    return moment(datetime).format("MMM Do h:mm A");
   }
 
   return (
@@ -37,8 +40,8 @@ function OccupancyCard(props) {
                 <div className="div1-title">
                   <h2>Occupancy Data</h2>
                   <h3>
-                    {formatDateTime(props.fromDate)} to{" "}
-                    {formatDateTime(props.toDate)}
+                    {formatDateTime(queryParams.fromDate)} to{" "}
+                    {formatDateTime(queryParams.toDate)}
                   </h3>
                 </div>
                 <div style={{ height: "16px" }} />

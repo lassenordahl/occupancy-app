@@ -1,0 +1,42 @@
+@import "globals/occupancy-styles.scss";
+
+.toaster {
+  position: fixed;
+  top: 100px;
+  right: 432px;
+  width: 240px;
+  height: 48px;
+  display: flex;
+  flex-direction: row;
+  background-color: white;
+  color: black !important;
+  box-shadow: 3px 10px 18px rgba(0, 0, 0, 0.1) !important;
+  z-index: 1005;
+}
+
+.toaster-label {
+  height: 100%;
+  width: 8px;
+  background-color: rgb(41, 41, 41);
+  margin-left: 0 !important;
+}
+
+.toaster-label-green {
+  background-color: #1dcd31;
+}
+
+.toaster-label-red {
+  background-color: #e44e3d;
+}
+
+.toast-text {
+  flex: 1 1;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.toast-text p {
+  font-size: 1em;
+  margin-left: 12px;
+}

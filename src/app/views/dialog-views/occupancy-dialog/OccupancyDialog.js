@@ -5,17 +5,17 @@ import "rc-tooltip/assets/bootstrap.css";
 
 import moment from "moment";
 import _ from "lodash";
-import { Picklist, PicklistOption, Button } from "react-rainbow-components";
+import { DateTimePicker, Button } from "react-rainbow-components";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFileCsv } from "@fortawesome/free-solid-svg-icons";
+import { faFileCsv, faChartLine } from "@fortawesome/free-solid-svg-icons";
 import { CSVLink } from "react-csv";
+import LoadingBar from "react-top-loading-bar";
 
 import {
   getChartJSData,
   getChartJSDataset,
   getGraphColor,
 } from "globals/utils/chartjs-helper";
-import { capitalizeWords } from "globals/utils/formatting-helper";
 import api from "globals/api";
 import authGet from "globals/authentication/AuthGet";
 import OccupancyCard from "./occupancy-card/OccupancyCard";
@@ -26,6 +26,7 @@ function OccupancyDialog(props) {
   const [entityOccupantData, setEntityOccupantData] = useState([]);
   const [filteredOccupancyData, setFilteredOccupancyData] = useState(null);
   const [entityDataAvailable, setEntityDataAvailable] = useState(true); // Holds wether or not there was any occupancy data (not to be confused with loading)
+  const [progress, setProgress] = useState(0);
 
   // Filter Variables
   const [filterMin, setFilterMin] = useState(null);
@@ -36,15 +37,17 @@ function OccupancyDialog(props) {
   const [max, setMax] = useState(null);
   const [avg, setAvg] = useState(null);
 
-  // Upon getting an entity load the occupancy information
-  useEffect(() => {
-    getOccupancyInformation(props.entity, true, false);
-  }, [props.entity]);
+  let oneWeekAgo = new Date();
+  oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
+  // Date Selections
+  const [fromDate, setFromDate] = useState(oneWeekAgo);
+  const [toDate, setToDate] = useState(new Date());
 
   // When the dates change load the occupancy data again, but we need to remove the first entity occupancy time
   useEffect(() => {
     getOccupancyInformation(props.entity, true, true);
-  }, [props.fromDate, props.toDate]);
+  }, [props.entity, fromDate, toDate]);
 
   // Take in if we're going to use the first index,
   // If we're the first index (primary entity for this dialog), then we should load the max/min/avg values
@@ -54,8 +57,6 @@ function OccupancyDialog(props) {
     let minVal = Number.MAX_SAFE_INTEGER;
     let minTimestamp = null;
     let total = 0;
-
-    console.log(observationValues);
 
     let data = observationValues.map(function (observation) {
       total += observation.payload.occupancy;
@@ -76,7 +77,7 @@ function OccupancyDialog(props) {
       // return moment(observation.timestamp).format("MMM Do h:mm:ss");
     });
 
-    console.log(timestamps);
+    // console.log(timestamps);
 
     setMin({
       value: minVal,
@@ -112,34 +113,39 @@ function OccupancyDialog(props) {
     isFirstIndex,
     isReplacingFirstIndex
   ) {
+    setProgress(30);
     authGet(api.observation, {
       entityId: entity.id,
       orderBy: "timestamp",
       direction: "asc",
       // limit: "30",
-      before: moment(props.toDate).format("YYYY-MM-DD hh:mm:ss"),
-      after: moment(props.fromDate).format("YYYY-MM-DD hh:mm:ss"),
+      limit: "1000",
+      before: moment(toDate).format("YYYY-MM-DD hh:mm:ss"),
+      after: moment(fromDate).format("YYYY-MM-DD hh:mm:ss"),
     })
       .then(function (response) {
         // Add the occupancy data to the observation values
-        console.log(response);
-        if (response.data.length > 0) {
-          setEntityDataAvailable(true);
+        setProgress(100);
 
-          // If we're replacing the first index, this means that the date range has been updated and we need to refresh the value for the first one
-          if (isReplacingFirstIndex) {
-            setEntityOccupantData([
-              mapObservationValues(response.data, isFirstIndex),
-              ...entityOccupantData.slice(1),
-            ]);
+        if (response !== undefined) {
+          if (response.data.length > 0) {
+            setEntityDataAvailable(true);
+
+            // If we're replacing the first index, this means that the date range has been updated and we need to refresh the value for the first one
+            if (isReplacingFirstIndex) {
+              setEntityOccupantData([
+                mapObservationValues(response.data, isFirstIndex),
+                ...entityOccupantData.slice(1),
+              ]);
+            } else {
+              setEntityOccupantData([
+                ...entityOccupantData,
+                mapObservationValues(response.data, isFirstIndex),
+              ]);
+            }
           } else {
-            setEntityOccupantData([
-              ...entityOccupantData,
-              mapObservationValues(response.data, isFirstIndex),
-            ]);
+            setEntityDataAvailable(false);
           }
-        } else {
-          setEntityDataAvailable(false);
         }
       })
       .catch(function (error) {
@@ -192,92 +198,105 @@ function OccupancyDialog(props) {
     getOccupancyInformation(newEntity, false, false);
   }
 
-  function removeComparedEntity(removedEntity) {
-    let removedIndex = -1;
-    setComparedEntities(
-      _.reject(comparedEntities, function (entity, index) {
-        if (entity.id === removedEntity.id) {
-          removedIndex = index;
-        }
-        return entity.id === removedEntity.id;
-      })
-    );
-    setEntityOccupantData(
-      _.reject(entityOccupantData, function (occupantData, index) {
-        return removedIndex === index;
-      })
-    );
-  }
-
   function exportCSV() {
     let csv = [];
     if (filteredOccupancyData !== null) {
       filteredOccupancyData.data.map(function (occupancyValue, index) {
         csv.push({
           occupancy: parseInt(occupancyValue),
-          timestamp: moment(filteredOccupancyData.timestamps[index]).format("MMM Do YYYY h:mm:ss"),
+          timestamp: moment(filteredOccupancyData.timestamps[index]).format(
+            "MMM Do YYYY h:mm:ss"
+          ),
         });
       });
     }
     return csv;
   }
 
+  async function compareEntities() {
+    // for (let i = 0; i < props.subEntities.length; i++) {
+    //   addToComparedEntities(props.subEntities[i]);
+    // }
+    setComparedEntities([...comparedEntities, ...props.subEntities]);
+    setProgress(30);
+
+    let subEntityResponses = await Promise.all(
+      props.subEntities.map(function (entity) {
+        return authGet(api.observation, {
+          entityId: entity.id,
+          orderBy: "timestamp",
+          direction: "asc",
+          // limit: "30",
+          limit: "1000",
+          before: moment(toDate).format("YYYY-MM-DD hh:mm:ss"),
+          after: moment(fromDate).format("YYYY-MM-DD hh:mm:ss"),
+        });
+      })
+    );
+
+    let newOccupantData = subEntityResponses.map(function (response) {
+      // Add the occupancy data to the observation values
+      if (response !== undefined) {
+        if (response.data.length > 0) {
+          return mapObservationValues(response.data, false);
+        }
+      }
+      return null;
+    });
+
+    setProgress(100);
+
+    newOccupantData = newOccupantData.filter(function (response) {
+      return response !== null;
+    });
+
+    setEntityOccupantData([...entityOccupantData, ...newOccupantData]);
+  }
+
   return (
     <div className="OccupancyDialog">
       <div className="dialog-graph-params">
-        <h2>Compare Spaces</h2>
-        <Picklist
-          disabled={!entityDataAvailable}
-          onChange={(option) => addToComparedEntities(option.value)}
-          placeholder="Select a comparable entity"
-        >
-          {[
-            { name: "test1", id: 1 },
-            { name: "test2", id: 2 },
-            { name: "test3", id: 3 },
-            { name: "test4", id: 4 },
-            { name: "test5", id: 5 },
-            { name: "test6", id: 6 },
-          ]
-            .sort(function (a, b) {
-              if (a.name < b.name) return -1;
-              if (a.name > b.name) return 1;
-              return 0;
-            })
-            .filter(function (entity) {
-              return !comparedEntities
-                .map((entity) => entity.id)
-                .includes(entity.id);
-            })
-            .map(function (entity, index) {
-              return (
-                <PicklistOption
-                  key={index}
-                  name={entity.name}
-                  label={capitalizeWords(entity.name)}
-                  value={entity}
-                />
-              );
-            })}
-        </Picklist>
-        {/* {comparedEntities.slice(1).map(function (entity, index) {
-          return (
-            <div className="dialog-entity-list-item" key={index}>
-              <p>{entity.name}</p>
-              <FontAwesomeIcon
-                icon={faTimes}
-                onClick={() => removeComparedEntity(entity)}
-              ></FontAwesomeIcon>
-            </div>
-          );
-        })} */}
+        <h2>Date Range </h2>
+        <DateTimePicker
+          value={fromDate}
+          label="From"
+          onChange={(value) => setFromDate(value)}
+        />
+        <div style={{ height: "16px" }} />
+        <DateTimePicker
+          value={toDate}
+          label="To"
+          onChange={(value) => setToDate(value)}
+        />
+        <div style={{ height: "24px" }} />
+        <h2>Occupancy Data</h2>
+        <p>
+          Occupancy values are pulled through the given time range, but limited
+          to 1000 values maximum. If the defined date range does not match the
+          one you queried, there is likely too much data.
+        </p>
+        <h2>Data</h2>
+        <p>
+          Data is provided by UCI OIT. View more information using the link
+          below.
+        </p>
+        <a href="https://www.oit.uci.edu/ics-and-oit-collaborate-on-tippers-research-project/">
+          https://www.oit.uci.edu/ics-and-oit-collaborate-on-tippers-research-project/
+        </a>
         <div style={{ height: "16px" }}></div>
-
         <div className="dialog-params-export-utilities">
-          <div>
-            <CSVLink data={exportCSV()}
-            filename={"entity-" + props.entity.id + "-exported-data.csv"}>
-              <Button variant="outline-brand" disabled={!entityDataAvailable || entityOccupantData.length === 0}>
+          <div className="dialog-param-buttons">
+            <CSVLink
+              data={exportCSV()}
+              className="dialog-param-buttons-csv"
+              filename={"entity-" + props.entity.id + "-exported-data.csv"}
+            >
+              <Button
+                variant="outline-brand"
+                disabled={
+                  !entityDataAvailable || entityOccupantData.length === 0
+                }
+              >
                 <FontAwesomeIcon
                   icon={faFileCsv}
                   className="rainbow-m-right_medium"
@@ -285,6 +304,22 @@ function OccupancyDialog(props) {
                 Export to CSV
               </Button>
             </CSVLink>
+            <div style={{ width: "24px" }}></div>
+            <Button
+              variant="brand"
+              disabled={
+                !entityDataAvailable ||
+                entityOccupantData.length === 0 ||
+                entityOccupantData.length > 1
+              }
+              onClick={() => compareEntities()}
+            >
+              <FontAwesomeIcon
+                icon={faChartLine}
+                className="rainbow-m-right_medium"
+              ></FontAwesomeIcon>
+              Compare
+            </Button>
           </div>
         </div>
       </div>

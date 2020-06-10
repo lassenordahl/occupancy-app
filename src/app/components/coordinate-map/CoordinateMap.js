@@ -100,10 +100,6 @@ function CoordinateMap(props) {
 
     let extent = coordinateEntity.payload.geo.extent;
 
-    if (coordinateEntity === 10059) {
-      console.log(coordinateEntity);
-    }
-
     // Coordinate structure is different depending on if it's a polygon or a rectangle, but pretty simple nonetheless
     if (extent !== null) {
       if (extent.extentClassName === "polygon") {
@@ -141,7 +137,7 @@ function CoordinateMap(props) {
 
     if (props.entityType === "gps") {
       return props.coordinateEntities.map(function (coordinateEntity, index) {
-        let occupancy = getOccupancy(index);
+        let occupancy = getOccupancy(coordinateEntity.id);
         return (
           <Polygon
             key={index}
@@ -151,7 +147,7 @@ function CoordinateMap(props) {
               }
             }}
             positions={mapCoordinateWrapper(coordinateEntity)}
-            color={"#" + blueRainbow.colorAt(occupancy || 0)}
+            color={occupancy === -1 ? "#808080" : "#" + blueRainbow.colorAt(occupancy || 0)}
           >
             <Tooltip sticky className="polygon-tooltip box-shadow">
               {coordinateEntity.name} - {occupancy === - 1 ? "No Data Available" : occupancy}
@@ -163,7 +159,7 @@ function CoordinateMap(props) {
       return (
         <Polygon
           positions={mapCoordinateWrapper(props.entity)}
-          color={"#" + blueRainbow.colorAt(10)}
+          color={props.occupancy.occupancy === -1 ? "#808080" : "#2749c4"}
         >
           <Tooltip sticky className="polygon-tooltip box-shadow">
             {props.entity.name}
@@ -175,10 +171,10 @@ function CoordinateMap(props) {
   }
 
   // Gets the occupancy for the given value
-  function getOccupancy(index) {
-    return props.occupancies[index] === undefined
-      ? 0
-      : props.occupancies[index].occupancy;
+  function getOccupancy(id) {
+    return props.occupancies[id] === undefined
+      ? -1
+      : props.occupancies[id].occupancy;
   }
 
   // Need to use the entity type from the props variable, because props.entityType isn't loaded yet

@@ -1,0 +1,46 @@
+#!/bin/bash
+
+case $1 in
+        build)
+                action="npm run-script build"
+                ;;
+        start)
+                action="npm start"
+                ;;
+        *) 
+                echo Invalid input
+                echo "./react [build | start] [dev | uci | home]"
+                exit 1
+                ;;
+esac
+
+# Make sure to add all React config variables here
+# https://create-react-app.dev/docs/adding-custom-environment-variables/
+
+export NODE_PATH=src/
+export ROOT_ENTITIY=2
+
+case $2 in
+	dev)	
+                export REACT_APP_ENV=dev
+                export REACT_APP_BASE_URL=https://dev-tippers.ics.uci.edu/api
+                export REACT_APP_OBSERVATION_ID=13
+                export REACT_APP_BASE_ENTITY_ID=10000
+                eval "$action"
+                ;;
+	uci)
+                export REACT_APP_ENV=dev
+                export REACT_APP_BASE_URL=https://uci-tippers.ics.uci.edu/api
+                export REACT_APP_OBSERVATION_ID=1
+                export REACT_APP_BASE_ENTITY_ID=2
+                eval "$action"
+                ;;
+	home)	
+                eval "$action"
+                ;;
+	*) 
+                echo Invalid input
+                echo "./react [build | start] [dev | uci | home]"
+                exit 1
+                ;;
+esac
