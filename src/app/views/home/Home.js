@@ -267,6 +267,7 @@ function Home(props) {
 
   // Renders the floor map if we need to select a non-geo object (GeoSubNonGeo, NonGeoSubNonGeo)
   function render2DMap() {
+    console.log('in render 2d map")');
     return (
       <FloorMap
         twoDimensionalEntities={subEntities}
@@ -342,7 +343,12 @@ function Home(props) {
     }
 
     if (entityType === null) {
-      return null;
+      return (
+         <React.Fragment>
+          <h2 className="home-error">No child spaces for selected space</h2>
+          <p className="home-error">Try another space!</p>
+        </React.Fragment>
+      )
     }
 
     if (

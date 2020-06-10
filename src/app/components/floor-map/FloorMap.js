@@ -286,6 +286,7 @@ class FloorMap extends React.Component {
   render() {
     return (
       <div className="FloorMap">
+        hell  o
         <div className="floormap-map-wrapper">
           <svg
             className="floormap-canvas"
