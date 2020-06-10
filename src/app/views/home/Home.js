@@ -342,13 +342,17 @@ function Home(props) {
       );
     }
 
-    if (entityType === null) {
+    if (entityType === null && entity !== null) {
       return (
          <React.Fragment>
           <h2 className="home-error">No child spaces for selected space</h2>
           <p className="home-error">Try another space!</p>
         </React.Fragment>
       )
+    }
+    
+    if (entityType === null) {
+      return null;
     }
 
     if (
