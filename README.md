@@ -43,8 +43,8 @@ The TIPPERS Occupancy App is built to utilize the TIPPERS Semiotic API for realt
 ![Donald Bren Hall View](https://user-images.githubusercontent.com/13127625/79298749-e2979300-7e96-11ea-935f-e1e5a2b11f2d.png)
 
 ### See floor-maps created by users
-![Floor Maps](https://user-images.githubusercontent.com/13127625/79298797-08bd3300-7e97-11ea-9ef1-ea83892bad26.png)
+![Floor Maps](https://user-images.githubusercontent.com/13127625/93947702-426d5200-fcf1-11ea-9a90-993fef7f17d4.png)
 
-### See advanced analytics for different spaces (Work in progress)
-![Analytics](https://user-images.githubusercontent.com/13127625/79298766-efb48200-7e96-11ea-9f04-728fd097c5e8.png)
+### See advanced analytics for different spaces 
+![Analytics](https://user-images.githubusercontent.com/13127625/93947596-fcb08980-fcf0-11ea-8e6d-765f4d571628.png)
 
