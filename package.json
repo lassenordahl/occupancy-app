@@ -15,7 +15,7 @@
     "js-cookie": "^2.2.1",
     "leaflet": "^1.5.1",
     "lodash": "^4.17.15",
-    "moment": "^2.24.0",
+    "moment": "^2.29.2",
     "node-sass": "^4.12.0",
     "rainbowvis.js": "^1.0.1",
     "rc-slider": "^9.2.4",
